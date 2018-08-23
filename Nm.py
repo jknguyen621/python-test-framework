@@ -78,6 +78,13 @@ def nm_dump_cert_cache(sendMode, IPV6):
     certs = processCmd(cmd)
     return certs
 
+#Routine to upload Operator Cert to persistent memory:
+def nm_upload_op_cert(sendMode, IPV6, path2x509):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs upload " + path2x509 + " persist"
+    print cmd
+    ret = processCmd(cmd)
+    print ret
+
 #Routine to upload DL to persistent memory:
 def nm_upload_dl_cert(sendMode, IPV6, path2x509):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs upload " + path2x509 + " c 2 persist"

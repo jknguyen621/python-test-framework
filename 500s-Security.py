@@ -15,9 +15,14 @@ NET_MGR_PATH = '/Users/jnguyen/test-framework/tools/net_mgr'
 #NET_MGR_PATH = '//home//pi//net_mgr//net_mgr'
 CPD_MAC_ID = '00:13:50:05:00:69:ce:38'
 CPD_IPV6_FSU = 'fe80::213:5005:0069:ce38'
-CERTS_PATH = '/Users/jnguyen/catools/catools-4.13.0b2000049/bin/'
+CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:0069:ce38'
+AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'   #Start_word = 0x6a5d'; net_id = 0xffff
+#CERTS_PATH = '/Users/jnguyen/catools/catools-4.13.0b2000049/bin/'
+CERTS_PATH = '~/Certs/'
 OP_CERT = '01_SWENG_20224_OPERATOR.x509'
-DL_CERT = '02_SWENG_20224_DLCA.x509'
+#DL_CERT = '02_SWENG_20224_DLCA.x509'
+SUB_CA_ECBOCA_CERT = '02_SWENG_20224_ECBOCA_PRIV.x509'
+DL_CERT = '03_SWENG_20224_NM1245.x509'
 MINTED_DL_CERT = 'dl-8d8.x509'
 
 certs_dump = NET_MGR_PATH + ' -g -d fe80::213:5005:0069:ce38 certs sdump 4'
@@ -25,8 +30,8 @@ certs_dump = NET_MGR_PATH + ' -g -d fe80::213:5005:0069:ce38 certs sdump 4'
 
 BPD_MAC_ID = ''
 
-sendMode = '-g -d'  #//via FSU
-#sendMode = '-d'     #via corp network
+#sendMode = '-g -d'  #//via FSU
+sendMode = '-d'     #via corp network & AP
 
 #*************** COMMANDS Implemented in Nm.py module ********************#
 ########################################################################################################################
@@ -55,26 +60,42 @@ nm.nm_nodeq_x('-i', '0')
 
 #check image list on device
 print "Get Image List...\n"
-nm.nm_get_image_list(sendMode, CPD_IPV6_FSU)
+nm.nm_get_image_list(sendMode, CPD_IPV6_AP)
 
 #get version str on device
 print "Get Version Str...\n"
-nm.nm_get_version_str(sendMode, CPD_IPV6_FSU)
+nm.nm_get_version_str(sendMode, CPD_IPV6_AP)
 
 #Removing dl cert:
-print "Removing DL cert....\n"
-nm.nm_remove_cert(sendMode, CPD_IPV6_FSU, '1283')
+#print "Removing DL cert....\n"
+#nm.nm_remove_cert(sendMode, CPD_IPV6_AP, '1283')
+
+#Upload Operator cert test:
+op_x509_path = CERTS_PATH + OP_CERT
+print "Uploading OP Cert...\n"
+nm.nm_upload_op_cert(sendMode, CPD_IPV6_AP, op_x509_path)
+
+#Upload ECBOCA cert test:
+ecboca_x509_path = CERTS_PATH + SUB_CA_ECBOCA_CERT
+print "Uploading ECBOCA cert...\n"
+nm.nm_upload_dl_cert(sendMode, CPD_IPV6_AP, ecboca_x509_path)
+
+
+#Upload DL cert test:
+dl_x509_path = CERTS_PATH + DL_CERT
+print "Uploading DL Cert...\n"
+nm.nm_upload_dl_cert(sendMode, CPD_IPV6_AP, dl_x509_path)
 
 
 #Upload dl cert test:
 dl_x509_path = CERTS_PATH + DL_CERT
-print "Uploading DL cert...\n"
-#nm.nm_upload_dl_cert(sendMode, CPD_IPV6_FSU, dl_x509_path)
+#print "Uploading DL cert...\n"
+#nm.nm_upload_dl_cert(sendMode, CPD_IPV6_AP, dl_x509_path)
 
 
 #Check cert chain node:
 print "Check Certs chains...\n"
-chain = nm.nm_cert_own(sendMode, CPD_IPV6_FSU)
+chain = nm.nm_cert_own(sendMode, CPD_IPV6_AP)
 
 #Check valid certs chain ownership:
 chain.rstrip('\r\n')
@@ -83,12 +104,12 @@ print ("Output of valid cert check = %r \n" % ret)
 
 #Delete Operator cert and all subordinate certs:
 print "Deleting Op cert and subordinates...\n"
-nm.nm_certs_delete_op(sendMode, CPD_IPV6_FSU)
+nm.nm_certs_delete_op(sendMode, CPD_IPV6_AP)
 
 
 ################################################################################
 #Dump Cert Cache and returning a cert cache text table as a list
-certs_list = nm.nm_dump_cert_cache(sendMode, CPD_IPV6_FSU)
+certs_list = nm.nm_dump_cert_cache(sendMode, CPD_IPV6_AP)
 #print "certs output: ", certs_list
 #print '{:s}'.format(certs_list)
 
