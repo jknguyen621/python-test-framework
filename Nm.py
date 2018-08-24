@@ -10,7 +10,8 @@
 
 import subprocess
 
-NET_MGR_PATH = '/Users/jnguyen/test-framework/tools/net_mgr'
+#NET_MGR_PATH = '/Users/jnguyen/test-framework/tools/net_mgr'
+NET_MGR_PATH = '/home/pi/python-test-framework/arm_net_mgr/net_mgr'
 CERTS_PATH = '/Users/jnguyen/catools/catools-4.13.0b2000049/bin/'
 #VALID_CHAINED_CERTS = "Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>"
 
@@ -25,6 +26,7 @@ def processCmd(cmd, *argv):
     for arg in argv:
         print "another arg through *argv :", arg
 
+    print ("Processing Command: %s\n" % cmd)
     proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
     print "command terminal output: ", out
