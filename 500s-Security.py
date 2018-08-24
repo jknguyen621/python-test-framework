@@ -11,8 +11,8 @@ import string
 import Nm as nm
 
 LOOP_MAX = 1 
-NET_MGR_PATH = '/Users/jnguyen/test-framework/tools/net_mgr'
-#NET_MGR_PATH = '//home//pi//net_mgr//net_mgr'
+#NET_MGR_PATH = '/Users/jnguyen/test-framework/tools/net_mgr'
+NET_MGR_PATH = '/home/pi/python-test-framework/arm_net_mgr/net_mgr'
 CPD_MAC_ID = '00:13:50:05:00:69:ce:38'
 CPD_IPV6_FSU = 'fe80::213:5005:0069:ce38'
 CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:0069:ce38'
