@@ -35,8 +35,8 @@ PRIVKEY_FILE = '03_SWENG_20224_NM1245.blob.privkey.Skey'
 
 VALID_CHAINED_CERTS = 'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
 
-global seguenceNum
-sequenceNum = 0
+#global seguenceNum
+#sequenceNum = 0
 
 
 #'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
@@ -203,13 +203,14 @@ def nm_get_shared_secret_from_assoc_response(outputString):
     #     0: No sig, 1: SHA1, 2: SHA224, 3: SHA256, 4: SHA384, 5: SHA512
     # For non-HMAC sigs, the 2nd digit has to be '0'
     # Note: The only valid argument is '03'"
-def nm_als_secured_commands_send(sendMode,  cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60, replyType=03):
-
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -a " + str(replyType) + " -A " + assocId + " -k " + sharedSecret +  " -c " + str(2) + " " + cmdString
+def nm_als_secured_commands_send(sendMode,  cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60, replyType='03'):
+    #seqNum = seqNum + 1
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -a " + str(replyType2) + " -A " + assocId + " -k " + sharedSecret +  " -c " + str(seqNum) + " " + cmdString
     print cmd
     output = processCmd(cmd)
     print output
-
+    seqNum += 1
+    return(seqNum, assocId, sharedSecret)
 
 #Routine to configure security associate ALS:
 #Example: /home/pi/python-test-framework/net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -t 60 -c 0 nm_sec_assoc assoc_conf \
@@ -222,8 +223,8 @@ def nm_sec_assoc_conf(sendMode, assocId, sharedSecret, IPV6=CPD_IPV6_AP, encrypt
     (output) = processCmd(cmd)
     print output
     #return (seqNum, assocId, sharedSecret)
-    global seguenceNum
-    seguenceNum = sequenceNum + 1
+    #global seguenceNum
+    #iseguenceNum = sequenceNum + 1
 
 
 
@@ -257,7 +258,7 @@ def nm_sec_assoc_assoc(sendMode, replyType, blobFileIn=CERTS_PATH+BLOB_FILE, pri
 #Example: /home/pi/python-test-framework/net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -t 60 -c 0 nm_sec_assoc assoc \
 # 12345 5 /home/pi/Certs/03_SWENG_20224_NM1245.blob.v2blob.bin  /home/pi/Certs/03_SWENG_20224_NM1245.blob.privkey.Skey
 #reply_type: 0x1=BC, 0x2=MFC, 0x4=blob (7=all)
-def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=12345, replyType=5, blobFileIn=CERTS_PATH+BLOB_FILE,
+def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=12345, replyType=5, replyType2='03', blobFileIn=CERTS_PATH+BLOB_FILE,
                                                                     privkeyFileIn=CERTS_PATH+PRIVKEY_FILE):
     assocID = ''  #Same static assocID for session
     sharedSECRET = ''  #Same static assocID for session
@@ -271,7 +272,9 @@ def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=123
 
     #3):  Send net_mgr commands string via secured ALS tunnel.
     cmdString = "image list"
-    nm_als_secured_commands_send(sendMode, cmdString, sequenceNum, assocID, sharedSECRET, IPV6, timeOut,replyType)
+    sequenceNum = 14
+    (seqNUM,assocId, ss) =  nm_als_secured_commands_send(sendMode, cmdString, sequenceNum, assocID, sharedSECRET, IPV6, timeOut,replyType2)
+    print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (seqNUM, assocId, ss)
 
 
 ########################################################################################################################
@@ -290,9 +293,10 @@ if __name__ == "__main__":
     blobFileIn = CERTS_PATH + BLOB_FILE
     privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
     IPV6 = CPD_IPV6_AP
-    replyType=5   #BC=0x1 + Blob=0x4
+    replyType=5   #BC=0x1 + Blob=0x4 for nm_sec_assoc assoc
+    replyType2='03'   #HMAC, ShA256 for secured send comands
     nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP,timeOut=60, reqId=12345, replyType=5,
-                                         blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE)
+replyType2='03', blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE)
 
 
     #cmdString = " certs esdump 4 "
