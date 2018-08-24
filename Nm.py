@@ -9,6 +9,7 @@
 
 
 import subprocess
+from random import randint
 
 NET_MGR_PATH = ''
 from sys import platform
@@ -33,6 +34,10 @@ BLOB_FILE = '03_SWENG_20224_NM1245.blob.v2blob.bin'
 PRIVKEY_FILE = '03_SWENG_20224_NM1245.blob.privkey.Skey'
 
 VALID_CHAINED_CERTS = 'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
+
+global seguenceNum
+sequenceNum = 0
+
 
 #'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
 ########################################################################################################################
@@ -75,17 +80,14 @@ def nm_nodeq_x(sendMode, nodeId):
 #Routine to check device image list:
 def nm_get_image_list(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " image list"
-    #print cmd
     ret = processCmd(cmd)
-    print ret
     return ret
+
 
 #Routine to get version string:
 def nm_get_version_str(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " get_version_str"
-    # print cmd
     ret = processCmd(cmd)
-    print ret
     return ret
 
 ########################################################################################################################
@@ -99,12 +101,14 @@ def nm_dump_cert_cache(sendMode, IPV6):
     certs = processCmd(cmd)
     return certs
 
+
 #Routine to upload Operator Cert to persistent memory:
 def nm_upload_op_cert(sendMode, IPV6, path2x509):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs upload " + path2x509 + " persist"
     print cmd
     ret = processCmd(cmd)
     print ret
+
 
 #Routine to upload DL to persistent memory:
 def nm_upload_dl_cert(sendMode, IPV6, path2x509):
@@ -113,12 +117,14 @@ def nm_upload_dl_cert(sendMode, IPV6, path2x509):
     ret = processCmd(cmd)
     print ret
 
+
 #Routine to remove cert
 def nm_remove_cert(sendMode, IPV6, privateID):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs erase " + privateID
     print cmd
     ret = processCmd(cmd)
     print ret
+
 
 #Routine to check cert chain node:
 def nm_cert_own(sendMode, IPV6):
@@ -128,6 +134,7 @@ def nm_cert_own(sendMode, IPV6):
     #print ret
     return ret
 
+
 #Routine to delete Operator Cert and  all subordinate certs from the Cache
 def nm_certs_delete_op(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs delete_op "
@@ -135,16 +142,23 @@ def nm_certs_delete_op(sendMode, IPV6):
     ret = processCmd(cmd)
     print ret
 
+
 #Routine to sync cert, moving from P persistent to F flash memory:
 def nm_cert_sync(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs sync "
     print cmd
     ret = processCmd(cmd)
-    #print ret
     return ret
 ########################################################################################################################
 #Helper routines:
 ########################################################################################################################
+
+#Random required ID:
+#Usage:  print random_with_N_digits(5)
+def random_with_N_digits(n):
+    range_start = 10 ** (n - 1)
+    range_end = (10 ** n) - 1
+    return randint(range_start, range_end)
 
 #Routine to check for valid certs ownership:
 def nm_check_valid_chain(actualCertsOwned, expectedCertsOwned=VALID_CHAINED_CERTS):
@@ -156,57 +170,110 @@ def nm_check_valid_chain(actualCertsOwned, expectedCertsOwned=VALID_CHAINED_CERT
         print "expected: \'%s\'" % str(expectedCertsOwned)
         return False
 
+
 #Routine to run by default when run module as test script
 def nm_get_image_str_version(sendMode, IPV6):
 
-    ret = nm_get_image_list(sendMode, IPV6)
-    print ret
+    nm_get_image_list(sendMode, IPV6)
+    nm_get_version_str(sendMode, IPV6)
 
-    ret = nm_get_version_str(sendMode, IPV6)
-    return ret
 
-#Routein for secured commands via ALS:
-def nm_als_secured_commands_send(sendMode, IPV6=CPD_IPV6_AP, timeOut=60, replyType, cmdString, seqNum, assocId, sharedSecret):
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + timeOut + " -A " + replyType + " -k " + sharedSecret +  -c " + seqNum + " " +cmdString
+#Get assoc ID from nm_sec_assoc assoc response
+def nm_get_assocId_from_assoc_response(outputString):
+    out = []
+    out = outputString.split('\n')
+
+    import re
+    assocID = re.findall(r'\d+', out[2])
+    return assocID[0]
+
+#Get Shared Secret from nm_sec_assoc assoc response
+def nm_get_shared_secret_from_assoc_response(outputString):
+    out = []
+    out = outputString.split('\n')
+    return out[10]
+
+#Routine for secured commands send via ALS:
+#Example: /home/pi/python-test-framework/net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -t 60 -a 03 -A 47989 -k \
+# ecdd06e7fc092a4ad054d569d35d25ed25ac51d422e8f074c1528f718ffa88e5 -c 1 image list
+#NOTE:  "-a Sign message with specified sig
+    # 1st digit - sig type:
+    #     0: HMAC, 1: RSA, 2: ECDSA, 3: DSA
+    # 2nd digit - HMAC hash type:
+    #     0: No sig, 1: SHA1, 2: SHA224, 3: SHA256, 4: SHA384, 5: SHA512
+    # For non-HMAC sigs, the 2nd digit has to be '0'
+    # Note: The only valid argument is '03'"
+def nm_als_secured_commands_send(sendMode,  cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60, replyType=03):
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -a " + str(replyType) + " -A " + assocId + " -k " + sharedSecret +  " -c " + str(2) + " " + cmdString
     print cmd
-    (out, err) = processCmd(cmd)
-    print out
+    output = processCmd(cmd)
+    print output
 
 
 #Routine to configure security associate ALS:
-def nm_sec_assoc_conf(sendMode, IPV6=CPD_IPV6_AP,timeOut=60, idle_timeOut=3000, encryptType, hmacType, assocId, sharedSecret):
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + timeOut + " -c 0 " + "nm_sec_assoc assoc_conf " \
-          + idle_timeOut + " " + encryptType + " " + hmacType + " " + assocId + " " + sharedSecret
+#Example: /home/pi/python-test-framework/net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -t 60 -c 0 nm_sec_assoc assoc_conf \
+# 3600 0 0 47989 ecdd06e7fc092a4ad054d569d35d25ed25ac51d422e8f074c1528f718ffa88e5
+
+def nm_sec_assoc_conf(sendMode, assocId, sharedSecret, IPV6=CPD_IPV6_AP, encryptType=0, hmacType=0, timeOut=60,idle_timeOut=3000):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -c 0 " + "nm_sec_assoc assoc_conf " \
+          + str(idle_timeOut) + " " + str(encryptType) + " " + str(hmacType) + " " + str(assocId) + " " + sharedSecret
     print cmd
-    (out, err) = processCmd(cmd)
-    print out
-    return (seqNum, assocId, sharedSecret)
+    (output) = processCmd(cmd)
+    print output
+    #return (seqNum, assocId, sharedSecret)
+    global seguenceNum
+    seguenceNum = sequenceNum + 1
+
 
 
 #Routine to security associate ALS:
-def nm_sec_assoc_assoc(sendMode, IPV6=CPD_IPV6_AP,reqId, blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE):
+#note: replyType = reply_type: 0x1=BC, 0x2=MFC, 0x4=blob (7=all)  (OR-ed)
+#Example: /home/pi/python-test-framework/net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -t 60 -c 0 nm_sec_assoc assoc \
+# 12345 5 /home/pi/Certs/03_SWENG_20224_NM1245.blob.v2blob.bin  /home/pi/Certs/03_SWENG_20224_NM1245.blob.privkey.Skey
+
+def nm_sec_assoc_assoc(sendMode, replyType, blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE,
+                                                                                                IPV6=CPD_IPV6_AP,timeOut=60, reqId=12345):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -c 0 " + "nm_sec_assoc assoc " \
+          + str(reqId) + " " + str(replyType) + " " + blobFileIn + " " + privkeyFileIn
+
+    output = processCmd(cmd)
+    print output
+
+    assocId = nm_get_assocId_from_assoc_response(output)
+
+    print ("Returned process ASSOC_ID = \'%s\' " % assocId)
+    # return (seqNum, assocId, sharedSecret)
+
+    sharedS = nm_get_shared_secret_from_assoc_response(output)
+    print ("Returned process Shared Secret = \'%s\' " % sharedS)
+
+    return (assocId, sharedS)
+
+#Main upper level Routine to help establish Application Layer Security &
+#For secured Application command processing.  Will call lower-level routines for configuration and connection.
+#returns:  the next seqNum to use for command, assoc_id, shared secret
+#Required: blob bin and privkey files for the particular operator in the ~/Certs directory.
+#Example: /home/pi/python-test-framework/net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -t 60 -c 0 nm_sec_assoc assoc \
+# 12345 5 /home/pi/Certs/03_SWENG_20224_NM1245.blob.v2blob.bin  /home/pi/Certs/03_SWENG_20224_NM1245.blob.privkey.Skey
+#reply_type: 0x1=BC, 0x2=MFC, 0x4=blob (7=all)
+def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=12345, replyType=5, blobFileIn=CERTS_PATH+BLOB_FILE,
+                                                                    privkeyFileIn=CERTS_PATH+PRIVKEY_FILE):
+    assocID = ''  #Same static assocID for session
+    sharedSECRET = ''  #Same static assocID for session
+
+    #1): Call nm_sec_assoc_assoc ()....
+    (assocID, sharedSECRET) = nm_sec_assoc_assoc(sendMode, replyType, blobFileIn, privkeyFileIn,IPV6, timeOut, reqId)
 
 
-
-#Routine to help establish Application Layer Security &
-#return the next seqNum to use for command, assoc_id, shared secret
-#For secured Application command processing
-def nm_Establish_ALS_Connection(sendMode, IPV6=CPD_IPV6_AP,reqId=12345, blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE):
-
-    #/home/pi/Certs/03_SWENG_20224_NM1245.blob.v2blob.bin
-    #/home/pi/Certs/03_SWENG_20224_NM1245.blob.privkey.Skey
-
-
-
-    #1): Request to establish ALS security association via IPV6 address provided.
-    #
-
-    #2): ALS tunnel configuration parameters.
-    #nm_sec_assoc_conf(sendMode, IPV6=CPD_IPV6_AP,timeOut=60, idle_timeOut=3000, encryptType, hmacType, assocId, sharedSecret):
+    #2): Calling nm_sec_assoc_conf() ALS tunnel configuration parameters.
+    nm_sec_assoc_conf(sendMode, assocID, sharedSECRET, IPV6, 0, 0, timeOut, 3000)
 
     #3):  Send net_mgr commands string via secured ALS tunnel.
-    #nm_als_secured_commands_send(sendMode, IPV6=CPD_IPV6_AP, timeOut=60, replyType, cmdString, seqNum, assocId,
-                                 sharedSecret):
+    cmdString = "image list"
+    nm_als_secured_commands_send(sendMode, cmdString, sequenceNum, assocID, sharedSECRET, IPV6, timeOut,replyType)
+
+
 ########################################################################################################################
 
 if __name__ == "__main__":
@@ -215,3 +282,29 @@ if __name__ == "__main__":
     sendMode = '-d'
     nm_get_image_str_version(sendMode, CPD_IPV6_AP)
 
+    #Testing ALS Secured Link, reading certs cache
+    #(nextSeqNum, assoc_id, sharedSecret)
+
+    #Get Random 5-digits Required ID to start communication
+    reqId = random_with_N_digits(5)
+    blobFileIn = CERTS_PATH + BLOB_FILE
+    privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
+    IPV6 = CPD_IPV6_AP
+    replyType=5   #BC=0x1 + Blob=0x4
+    nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP,timeOut=60, reqId=12345, replyType=5,
+                                         blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE)
+
+
+    #cmdString = " certs esdump 4 "
+    #ret = nm_als_secured_commands_send(sendMode,  replyType, cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60):
+
+
+
+
+
+
+
+
+    print random_with_N_digits(2)
+    print random_with_N_digits(3)
+    print random_with_N_digits(4)
