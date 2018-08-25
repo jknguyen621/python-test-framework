@@ -12,12 +12,16 @@ import Nm as nm
 
 LOOP_MAX = 1
 
+import os
+pwd = os.getcwd()
+print "Current Working Direcgtory %s\n" % (pwd)
+
 NET_MGR_PATH = ''
 from sys import platform
 if platform == "darwin" or platform == "linux":
-    NET_MGR_PATH = '/Users/jnguyen/PycharmProjects/python-test-framework/net_mgr'
+    NET_MGR_PATH = pwd + '/net_mgr'
 elif platform == "linux2":                  #Raspberry Pi
-    NET_MGR_PATH = '/home/pi/python-test-framework/arm_net_mgr/net_mgr'
+    NET_MGR_PATH = pwd + '/arm_net_mgr/net_mgr'
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 

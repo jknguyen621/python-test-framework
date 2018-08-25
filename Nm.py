@@ -9,14 +9,20 @@
 
 
 import subprocess
+import time
+
 from random import randint
+
+import os
+pwd = os.getcwd()
+print "Current Working Direcgtory %s\n" % (pwd)
 
 NET_MGR_PATH = ''
 from sys import platform
 if platform == "darwin" or platform == "linux":
-    NET_MGR_PATH = '/Users/jnguyen/PycharmProjects/python-test-framework/net_mgr'
+    NET_MGR_PATH = pwd + '/net_mgr'
 elif platform == "linux2":                  #Raspberry Pi
-    NET_MGR_PATH = '/home/pi/python-test-framework/arm_net_mgr/net_mgr'
+    NET_MGR_PATH = pwd + '/arm_net_mgr/net_mgr'
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
@@ -68,10 +74,11 @@ def nm_device_discovery(sendMode, device_mac_id):
 #Routine to return various nodeq check
 #Refer to this wiki for all the nodeq IDs: https://zoo.silverspringnet.com/display/PlatformFW/Nodeq
 def nm_nodeq_x(sendMode, nodeId):
-    cmd = NET_MGR_PATH + " " + sendMode + " " + "nodeq " + nodeId
+    cmd = NET_MGR_PATH + " " + sendMode + " " + "nodeq " + str(nodeId)
     print cmd
-    ret = processCmd(cmd)
-    print ret
+    out = processCmd(cmd)
+    print out
+    return out
 
 ########################################################################################################################
 #Image and Version related:
@@ -153,6 +160,23 @@ def nm_cert_sync(sendMode, IPV6):
 #Helper routines:
 ########################################################################################################################
 
+#Routine to loop and get neihbor on nodeq 0, useful after a reboot.
+def nm_discover_thy_neighbor(sendMode, device_macId, timeOut=60):
+
+    sendMode = '-i '
+    linkedDevice = ''
+    loopCount = 1
+    while linkedDevice == 'None' or linkedDevice =='':
+        nm_device_discovery(sendMode, device_macId)
+        nodeId = 0
+        linkedDevice = nm_nodeq_x(sendMode, nodeId)
+        print "Trying connection loop: \'%d\' \n" % loopCount
+        loopCount += 1
+        time.sleep(1)
+
+    print "Linked Device list is: \'%s\' \n"  % linkedDevice
+
+
 #Random required ID:
 #Usage:  print random_with_N_digits(5)
 def random_with_N_digits(n):
@@ -205,7 +229,8 @@ def nm_get_shared_secret_from_assoc_response(outputString):
     # Note: The only valid argument is '03'"
 def nm_als_secured_commands_send(sendMode,  cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60, replyType='03'):
     #seqNum = seqNum + 1
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -a " + str(replyType2) + " -A " + assocId + " -k " + sharedSecret +  " -c " + str(seqNum) + " " + cmdString
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -a " + str(replyType2) + " -A " \
+          + assocId + " -k " + sharedSecret +  " -c " + str(seqNum) + " " + cmdString
     print cmd
     output = processCmd(cmd)
     print output
@@ -258,12 +283,11 @@ def nm_sec_assoc_assoc(sendMode, replyType, blobFileIn=CERTS_PATH+BLOB_FILE, pri
 #Example: /home/pi/python-test-framework/net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -t 60 -c 0 nm_sec_assoc assoc \
 # 12345 5 /home/pi/Certs/03_SWENG_20224_NM1245.blob.v2blob.bin  /home/pi/Certs/03_SWENG_20224_NM1245.blob.privkey.Skey
 #reply_type: 0x1=BC, 0x2=MFC, 0x4=blob (7=all)
-def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=12345, replyType=5, replyType2='03', blobFileIn=CERTS_PATH+BLOB_FILE,
-                                                                    privkeyFileIn=CERTS_PATH+PRIVKEY_FILE):
-    assocID = ''  #Same static assocID for session
-    sharedSECRET = ''  #Same static assocID for session
+def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=12345, replyType=5, replyType2='03', \
+                                blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE):
 
-    #1): Call nm_sec_assoc_assoc ()....
+
+    #1): Call nm_sec_assoc_assoc ().... Get initial assocID and SharedSecret
     (assocID, sharedSECRET) = nm_sec_assoc_assoc(sendMode, replyType, blobFileIn, privkeyFileIn,IPV6, timeOut, reqId)
 
 
@@ -272,9 +296,10 @@ def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=123
 
     #3):  Send net_mgr commands string via secured ALS tunnel.
     cmdString = "image list"
-    sequenceNum = 14
-    (seqNUM,assocId, ss) =  nm_als_secured_commands_send(sendMode, cmdString, sequenceNum, assocID, sharedSECRET, IPV6, timeOut,replyType2)
-    print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (seqNUM, assocId, ss)
+    sequenceNum = 3
+    (seqNUM,assocID, SS) = nm_als_secured_commands_send(sendMode, cmdString, sequenceNum, assocID, sharedSECRET, IPV6, timeOut,replyType2)
+    print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (seqNUM, assocID, SS)
+    return (seqNUM, assocID, SS)
 
 
 ########################################################################################################################
@@ -283,10 +308,15 @@ if __name__ == "__main__":
     print "Running nm.py module as script"
     print "NIC info"
     sendMode = '-d'
-    nm_get_image_str_version(sendMode, CPD_IPV6_AP)
+    #nm_get_image_str_version(sendMode, CPD_IPV6_AP)
 
     #Testing ALS Secured Link, reading certs cache
     #(nextSeqNum, assoc_id, sharedSecret)
+
+    timeOut = 60
+    nm_discover_thy_neighbor(sendMode, CPD_MAC_ID, 30)
+
+    time.sleep(30)
 
     #Get Random 5-digits Required ID to start communication
     reqId = random_with_N_digits(5)
@@ -295,20 +325,17 @@ if __name__ == "__main__":
     IPV6 = CPD_IPV6_AP
     replyType=5   #BC=0x1 + Blob=0x4 for nm_sec_assoc assoc
     replyType2='03'   #HMAC, ShA256 for secured send comands
-    nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP,timeOut=60, reqId=12345, replyType=5,
-replyType2='03', blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE)
 
 
-    #cmdString = " certs esdump 4 "
-    #ret = nm_als_secured_commands_send(sendMode,  replyType, cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60):
+    #Establihsing ALS connection and sendig first command via secured ALS
+    (seqNum, assocId, ss) = nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP,timeOut=60, reqId=12345, \
+                replyType=5, replyType2='03', blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE)
 
 
+    #Making a second secured command request via ALS
+    cmdString = " certs esdump 4 "
+    (seqNum, assocId, ss) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,replyType2)
+    print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+    seqNum, assocId, ss)
 
 
-
-
-
-
-    print random_with_N_digits(2)
-    print random_with_N_digits(3)
-    print random_with_N_digits(4)
