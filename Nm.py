@@ -60,7 +60,7 @@ def processCmd(cmd, *argv):
     print ("Processing Command: \'%s\' \n" % cmd)
     proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    print "command terminal output: \'%s\'\n", out
+    print "command terminal output: \'%s\' \n" % str(out)
     return out
 
 ########################################################################################################################
@@ -251,10 +251,6 @@ def nm_sec_assoc_conf(sendMode, assocId, sharedSecret, IPV6=CPD_IPV6_AP, encrypt
     (output) = processCmd(cmd)
     print output
     #return (seqNum, assocId, sharedSecret)
-    #global seguenceNum
-    #iseguenceNum = sequenceNum + 1
-
-
 
 #Routine to security associate ALS:
 #note: replyType = reply_type: 0x1=BC, 0x2=MFC, 0x4=blob (7=all)  (OR-ed)
@@ -313,12 +309,69 @@ def nm_get_secure_association_list(sendMode, IPV6=CPD_IPV6_AP):
     print out
     return out
 
+#Routine to teardown existing ALS link.  Note there is a bug with using actual seqNum, workaround using null port: FIRMW-19357
 def nm_teardown_ALS_connection(sendMode, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -c " + str(0) + " nm_sec_assoc teardown "  + str(assocId) + \
           " " + sharedSecret
     print cmd
     ret = processCmd(cmd)
     print ret
+
+#########################################################################################################################
+#Security level and backdoor unsecure(legacy port) disabling methods.
+
+#Routine to set security level
+#0x0 - None
+#0x7 -  Compatibility Mode
+#0xF - Strict
+def nm_conf_mlme_sec_level():
+    pass
+
+
+#Must use App layer security association
+#conf nm_sec disable_unsecure 0  #0=Open; 1=Disabled; 2=Automatio. Set to 0 for testing for emergency recovery via unsecured port.
+def nm_conf_disable_unsecure(sendMode, seqNum, assocId, sharedSecret, unsecureMode, IPV6=CPD_IPV6_AP):
+
+    cmdString = "conf nm_sec disable_unsecure " + str(unsecureMode)
+    seqNum = 15   #Had to hardcode this to work around seqNum bug...
+    (seqNum, assocId, ss) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60,
+                                  replyType='03')
+
+    #Call again without parameters to get current set value
+    cmdString = "conf nm_sec disable_unsecure "
+    (seqNUM, assocID, SS) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6=CPD_IPV6_AP, timeOut=60,
+                                 replyType='03')
+    return (seqNUM, assocID, SS)
+
+#Set Link Layer Security Idle limit timeout,   Default is set to 2 days.  Set to 1 day for testing.
+def nm_conf_set_link_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP):
+    cmdString = " conf nm_sec link_layer_sec_idle_limit" + " " + str(noOfDay)
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + cmdString
+    # print cmd
+    ret = processCmd(cmd)
+
+    #Call again to see set status
+    cmdString = " conf nm_sec link_layer_sec_idle_limit"
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + cmdString
+    # print cmd
+    ret = processCmd(cmd)
+    print ret
+
+
+#Set Applicaiton Layer Security Association idle limit timeout.  Default is set for 4 days.  Set to 1 day for testing.
+def nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP):
+    cmdString = " conf nm_sec auto_lpo_idle_limit" + " " + str(noOfDay)
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + cmdString
+    # print cmd
+    ret = processCmd(cmd)
+
+    # Call again to see set status
+    cmdString = " conf nm_sec auto_lpo_idle_limit"
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + cmdString
+    # print cmd
+    ret = processCmd(cmd)
+    print ret
+
 
 ########################################################################################################################
 
@@ -357,8 +410,22 @@ if __name__ == "__main__":
     seqNum, assocId, ss)
 
     #Get a list of Securit Association:
-    sa_list = nm_get_secure_association_list(sendMode, IPV6)
-    print "ALS ccurent Security Asscocation list is: \'%s\'\n"  % (sa_list)
+    #sa_list = nm_get_secure_association_list(sendMode, IPV6)
+    #print "ALS ccurent Security Asscocation list is: \'%s\'\n"  % (sa_list)
 
-    #Teardown
+
+
+    #Disable unsecured port for safety net during testing as a way to recover.
+    unsecureMode =  0  #DISABLED
+    #seqNum = 22
+    (seqNum, assocId, ss) = nm_conf_disable_unsecure(sendMode, seqNum, assocId, ss, unsecureMode, IPV6=CPD_IPV6_AP)
+
+    #Set Link Layer Idle Timeout to 1 day:
+    noOfDay = 1
+    nm_conf_set_link_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP)
+
+    #Set App Layer idle timeout to 1 day:
+    nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP)
+
+    # Teardown
     ret = nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
