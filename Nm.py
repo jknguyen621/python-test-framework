@@ -314,8 +314,8 @@ def nm_get_secure_association_list(sendMode, IPV6=CPD_IPV6_AP):
     return out
 
 def nm_teardown_ALS_connection(sendMode, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP):
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -c " + str(seqNum) + " nm_sec_assoc teardown " + "-A " + str(assocId) + \
-          " -k " + sharedSecret
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -c " + str(0) + " nm_sec_assoc teardown "  + str(assocId) + \
+          " " + sharedSecret
     print cmd
     ret = processCmd(cmd)
     print ret
