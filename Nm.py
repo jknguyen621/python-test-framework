@@ -41,6 +41,9 @@ PRIVKEY_FILE = '03_SWENG_20224_NM1245.blob.privkey.Skey'
 
 VALID_CHAINED_CERTS = 'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
 
+DAILY_BUILD_4_6_x = "//it-nas-01/release/firmware/daily-builds/4.6.x/4.6.0/4.5.0-bld5a/rni_nic/"
+IMAGE ="slic_rni.nic.image.DEV.DEV_sig.04.05.995a.03"
+
 #global seguenceNum
 #sequenceNum = 0
 
@@ -54,10 +57,10 @@ def processCmd(cmd, *argv):
     for arg in argv:
         print "another arg through *argv :", arg
 
-    print ("Processing Command: %s\n" % cmd)
+    print ("Processing Command: \'%s\' \n" % cmd)
     proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    print "command terminal output: ", out
+    print "command terminal output: \'%s\'\n", out
     return out
 
 ########################################################################################################################
@@ -301,6 +304,21 @@ def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=123
     print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (seqNUM, assocID, SS)
     return (seqNUM, assocID, SS)
 
+#Routine to return a list of current security associated ALS connections:
+def nm_get_secure_association_list(sendMode, IPV6=CPD_IPV6_AP):
+#Routine to teardown a specific secured ALS connection:
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " nm_sec_assoc list "
+    print cmd
+    out = processCmd(cmd)
+    print out
+    return out
+
+def nm_teardown_ALS_connection(sendMode, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -c " + str(seqNum) + " nm_sec_assoc teardown " + "-A " + str(assocId) + \
+          " -k " + sharedSecret
+    print cmd
+    ret = processCmd(cmd)
+    print ret
 
 ########################################################################################################################
 
@@ -316,7 +334,7 @@ if __name__ == "__main__":
     timeOut = 60
     nm_discover_thy_neighbor(sendMode, CPD_MAC_ID, 30)
 
-    time.sleep(30)
+    #time.sleep(10)
 
     #Get Random 5-digits Required ID to start communication
     reqId = random_with_N_digits(5)
@@ -338,4 +356,9 @@ if __name__ == "__main__":
     print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
     seqNum, assocId, ss)
 
+    #Get a list of Securit Association:
+    sa_list = nm_get_secure_association_list(sendMode, IPV6)
+    print "ALS ccurent Security Asscocation list is: \'%s\'\n"  % (sa_list)
 
+    #Teardown
+    ret = nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
