@@ -100,6 +100,30 @@ def nm_get_version_str(sendMode, IPV6):
     ret = processCmd(cmd)
     return ret
 
+
+########################################################################################################################
+#Configurations related:
+########################################################################################################################
+
+#Configure CPD to talk to BPD:
+# conf meter_dt type 85
+# last_gasp ignore_pf_zx 3
+# Need to use 4.6 image and latest net_mgr
+def nm_configure_cpd(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf meter_dt type 85"
+    processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf meter_dt type"
+    out = processCmd(cmd)
+    print out
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf last_gasp ignore_pf_zx 3"
+    processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf last_gasp ignore_pf_zx"
+    out = processCmd(cmd)
+    print out
+
 ########################################################################################################################
 #Certs related:
 ########################################################################################################################
@@ -397,6 +421,9 @@ if __name__ == "__main__":
     replyType=5   #BC=0x1 + Blob=0x4 for nm_sec_assoc assoc
     replyType2='03'   #HMAC, ShA256 for secured send comands
 
+
+    #Configure CPD to talk to BPD:
+    nm_configure_cpd(sendMode, IPV6)
 
     #Establihsing ALS connection and sendig first command via secured ALS
     (seqNum, assocId, ss) = nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP,timeOut=60, reqId=12345, \
