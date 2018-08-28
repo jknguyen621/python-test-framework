@@ -128,6 +128,19 @@ def nm_configure_cpd(sendMode, IPV6):
 #Certs related:
 ########################################################################################################################
 
+# INDEX values are: (2)birth, (3)Mfg, (4)Cert Cache,
+#         (5)Ecck1 pub key, (6)Ecck2 pub key, (7)Ecck3 pub key, (8)Ecck4 pub key,
+#         GIDs are a class: (0)General, (1)Op Certs (2)DL Certs.
+#
+
+
+#Routine to show the various types of certs based on Index value
+def nm_show_cert(sendMode, IPV6, index):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs show " + str(index)
+    # print cmd
+    certs = processCmd(cmd)
+    return certs
+
 #Routine to dump the cert cache:
 def nm_dump_cert_cache(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs esdump 4"
@@ -426,7 +439,7 @@ if __name__ == "__main__":
     nm_configure_cpd(sendMode, IPV6)
 
     #Establihsing ALS connection and sendig first command via secured ALS
-    (seqNum, assocId, ss) = nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP,timeOut=60, reqId=12345, \
+    (seqNum, assocId, ss) = nm_establish_ALS_connection(sendMode, IPV6,timeOut=60, reqId=12345, \
                 replyType=5, replyType2='03', blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE)
 
 
@@ -445,14 +458,21 @@ if __name__ == "__main__":
     #Disable unsecured port for safety net during testing as a way to recover.
     unsecureMode =  0  #DISABLED
     #seqNum = 22
-    (seqNum, assocId, ss) = nm_conf_disable_unsecure(sendMode, seqNum, assocId, ss, unsecureMode, IPV6=CPD_IPV6_AP)
+    (seqNum, assocId, ss) = nm_conf_disable_unsecure(sendMode, seqNum, assocId, ss, unsecureMode, IPV6)
 
     #Set Link Layer Idle Timeout to 1 day:
     noOfDay = 1
-    nm_conf_set_link_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP)
+    nm_conf_set_link_layer_idle_limit(sendMode, noOfDay, IPV6)
 
     #Set App Layer idle timeout to 1 day:
-    nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP)
+    nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6)
+
+    #show various types of certs:
+    nm_show_cert(sendMode, IPV6, 2)  #Birth
+
+    nm_show_cert(sendMode, IPV6, 3)  #MFG
+
+    #nm_show_cert(sendMode, IPV6, 4) #Cert Cache
 
     # Teardown
     ret = nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
