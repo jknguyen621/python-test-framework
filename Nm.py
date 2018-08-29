@@ -38,6 +38,7 @@ DL_CERT = '03_SWENG_20224_NM1245.x509'
 MINTED_DL_CERT = 'dl-8d8.x509'
 BLOB_FILE = '03_SWENG_20224_NM1245.blob.v2blob.bin'
 PRIVKEY_FILE = '03_SWENG_20224_NM1245.blob.privkey.Skey'
+MFG_BLOB_FILE = ''
 
 VALID_CHAINED_CERTS = 'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
 
@@ -47,6 +48,12 @@ IMAGE ="slic_rni.nic.image.DEV.DEV_sig.04.05.995a.03"
 #global seguenceNum
 #sequenceNum = 0
 
+COSEM_OBIS_TEST_COMMAND = "net_mgr -d IPV6 -t 20 cosem aa_sn --flags=128 xdlms --ia --cst=4954526300000002 --sst=0x4954554300000002 --time --inv=3001 get 1:0.1.0.2.0.255:2"
+
+OBIS_FW_VERSION = "1:0.1.0.2.0.255:2"
+OBIS_UNIX_TIME = "1:0.0.1.1.0.255:2"
+OBIS_SN = "1:0.0.96.1.1.255:2"
+OBIS_MAC = "1:128.1.1.1.1.10:2"
 
 #'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
 ########################################################################################################################
@@ -160,6 +167,14 @@ def nm_upload_op_cert(sendMode, IPV6, path2x509):
 #Routine to upload DL to persistent memory:
 def nm_upload_dl_cert(sendMode, IPV6, path2x509):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs upload " + path2x509 + " c 2 persist"
+    print cmd
+    ret = processCmd(cmd)
+    print ret
+
+
+#Routine to upload Manufacturing blob:
+def nm_upload_mfg_blob(sendMode, IPV6, path2BlobFile):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs upload_blob" + path2BlobFile
     print cmd
     ret = processCmd(cmd)
     print ret
@@ -409,6 +424,17 @@ def nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP):
     ret = processCmd(cmd)
     print ret
 
+########################################################################################################################
+#OBIS Commands using COSEM from onboard NIC to BPD
+
+#Routine to send OBIS command to BPD via NIC using IPV6
+def nm_OBIS_read(sendMode, obisCommand, IPV6=CPD_IPV6_AP):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " -t 20 cosem aa_sn --flags=128 xdlms --ia --cst=4954526300000002 \
+    --sst=0x4954554300000002 --time --inv=3001 get " + obisCommand
+    out = processCmd(cmd)
+    print out
+    #return out
+
 
 ########################################################################################################################
 
@@ -474,5 +500,21 @@ if __name__ == "__main__":
 
     #nm_show_cert(sendMode, IPV6, 4) #Cert Cache
 
+    #Read BPD's FW Version
+    obisCommand = OBIS_FW_VERSION
+    nm_OBIS_read(sendMode, obisCommand, IPV6)
+
+    # Read BPD's Unix Time
+    obisCommand = OBIS_UNIX_TIME
+    nm_OBIS_read(sendMode, obisCommand, IPV6)
+
+    # Read BPD's SN
+    obisCommand = OBIS_SN
+    nm_OBIS_read(sendMode, obisCommand, IPV6)
+
+    # Read BPD's MAC ID
+    obisCommand = OBIS_MAC
+    nm_OBIS_read(sendMode, obisCommand, IPV6)
+
     # Teardown
-    ret = nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
+    #ret = nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
