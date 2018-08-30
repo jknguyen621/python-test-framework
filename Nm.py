@@ -67,7 +67,7 @@ def processCmd(cmd, *argv):
     print ("Processing Command: \'%s\' \n" % cmd)
     proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    print "command terminal output: \'%s\' \n" % str(out)
+    #print "command terminal output: \'%s\' \n" % str(out)
     return out
 
 ########################################################################################################################
@@ -211,9 +211,45 @@ def nm_cert_sync(sendMode, IPV6):
     print cmd
     ret = processCmd(cmd)
     return ret
+
+#######################################################################################################################
+#IMU or Master Meter Reading related
 ########################################################################################################################
+def nm_imu_data_range(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " imu_data range"
+    print cmd
+
+    range  = processCmd(cmd)
+    list = range.split('\n')
+
+    item1 = list[0]
+    item2 = list[1]
+
+    max = item1.split(' ')[-2]
+    min = item2.split(' ')[-2]
+    return (min, max)
+
+
+def nm_imu_data_read_index(sendMode, IPV6, index):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " imu_data read " + index
+    print cmd
+    readData = []
+    readData = processCmd(cmd)
+    #print readData
+    return readData
+
+#######################################################################################################################
 #Helper routines:
 ########################################################################################################################
+
+#Routine to get the last data range and retrieve its data.
+#Meant to be used with OBIS requests or any kind of IMU Data requests
+def nm_get_latest_IMU_data_response(sendMode, IPV6):
+    (min, max) = nm_imu_data_range(sendMode, IPV6)
+    #print "Max:Min: \'%s\':\'%s\' \n" % (max, min)
+
+    responseData = nm_imu_data_read_index(sendMode, IPV6, max)
+    return responseData
 
 #Routine to loop and get neihbor on nodeq 0, useful after a reboot.
 def nm_discover_thy_neighbor(sendMode, device_macId, timeOut=60):
@@ -428,9 +464,9 @@ def nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP):
 #OBIS Commands using COSEM from onboard NIC to BPD
 
 #Routine to send OBIS command to BPD via NIC using IPV6
-def nm_OBIS_read(sendMode, obisCommand, IPV6=CPD_IPV6_AP):
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " -t 20 cosem aa_sn --flags=128 xdlms --ia --cst=4954526300000002 \
-    --sst=0x4954554300000002 --time --inv=3001 get " + obisCommand
+def nm_OBIS_read(sendMode, invokeID, obisCommand, IPV6=CPD_IPV6_AP):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " -t 20 cosem aa_sn --flags=128 xdlms --ia \
+    --cst=4954526300000002 --sst=0x4954554300000002 --time --inv=" + str(invokeID) + " get " + obisCommand
     out = processCmd(cmd)
     print out
     #return out
@@ -500,25 +536,51 @@ if __name__ == "__main__":
 
     #nm_show_cert(sendMode, IPV6, 4) #Cert Cache
 
+
+    obisInvokeID =  11111
+
     #Read BPD's FW Version
     obisCommand = OBIS_FW_VERSION
     print "READING BPD FW VERSION\n"
-    nm_OBIS_read(sendMode, obisCommand, IPV6)
+    nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
+    obisInvokeID +=1
+
+    #Get resonse:
+    res = nm_get_latest_IMU_data_response(sendMode, IPV6)
+    print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
+
 
     # Read BPD's Unix Time
     obisCommand = OBIS_UNIX_TIME
     print "READING BPD TIME\n"
-    nm_OBIS_read(sendMode, obisCommand, IPV6)
+    nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
+    obisInvokeID += 1
+
+    # Get resonse:
+    res = nm_get_latest_IMU_data_response(sendMode, IPV6)
+    print "Response Data for BPD's Unix Time is: \n\%s\'\n" % res
 
     # Read BPD's SN
     obisCommand = OBIS_SN
     print "READING BPD S/N\n"
-    nm_OBIS_read(sendMode, obisCommand, IPV6)
+    nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
+    obisInvokeID += 1
+
+    # Get resonse:
+    res = nm_get_latest_IMU_data_response(sendMode, IPV6)
+    print "Response Data for BPD's SN is: \n\%s\'\n" % res
 
     # Read BPD's MAC ID
     obisCommand = OBIS_MAC
     print "READING BPD MAC ID\n"
-    nm_OBIS_read(sendMode, obisCommand, IPV6)
+    nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
+    obisInvokeID += 1
+
+    # Get resonse:
+    res = nm_get_latest_IMU_data_response(sendMode, IPV6)
+    print "Response Data for BPD's MAC Address is: \n\%s\'\n" % res
+
+
 
     # Teardown
-    #ret = nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
+    ret = nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
