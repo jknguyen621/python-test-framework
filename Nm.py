@@ -502,18 +502,22 @@ if __name__ == "__main__":
 
     #Read BPD's FW Version
     obisCommand = OBIS_FW_VERSION
+    print "READING BPD FW VERSION\n"
     nm_OBIS_read(sendMode, obisCommand, IPV6)
 
     # Read BPD's Unix Time
     obisCommand = OBIS_UNIX_TIME
+    print "READING BPD TIME\n"
     nm_OBIS_read(sendMode, obisCommand, IPV6)
 
     # Read BPD's SN
     obisCommand = OBIS_SN
+    print "READING BPD S/N\n"
     nm_OBIS_read(sendMode, obisCommand, IPV6)
 
     # Read BPD's MAC ID
     obisCommand = OBIS_MAC
+    print "READING BPD MAC ID\n"
     nm_OBIS_read(sendMode, obisCommand, IPV6)
 
     # Teardown
