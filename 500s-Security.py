@@ -9,6 +9,7 @@ import sys
 import os
 import string
 import Nm as nm
+from nm_header import *
 
 LOOP_MAX = 1
 
@@ -26,23 +27,6 @@ elif platform == "linux2":                  #Raspberry Pi
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
 
-
-CPD_MAC_ID = '00:13:50:05:00:69:ce:38'
-CPD_IPV6_FSU = 'fe80::213:5005:0069:ce38'
-CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:0069:ce38'
-AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'      #Start_word = 0x6a5d'; net_id = 0xffff
-CERTS_PATH = '~/Certs/'                                 #Expecting ~/Certs path at the home directory for user
-OP_CERT = '01_SWENG_20224_OPERATOR.x509'
-SUB_CA_ECBOCA_CERT = '02_SWENG_20224_ECBOCA_PRIV.x509'
-DL_CERT = '03_SWENG_20224_NM1245.x509'
-MINTED_DL_CERT = 'dl-8d8.x509'
-BLOB_FILE = '03_SWENG_20224_NM1245.blob.v2blob.bin'
-PRIVKEY_FILE = '03_SWENG_20224_NM1245.blob.privkey.Skey'
-
-certs_dump = NET_MGR_PATH + ' -g -d fe80::213:5005:0069:ce38 certs sdump 4'
-
-
-BPD_MAC_ID = ''
 
 #sendMode = '-g -d'  #//via FSU
 sendMode = '-d'     #via corp network & AP
@@ -69,6 +53,8 @@ nm.nm_get_version_str(sendMode, CPD_IPV6_AP)
 #print "Removing DL cert....\n"
 #nm.nm_remove_cert(sendMode, CPD_IPV6_AP, '1283')
 
+
+########################################################################################################################
 #Upload Operator cert test:
 op_x509_path = CERTS_PATH + OP_CERT
 print "Uploading OP Cert...\n"

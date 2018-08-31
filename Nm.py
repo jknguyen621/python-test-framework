@@ -7,53 +7,13 @@
 
 #Purpose of this module is to house all net_mgr cmd processing.
 
-
+from nm_header import *
 import subprocess
 import time
 
 from random import randint
 
-import os
-pwd = os.getcwd()
-print "Current Working Direcgtory %s\n" % (pwd)
 
-NET_MGR_PATH = ''
-from sys import platform
-if platform == "darwin" or platform == "linux":
-    NET_MGR_PATH = pwd + '/net_mgr'
-elif platform == "linux2":                  #Raspberry Pi
-    NET_MGR_PATH = pwd + '/arm_net_mgr/net_mgr'
-
-print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
-
-
-CPD_MAC_ID = '00:13:50:05:00:69:ce:38'
-CPD_IPV6_FSU = 'fe80::213:5005:0069:ce38'
-CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:0069:ce38'
-AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'      #Start_word = 0x6a5d'; net_id = 0xffff
-CERTS_PATH = '~/Certs/'                                 #Expecting ~/Certs path at the home directory for user
-OP_CERT = '01_SWENG_20224_OPERATOR.x509'
-SUB_CA_ECBOCA_CERT = '02_SWENG_20224_ECBOCA_PRIV.x509'
-DL_CERT = '03_SWENG_20224_NM1245.x509'
-MINTED_DL_CERT = 'dl-8d8.x509'
-BLOB_FILE = '03_SWENG_20224_NM1245.blob.v2blob.bin'
-PRIVKEY_FILE = '03_SWENG_20224_NM1245.blob.privkey.Skey'
-MFG_BLOB_FILE = ''
-
-VALID_CHAINED_CERTS = 'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
-
-DAILY_BUILD_4_6_x = "//it-nas-01/release/firmware/daily-builds/4.6.x/4.6.0/4.5.0-bld5a/rni_nic/"
-IMAGE ="slic_rni.nic.image.DEV.DEV_sig.04.05.995a.03"
-
-#global seguenceNum
-#sequenceNum = 0
-
-COSEM_OBIS_TEST_COMMAND = "net_mgr -d IPV6 -t 20 cosem aa_sn --flags=128 xdlms --ia --cst=4954526300000002 --sst=0x4954554300000002 --time --inv=3001 get 1:0.1.0.2.0.255:2"
-
-OBIS_FW_VERSION = "1:0.1.0.2.0.255:2"
-OBIS_UNIX_TIME = "1:0.0.1.1.0.255:2"
-OBIS_SN = "1:0.0.96.1.1.255:2"
-OBIS_MAC = "1:128.1.1.1.1.10:2"
 
 #'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
 ########################################################################################################################
@@ -213,8 +173,9 @@ def nm_cert_sync(sendMode, IPV6):
     return ret
 
 #######################################################################################################################
-#IMU or Master Meter Reading related
+#IMU or Master Meter Reading related, read imu Data and el events
 ########################################################################################################################
+#Get range of imu data
 def nm_imu_data_range(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " imu_data range"
     print cmd
@@ -229,13 +190,39 @@ def nm_imu_data_range(sendMode, IPV6):
     min = item2.split(' ')[-2]
     return (min, max)
 
-
+#read specific Imu data by index
 def nm_imu_data_read_index(sendMode, IPV6, index):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " imu_data read " + index
     print cmd
     readData = []
     readData = processCmd(cmd)
-    #print readData
+    return readData
+
+
+#Get range of el data
+def nm_el_data_range(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " el_data range"
+    print cmd
+
+    range  = processCmd(cmd)
+    print range
+    list = range.split('\n')
+
+    item1 = list[0]
+    item2 = list[1]
+
+    max = item1.split(' ')[-1]
+    min = item2.split(' ')[-1]
+    #print min, max
+    return (min, max)
+
+
+#read specific el data by index
+def nm_el_data_read_index(sendMode, IPV6, index):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " el_data read " + index
+    print cmd
+    readData = []
+    readData = processCmd(cmd)
     return readData
 
 #######################################################################################################################
@@ -250,6 +237,16 @@ def nm_get_latest_IMU_data_response(sendMode, IPV6):
 
     responseData = nm_imu_data_read_index(sendMode, IPV6, max)
     return responseData
+
+
+#Routine to get the last el data range and retrieve its data.
+def nm_get_latest_el_data_response(sendMode, IPV6):
+    (min, max) = nm_el_data_range(sendMode, IPV6)
+    print "Max:Min: \'%s\':\'%s\' \n" % (max, min)
+
+    responseData = nm_el_data_read_index(sendMode, IPV6, max)
+    return responseData
+
 
 #Routine to loop and get neihbor on nodeq 0, useful after a reboot.
 def nm_discover_thy_neighbor(sendMode, device_macId, timeOut=60):
@@ -320,7 +317,7 @@ def nm_get_shared_secret_from_assoc_response(outputString):
     # Note: The only valid argument is '03'"
 def nm_als_secured_commands_send(sendMode,  cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60, replyType='03'):
     #seqNum = seqNum + 1
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -a " + str(replyType2) + " -A " \
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -a " + str(replyType) + " -A " \
           + assocId + " -k " + sharedSecret +  " -c " + str(seqNum) + " " + cmdString
     print cmd
     output = processCmd(cmd)
@@ -478,7 +475,8 @@ if __name__ == "__main__":
     print "Running nm.py module as script"
     print "NIC info"
     sendMode = '-d'
-    #nm_get_image_str_version(sendMode, CPD_IPV6_AP)
+
+    nm_get_image_str_version(sendMode, CPD_IPV6_AP)
 
     #Testing ALS Secured Link, reading certs cache
     #(nextSeqNum, assoc_id, sharedSecret)
@@ -486,101 +484,3 @@ if __name__ == "__main__":
     timeOut = 60
     nm_discover_thy_neighbor(sendMode, CPD_MAC_ID, 30)
 
-    #time.sleep(10)
-
-    #Get Random 5-digits Required ID to start communication
-    reqId = random_with_N_digits(5)
-    blobFileIn = CERTS_PATH + BLOB_FILE
-    privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
-    IPV6 = CPD_IPV6_AP
-    replyType=5   #BC=0x1 + Blob=0x4 for nm_sec_assoc assoc
-    replyType2='03'   #HMAC, ShA256 for secured send comands
-
-
-    #Configure CPD to talk to BPD:
-    nm_configure_cpd(sendMode, IPV6)
-
-    #Establihsing ALS connection and sendig first command via secured ALS
-    (seqNum, assocId, ss) = nm_establish_ALS_connection(sendMode, IPV6,timeOut=60, reqId=12345, \
-                replyType=5, replyType2='03', blobFileIn=CERTS_PATH+BLOB_FILE, privkeyFileIn=CERTS_PATH+PRIVKEY_FILE)
-
-
-    #Making a second secured command request via ALS
-    cmdString = " certs esdump 4 "
-    (seqNum, assocId, ss) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,replyType2)
-    print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
-    seqNum, assocId, ss)
-
-    #Get a list of Securit Association:
-    #sa_list = nm_get_secure_association_list(sendMode, IPV6)
-    #print "ALS ccurent Security Asscocation list is: \'%s\'\n"  % (sa_list)
-
-
-
-    #Disable unsecured port for safety net during testing as a way to recover.
-    unsecureMode =  0  #DISABLED
-    #seqNum = 22
-    (seqNum, assocId, ss) = nm_conf_disable_unsecure(sendMode, seqNum, assocId, ss, unsecureMode, IPV6)
-
-    #Set Link Layer Idle Timeout to 1 day:
-    noOfDay = 1
-    nm_conf_set_link_layer_idle_limit(sendMode, noOfDay, IPV6)
-
-    #Set App Layer idle timeout to 1 day:
-    nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6)
-
-    #show various types of certs:
-    nm_show_cert(sendMode, IPV6, 2)  #Birth
-
-    nm_show_cert(sendMode, IPV6, 3)  #MFG
-
-    #nm_show_cert(sendMode, IPV6, 4) #Cert Cache
-
-
-    obisInvokeID =  11111
-
-    #Read BPD's FW Version
-    obisCommand = OBIS_FW_VERSION
-    print "READING BPD FW VERSION\n"
-    nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
-    obisInvokeID +=1
-
-    #Get resonse:
-    res = nm_get_latest_IMU_data_response(sendMode, IPV6)
-    print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
-
-
-    # Read BPD's Unix Time
-    obisCommand = OBIS_UNIX_TIME
-    print "READING BPD TIME\n"
-    nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
-    obisInvokeID += 1
-
-    # Get resonse:
-    res = nm_get_latest_IMU_data_response(sendMode, IPV6)
-    print "Response Data for BPD's Unix Time is: \n\%s\'\n" % res
-
-    # Read BPD's SN
-    obisCommand = OBIS_SN
-    print "READING BPD S/N\n"
-    nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
-    obisInvokeID += 1
-
-    # Get resonse:
-    res = nm_get_latest_IMU_data_response(sendMode, IPV6)
-    print "Response Data for BPD's SN is: \n\%s\'\n" % res
-
-    # Read BPD's MAC ID
-    obisCommand = OBIS_MAC
-    print "READING BPD MAC ID\n"
-    nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
-    obisInvokeID += 1
-
-    # Get resonse:
-    res = nm_get_latest_IMU_data_response(sendMode, IPV6)
-    print "Response Data for BPD's MAC Address is: \n\%s\'\n" % res
-
-
-
-    # Teardown
-    ret = nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
