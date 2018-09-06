@@ -9,6 +9,7 @@
 
 import unittest
 from tests.TestCertsValidationHandling import *
+import ResultsHandling
 
 
 class Certs_Suite(unittest.TestCase):
@@ -50,15 +51,19 @@ def suite():
 
 runner = unittest.TextTestRunner()
 test_suite = suite()
-runner.run(test_suite)
+result = runner.run(test_suite)
 
-'''
+#Output results statistics
+from ResultsHandling import *
+ResultsHandling(result)
+
+
+"""
 if __name__ == ' __main__':
     runner = unittest.TextTestRunner()
     test_suite = suite()
     runner.run(test_suite)
-'''
-
+"""
 
 #METHOD2:
 #certsTestSuite.addTest(TestCertsValidationHandling('test_default_size'))
