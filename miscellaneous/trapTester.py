@@ -15,6 +15,14 @@ import select
 from pygtail import Pygtail    #download and install pygtail package under /Library/Python/2.7/site-packages
 #Download pygtail at: https://github.com/bgreenlee/pygtail
 
+'''
+Pygtail's options:
+    offset_file=options.offset_file,
+    paranoid=options.paranoid,
+    every_n=options.every_n,
+    copytruncate=not options.no_copytruncate,
+    ead_from_end=options.read_from_end)
+'''
 pwd = os.getcwd()
 print "Current Working Direcgtory %s\n" % (pwd)
 
@@ -35,18 +43,19 @@ Call this program from project root directory: python -m miscellaneous.trapTeste
 #List of traps that are currently testable via a net_mgr's nmtrap force command(only 18 out of 71 are testable this way.
 
 
-trapsToTest = {
+#Quick Dictionary use for Debugging
+#trapsToTest = {
 #'power_loss':'0xcf',
 #'power_restore':'0xd0',
 #'battery_off': '0x11f',
 #'battery_on':'0x11e',
-'battery_config_mismatched':'0x379',
-}
+#'battery_config_mismatched':'0x379',
+#}
 
-"""
+
 trapsToTest = {
 'power_loss':'0xcf',
-#'power_restore':'0xd0',
+'power_restore':'0xd0',
 'battery_off': '0x11f',
 'battery_on':'0x11e',
 'battery_config_mismatched':'0x379',
@@ -65,7 +74,7 @@ trapsToTest = {
 'high_temp':'0x468',
 'authority_key_missing':'0x529',
 }
-"""
+
 
 #Trap setup:
 TRAP_SERVER_IPV6 = 'fd34:fe56:7891:7e23:4a8:7e53:a48e:e474'   #Local Macbook Ethernet
@@ -83,7 +92,7 @@ sendMode = "-d "
 ./net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 nm_trap port_set 647   #On Net Mgr on the NIC
 
 #Set delay for trap message sent:
-./net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 nm_trap delay authority_key_missing 30    #On Net Mgr on the NIC
+./net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 nm_trap delay authority_key_missing 0    #On Net Mgr on the NIC
 
 #Service is started by: 
 sudo ./net_trap -p 647  fd34:fe56:7891:7e23:4a8:7e53:a48e:e474  >> /tmp/trap_file.tx   #On local mac on 4.6 branch.
@@ -109,7 +118,6 @@ def processCmd(cmd, *argv):
     print ("Processing Command: \'%s\' \n" % cmd)
     proc = subprocess.Popen([cmd], stdout=subprocess.PIPE, shell=True)
     (out, err) = proc.communicate()
-    #print "command terminal output: \'%s\' \n" % str(out)
     return out
 
 def nm_force_trap_event(trap):
@@ -117,19 +125,21 @@ def nm_force_trap_event(trap):
     ret = processCmd(cmd)
     return ret
 
-def nm_tail_file(filePath, expectedValue):
-    exptedValue = "Received"
-    exptedValue1 = "Received trap id = " + str(expectedValue)
-    expectedValue2 = "Received *test* trap id = " + str(expectedValue)
-    for line in Pygtail(filePath):
+def nm_tail_file(filePath, expectedValue=None):
+
+    expetedValue1 = "Received "
+
+    if expectedValue == None:
+        dummyRead = Pygtail(filePath, read_from_end=True)
+
+    for line in Pygtail(filePath,  read_from_end=True, paranoid=True):
         sys.stdout.write(line)
-        if exptedValue in line:
+        if expetedValue1 in line:
             myList = line.split('=')
             print myList
             myList2 = myList[1].split(',')
             actualValue = myList2[0].lstrip()
             print "Hex Value Received is: \'%s\' \n" % actualValue
-            #break
             return actualValue
         else:
             pass
@@ -143,8 +153,13 @@ def nm_tail_file(filePath, expectedValue):
 for key, value in trapsToTest.iteritems():
     print key + " corresponds to " + trapsToTest[key] + "\n"
 
+    #Dummy read first
+    nm_tail_file(TRAP_LOG)
+
     ret = nm_force_trap_event(key)
-    time.sleep(3)
+    print "Returned value of nm_force_trap_event is: \'%s\' \n" % ret
+
+    time.sleep(1)
     retValue = nm_tail_file(TRAP_LOG, trapsToTest[key])
 
     print "Ret Value of parsing is: \'%s\' \n" % retValue
