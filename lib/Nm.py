@@ -8,12 +8,23 @@
 #Purpose of this module is to house all net_mgr cmd processing.
 
 from nm_header import *
+from utilities import *
 import subprocess
 import time
+import os
 
 from random import randint
+global seqNum
 
 
+filePath = "/tmp/pickleFile.myData"
+
+if os.path.isfile(filePath):
+    seqNum = read_data_from_file(filePath)
+else:
+    seqNum = 0
+
+seqNum = int(seqNum)
 
 #'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
 ########################################################################################################################
@@ -315,14 +326,16 @@ def nm_get_shared_secret_from_assoc_response(outputString):
     #     0: No sig, 1: SHA1, 2: SHA224, 3: SHA256, 4: SHA384, 5: SHA512
     # For non-HMAC sigs, the 2nd digit has to be '0'
     # Note: The only valid argument is '03'"
-def nm_als_secured_commands_send(sendMode,  cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60, replyType='03'):
+def nm_als_secured_commands_send(sendMode,  cmdString, sequenceNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60, replyType='03'):
     #seqNum = seqNum + 1
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t " + str(timeOut) + " -a " + str(replyType) + " -A " \
-          + assocId + " -k " + sharedSecret +  " -c " + str(seqNum) + " " + cmdString
+          + assocId + " -k " + sharedSecret +  " -c " + str(sequenceNum) + " " + cmdString
     print cmd
     output = processCmd(cmd)
     print output
-    seqNum += 1
+    global seqNum
+    seqNum = sequenceNum + 1
+
     return(seqNum, assocId, sharedSecret)
 
 #Routine to configure security associate ALS:
@@ -380,9 +393,15 @@ def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=123
 
     #3):  Send net_mgr commands string via secured ALS tunnel.
     cmdString = "image list"
-    sequenceNum = 3
-    (seqNUM,assocID, SS) = nm_als_secured_commands_send(sendMode, cmdString, sequenceNum, assocID, sharedSECRET, IPV6, timeOut,replyType2)
+
+    global seqNum
+    seqNum = seqNum + 1
+    (seqNUM,assocID, SS) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocID, sharedSECRET, IPV6, timeOut,replyType2)
     print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (seqNUM, assocID, SS)
+
+    #Pickle the seqNum for next startup
+    filePath = "/tmp/picklefile.myData"
+    write_data_to_file(filePath, seqNUM)
     return (seqNUM, assocID, SS)
 
 #Routine to return a list of current security associated ALS connections:
