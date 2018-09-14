@@ -16,11 +16,11 @@ import unittest
 
 
 class TestCertsValidationHandling(unittest.TestCase):
-    """
-    def __init__(selff):
-        suite = unittest.TestLoader().loadTestsFromTestCase(TestCertsValidationHandling)
-        runner = unittest.TextTestRunner(verbosity=2)
-        runner.run(suite)
+
+    #def __init__(self):
+    #    suite = unittest.TestLoader().loadTestsFromTestCase(TestCertsValidationHandling)
+    #    runner = unittest.TextTestRunner(verbosity=2)
+    #    runner.run(suite)
 
 
     #Setup required to run our testcase/suite.
@@ -46,11 +46,12 @@ class TestCertsValidationHandling(unittest.TestCase):
                                                                replyType=5, replyType2='03',
                                                                blobFileIn=CERTS_PATH + BLOB_FILE,
                                                                privkeyFileIn=CERTS_PATH + PRIVKEY_FILE)
-        self.assertTrue(seqNum != 0 ,assocId !=0, ss != '', "Wrong response for ")
+        self.assertTrue(self, (assocId !=0 or ss != ''), "Wrong response for ")
 
-    #def runTest(self):
 
-    """
+
+
+
 
     #Dummy tests
     def test_upper(self):

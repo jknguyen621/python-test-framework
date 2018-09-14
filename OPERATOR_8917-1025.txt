@@ -1,0 +1,51 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 20224 (0x4f00)
+        Signature Algorithm: ecdsa-with-SHA256
+        Issuer: C=US, O=Silver Spring Networks, CN=SSN Root Certificate
+        Validity
+            Not Before: Sep 24 19:45:29 2013 GMT
+            Not After : Oct 31 19:45:29 2023 GMT
+        Subject: C=US, O=SSN, OU=sweng, CN=Operator Root
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+            EC Public Key:
+                pub: 
+                    04:af:10:95:51:b7:a5:4f:e7:9b:94:71:e6:a3:8f:
+                    fc:27:0a:b3:a1:11:f8:12:cd:11:34:6d:df:40:c1:
+                    2a:ce:75:23:e3:8c:9d:37:d6:10:cf:4d:13:28:86:
+                    fd:fb:de:3f:e8:66:64:64:7b:35:22:c1:53:99:ff:
+                    29:44:5e:8b:ef
+                ASN1 OID: prime256v1
+        X509v3 extensions:
+            X509v3 Key Usage: 
+                Certificate Sign, CRL Sign
+            X509v3 Certificate Policies: 
+                Policy: X509v3 Any Policy
+
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:2
+            X509v3 Subject Key Identifier: 
+                55:44:04:AD:5A:C1:5A:7E:BE:C3:6A:E3:46:4C:1B:98:41:94:C1:F9
+            X509v3 Authority Key Identifier: 
+                keyid:0D:CC:85:6F:D9:20:38:30:11:60:AA:B3:89:8B:2F:2F:16:04:B6:A2
+
+    Signature Algorithm: ecdsa-with-SHA256
+        30:45:02:21:00:f5:3e:eb:60:10:92:02:0e:59:69:d3:8d:37:
+        9f:7b:5f:9a:62:1a:70:a0:cc:f8:53:f4:88:7e:0a:37:96:80:
+        89:02:20:04:a8:dd:4f:1b:1a:58:a4:d7:ad:19:06:bc:74:f3:
+        1f:ae:bd:de:fa:b0:25:cb:af:0b:37:6b:b7:59:62:d2:66
+-----BEGIN CERTIFICATE-----
+MIIB9jCCAZygAwIBAgICTwAwCgYIKoZIzj0EAwIwTTELMAkGA1UEBhMCVVMxHzAd
+BgNVBAoMFlNpbHZlciBTcHJpbmcgTmV0d29ya3MxHTAbBgNVBAMMFFNTTiBSb290
+IENlcnRpZmljYXRlMB4XDTEzMDkyNDE5NDUyOVoXDTIzMTAzMTE5NDUyOVowQzEL
+MAkGA1UEBhMCVVMxDDAKBgNVBAoTA1NTTjEOMAwGA1UECxMFc3dlbmcxFjAUBgNV
+BAMTDU9wZXJhdG9yIFJvb3QwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASvEJVR
+t6VP55uUceajj/wnCrOhEfgSzRE0bd9AwSrOdSPjjJ031hDPTRMohv373j/oZmRk
+ezUiwVOZ/ylEXovvo3YwdDALBgNVHQ8EBAMCAQYwEQYDVR0gBAowCDAGBgRVHSAA
+MBIGA1UdEwEB/wQIMAYBAf8CAQIwHQYDVR0OBBYEFFVEBK1awVp+vsNq40ZMG5hB
+lMH5MB8GA1UdIwQYMBaAFA3MhW/ZIDgwEWCqs4mLLy8WBLaiMAoGCCqGSM49BAMC
+A0gAMEUCIQD1PutgEJICDllp0403n3tfmmIacKDM+FP0iH4KN5aAiQIgBKjdTxsa
+WKTXrRkGvHTzH6693vqwJcuvCzdrt1li0mY=
+-----END CERTIFICATE-----

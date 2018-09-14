@@ -14,6 +14,7 @@ import ResultsHandling
 
 class Certs_Suite(unittest.TestCase):
 
+    """
     def setUp(self):
         self.a = 10
         self.b =  20
@@ -33,14 +34,15 @@ class Certs_Suite(unittest.TestCase):
          print "\nend of test", self.shortDescription()
 
     def testadd(self):
-        """Add"""
+        '''Add'''
         result = self.a + self.b
         self.assertTrue(result == 30)
 
     def testsub(self):
-        """Sub"""
+        '''Sub'''
         result = self.a - self.b
         self.assertTrue(result == -10)
+    """
 
 def suite():
     suite = unittest.TestSuite()

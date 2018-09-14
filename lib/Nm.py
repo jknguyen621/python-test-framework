@@ -69,6 +69,7 @@ def nm_nodeq_x(sendMode, nodeId):
 def nm_get_image_list(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " image list"
     ret = processCmd(cmd)
+    print ret
     return ret
 
 
@@ -76,6 +77,7 @@ def nm_get_image_list(sendMode, IPV6):
 def nm_get_version_str(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " get_version_str"
     ret = processCmd(cmd)
+    print ret
     return ret
 
 
@@ -150,6 +152,17 @@ def nm_upload_mfg_blob(sendMode, IPV6, path2BlobFile):
     ret = processCmd(cmd)
     print ret
 
+
+#Routine to download Certs, to local working directory:
+#**Where, INDEX values are: (2)birth, (3)Mfg, (4)Cert Cache,
+#         (5)Ecck1 pub key, (6)Ecck2 pub key, (7)Ecck3 pub key, (8)Ecck4 pub key,
+#         GIDs are a class: (0)General, (1)Op Certs (2)DL Certs.
+#i.e: #Operator Cert downlaod: ./net_mgr -d fd04:7c3e:be2f:100f:213:5005:004f:8917 certs dload OPERATOR 4 c 1
+def nm_download_cert(sendMode, IPV6, baseName, indexValue, gidClassl):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs dload " + baseName + " " + str(indexValue) + " c "  + str(gidClass)
+    print cmd
+    ret = processCmd(cmd)
+    print ret
 
 #Routine to remove cert
 def nm_remove_cert(sendMode, IPV6, privateID):

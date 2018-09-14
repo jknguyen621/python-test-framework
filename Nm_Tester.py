@@ -116,4 +116,4 @@ res = Nm.nm_get_latest_el_data_response(sendMode, IPV6)
 print "Latest EL EVENT  is: \n\%s\'\n" % res
 
 # Teardown
-ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
+#ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
