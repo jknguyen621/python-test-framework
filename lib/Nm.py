@@ -450,7 +450,7 @@ def nm_conf_mlme_sec_level():
 def nm_conf_disable_unsecure(sendMode, seqNum, assocId, sharedSecret, unsecureMode, IPV6=CPD_IPV6_AP):
 
     cmdString = "conf nm_sec disable_unsecure " + str(unsecureMode)
-    seqNum = 15   #Had to hardcode this to work around seqNum bug...
+    #seqNum = 15   #Had to hardcode this to work around seqNum bug...
     (seqNum, assocId, ss) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60,
                                   replyType='03')
 

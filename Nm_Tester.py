@@ -5,9 +5,21 @@
 #File: Nm_Tester.py
 
 from lib.nm_header import *
+from lib.utilities import *
 import lib.Nm as Nm
+import os
 
+from random import randint
+global seqNum
 
+filePath = "/tmp/pickleFile.myData"
+
+if os.path.isfile(filePath):
+    seqNum = read_data_from_file(filePath)
+else:
+    seqNum = 0
+
+seqNum = int(seqNum)
 
 #This is a break-out file, from the main section of Nm.py, to separate the testing portion for the library from the libary.
 #As it's gotten too big to be part of the library.
@@ -50,13 +62,20 @@ print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and s
 
 
 # Disable unsecured port for safety net during testing as a way to recover.
+# NOTE: if you use net_mgrS for connection, it will enable the unsecured port on Gen5 NIC.
 unsecureMode = 0  # DISABLED
-# seqNum = 22
+
+
+seqNum = seqNum + 11  #For some resason, when we start to disable unsecured port, seqNum increased by 11
 (seqNum, assocId, ss) = Nm.nm_conf_disable_unsecure(sendMode, seqNum, assocId, ss, unsecureMode, IPV6)
 
 # Set Link Layer Idle Timeout to 1 day:
 noOfDay = 1
 Nm.nm_conf_set_link_layer_idle_limit(sendMode, noOfDay, IPV6)
+
+#Set IPV6 = BPD under test:
+IPV6 = BPD1_IPV6_AP
+#IPV6 = BPD2_IPV6_AP
 
 # Set App Layer idle timeout to 1 day:
 Nm.nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6)
@@ -112,8 +131,14 @@ res = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
 print "Response Data for BPD's MAC Address is: \n\%s\'\n" % res
 
 # Test get latest el data:
-res = Nm.nm_get_latest_el_data_response(sendMode, IPV6)
-print "Latest EL EVENT  is: \n\%s\'\n" % res
+#res = Nm.nm_get_latest_el_data_response(sendMode, IPV6)
+#print "Latest EL EVENT  is: \n\%s\'\n" % res
 
 # Teardown
+# Pickle the seqNum for next startup
+filePath = "/tmp/picklefile.myData"
+print "Updating : " + filePath + " with latest seqNum\n"
+
+seqNum = seqNum + 1
+write_data_to_file(filePath, seqNum)
 #ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)

@@ -52,6 +52,7 @@ PRIVKEY_FILE = '03_SWENG_20224_NM1245.blob.privkey.Skey'
 MFG_BLOB_FILE = ''
 
 VALID_CHAINED_CERTS = 'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
+FULLY_DL_CHAINED_CERTS = 'Certificates owned: 0xff<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate,PrivateKeyOK>'
 
 DAILY_BUILD_4_6_x = "//it-nas-01/release/firmware/daily-builds/4.6.x/4.6.0/4.5.0-bld5a/rni_nic/"
 IMAGE ="slic_rni.nic.image.DEV.DEV_sig.04.05.995a.03"
