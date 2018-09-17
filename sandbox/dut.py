@@ -57,18 +57,19 @@ reqId = Nm.random_with_N_digits(5)
 blobFileIn = CERTS_PATH + BLOB_FILE
 privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
 IPV6 = BPD2_IPV6_AP
+timeOut = 30
 replyType = 5  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
 replyType2 = '03'  # HMAC, ShA256 for secured send comands
 
 #Upload ECBOCA cert test:
 ecboca_x509_path = CERTS_PATH + SUB_CA_ECBOCA_CERT
 print "Uploading ECBOCA cert...\n"
-Nm.nm_upload_op_cert(sendMode, IPV6, ecboca_x509_path)
+#Nm.nm_upload_op_cert(sendMode, IPV6, ecboca_x509_path)
 
 #Upload NMenity cert test:
 dl_x509_path = CERTS_PATH + SUB_NM_CERT
 print "Uploading NMenity Cert...\n"
-Nm.nm_upload_op_cert(sendMode, IPV6, dl_x509_path)
+#Nm.nm_upload_op_cert(sendMode, IPV6, dl_x509_path)
 
 #These next 2 are done as part of DL cert generation
 #Upload DLCA cert test:
@@ -78,6 +79,11 @@ dl_x509_path = CERTS_PATH + SWENG_DLCA_2019
 
 #Next would be to upload mintedDL cert....
 
+#Check Certs Ownership level of device:
+print "Validating & Checking certs ownership on devices... \'%s\'" % IPV6
+Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 # Establihsing ALS connection and sendig first command via secured ALS
 (seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, IPV6, timeOut=60, reqId=12345, \

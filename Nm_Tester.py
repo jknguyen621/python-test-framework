@@ -91,6 +91,14 @@ print "MFG CERT: \n" + mfgCert
 #certsCache = Nm.nm_show_cert(sendMode, IPV6, 4) #Cert Cache
 #print "CERTs CACHE: \n" + certsCache
 
+
+#Check Certs Ownership level of device:
+print "Validating & Checking certs ownership on devices... \'%s\'" % IPV6
+Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+
+
 obisInvokeID = 11111
 
 # Read BPD's FW Version

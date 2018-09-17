@@ -196,6 +196,17 @@ def nm_cert_sync(sendMode, IPV6):
     ret = processCmd(cmd)
     return ret
 
+#Routine to validate Certs ownership of a device
+def nm_validate_certs_ownership(sendMode, IPV6, expectedCertsOwnershipLevel):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " certs own "
+    print cmd
+    ret = processCmd(cmd)
+    print ret
+    if ret.rstrip() == expectedCertsOwnershipLevel:
+        print "PASSED: Got expected Level of Certs Ownership for device: \'%s\' : \'%s\'\n" % (IPV6, ret)
+    else:
+        print "FAILED: Certs Ownership level for device is not at proper level: \'%s\'\n" % ret
+
 #######################################################################################################################
 #IMU or Master Meter Reading related, read imu Data and el events
 ########################################################################################################################
