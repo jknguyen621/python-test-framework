@@ -81,12 +81,15 @@ IPV6 = BPD1_IPV6_AP
 Nm.nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6)
 
 # show various types of certs:
-Nm.nm_show_cert(sendMode, IPV6, 2)  # Birth
+birthCert = Nm.nm_show_cert(sendMode, IPV6, 2)  # Birth
+print "BIRTH CERT: \n" + birthCert
 
-Nm.nm_show_cert(sendMode, IPV6, 3)  # MFG
+mfgCert = Nm.nm_show_cert(sendMode, IPV6, 3)  # MFG
+print "MFG CERT: \n" + mfgCert
 
-# nm.nm_show_cert(sendMode, IPV6, 4) #Cert Cache
-
+#Disabling this for now, the return cache is huge, with all the certs text printed out.
+#certsCache = Nm.nm_show_cert(sendMode, IPV6, 4) #Cert Cache
+#print "CERTs CACHE: \n" + certsCache
 
 obisInvokeID = 11111
 
