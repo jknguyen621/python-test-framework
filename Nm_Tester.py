@@ -44,8 +44,10 @@ replyType2 = '03'  # HMAC, ShA256 for secured send comands
 
 # Configure CPD to talk to BPD:
 Nm.nm_configure_cpd(sendMode, IPV6)
+Nm.nm_configure_cpd(sendMode, BPD1_IPV6_AP)
+#Nm.nm_configure_cpd(sendMode, BPD2_IPV6_AP)
 
-IPV6_ARRAY = [CPD_IPV6_AP, BPD1_IPV6_AP, BPD2_IPV6_AP]
+IPV6_ARRAY = [CPD_IPV6_AP, BPD1_IPV6_AP]
 
 for ipv6 in IPV6_ARRAY:
 
@@ -103,7 +105,7 @@ print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_A
 Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
-Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+#Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
@@ -111,7 +113,7 @@ Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 obisInvokeID = 11111
 
-BPD_ARRAY = [BPD1_IPV6_AP, BPD2_IPV6_AP]
+BPD_ARRAY = [BPD1_IPV6_AP]
 
 for bpd_ipv6 in BPD_ARRAY:
     # Read BPD's FW Version

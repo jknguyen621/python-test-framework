@@ -102,6 +102,19 @@ def nm_configure_cpd(sendMode, IPV6):
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf last_gasp ignore_pf_zx"
     out = processCmd(cmd)
+
+    #Next 2 commands to enable USB Serial debug for lack of LLS MAC
+    """
+    conf i5s enable	1	Initialize 500INS proxy application. //Requires a reboot
+    conf i5s dbs	0	Connect to BPD NCL via debug serial instead of LLS MAC
+    Note - compile option allows directing COSEM messages directly to debug serial for initial development.
+    """
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s enable 1"   #When changing values, need to reboot.
+    out = processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs 1"   #Dont need on latest BPD's fw, but doesn't hurt
+    out = processCmd(cmd)
+
     print out
 
 ########################################################################################################################
@@ -453,8 +466,11 @@ def nm_teardown_ALS_connection(sendMode, seqNum, assocId, sharedSecret, IPV6=CPD
 #0x7 -  Compatibility Mode
 #0xF - Strict
 def nm_conf_mlme_sec_level():
-    pass
-
+    cmdString = "conf mlme sec_level " + str(level)
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + cmdString
+    # print cmd
+    ret = processCmd(cmd)
+    print ret
 
 #Must use App layer security association
 #conf nm_sec disable_unsecure 0  #0=Open; 1=Disabled; 2=Automatio. Set to 0 for testing for emergency recovery via unsecured port.
@@ -462,10 +478,11 @@ def nm_conf_disable_unsecure(sendMode, seqNum, assocId, sharedSecret, unsecureMo
 
     cmdString = "conf nm_sec disable_unsecure " + str(unsecureMode)
     #seqNum = 15   #Had to hardcode this to work around seqNum bug...
+
     (seqNum, assocId, ss) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, sharedSecret, IPV6=CPD_IPV6_AP, timeOut=60,
                                   replyType='03')
 
-    #Call again without parameters to get current set value
+    #Call again without parameters to get current set value, READ-ONLY
     cmdString = "conf nm_sec disable_unsecure "
     (seqNUM, assocID, SS) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6=CPD_IPV6_AP, timeOut=60,
                                  replyType='03')
