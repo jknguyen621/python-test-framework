@@ -80,27 +80,35 @@ dl_x509_path = CERTS_PATH + SWENG_DLCA_2019
 #Next would be to upload mintedDL cert....
 
 #Check Certs Ownership level of device:
-print "Validating & Checking certs ownership on devices... \'%s\'" % IPV6
+print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+
+print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+
+print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
-# Establihsing ALS connection and sendig first command via secured ALS
-(seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, IPV6, timeOut=60, reqId=12345, \
-                                                       replyType=5, replyType2='03', blobFileIn=CERTS_PATH + BLOB_FILE, privkeyFileIn=CERTS_PATH + PRIVKEY_FILE)
 
-# Making a second secured command request via ALS
-cmdString = " certs esdump 4 "
-(seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
-                                                        replyType2)
-print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
-    seqNum, assocId, ss)
+BPD_ARRAY = [BPD1_IPV6_AP, BPD2_IPV6_AP]
+for bpd_ipv6 in BPD_ARRAY:
 
-#Removing OP cert:
-#print "Removing OP cert....\n"
-#Nm.nm_remove_cert(sendMode, IPV6, '1025')
+    # Establihsing ALS connection and sendig first command via secured ALS
+    (seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, bpd_ipv6, timeOut=60, reqId=12345, \
+                                                           replyType=5, replyType2='03', blobFileIn=CERTS_PATH + BLOB_FILE, privkeyFileIn=CERTS_PATH + PRIVKEY_FILE)
 
-ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
+    # Making a second secured command request via ALS
+    cmdString = " certs esdump 4 "
+    (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, bpd_ipv6, timeOut,
+                                                            replyType2)
+    print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+        seqNum, assocId, ss)
+
+    #Removing OP cert:
+    #print "Removing OP cert....\n"
+    #Nm.nm_remove_cert(sendMode, IPV6, '1025')
+
+    ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, bpd_ipv6)
 
 
 ########################################################################################################################

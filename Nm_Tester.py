@@ -93,64 +93,71 @@ for ipv6 in IPV6_ARRAY:
     print "MFG CERT: \n" + mfgCert
 
 
-IPV6 = CPD_IPV6_AP
 #Disabling this for now, the return cache is huge, with all the certs text printed out.
 #certsCache = Nm.nm_show_cert(sendMode, IPV6, 4) #Cert Cache
 #print "CERTs CACHE: \n" + certsCache
 
 
 #Check Certs Ownership level of device:
-print "Validating & Checking certs ownership on devices... \'%s\'" % IPV6
+print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+
+print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+
+print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 
 obisInvokeID = 11111
 
-# Read BPD's FW Version
-obisCommand = OBIS_FW_VERSION
-print "READING BPD FW VERSION\n"
-Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
-obisInvokeID += 1
+BPD_ARRAY = [BPD1_IPV6_AP, BPD2_IPV6_AP]
 
-# Get resonse:
-res = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
-print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
+for bpd_ipv6 in BPD_ARRAY:
+    # Read BPD's FW Version
+    obisCommand = OBIS_FW_VERSION
+    print "READING BPD FW VERSION\n"
+    Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
+    obisInvokeID += 1
 
-# Read BPD's Unix Time
-obisCommand = OBIS_UNIX_TIME
-print "READING BPD TIME\n"
-Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
-obisInvokeID += 1
+    # Get resonse:
+    res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
+    print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
 
-# Get resonse:
-res = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
-print "Response Data for BPD's Unix Time is: \n\%s\'\n" % res
+    # Read BPD's Unix Time
+    obisCommand = OBIS_UNIX_TIME
+    print "READING BPD TIME\n"
+    Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
+    obisInvokeID += 1
 
-# Read BPD's SN
-obisCommand = OBIS_SN
-print "READING BPD S/N\n"
-Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
-obisInvokeID += 1
+    # Get resonse:
+    res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
+    print "Response Data for BPD's Unix Time is: \n\%s\'\n" % res
 
-# Get resonse:
-res = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
-print "Response Data for BPD's SN is: \n\%s\'\n" % res
+    # Read BPD's SN
+    obisCommand = OBIS_SN
+    print "READING BPD S/N\n"
+    Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
+    obisInvokeID += 1
 
-# Read BPD's MAC ID
-obisCommand = OBIS_MAC
-print "READING BPD MAC ID\n"
-Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, IPV6)
-obisInvokeID += 1
+    # Get resonse:
+    res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
+    print "Response Data for BPD's SN is: \n\%s\'\n" % res
 
-# Get resonse:
-res = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
-print "Response Data for BPD's MAC Address is: \n\%s\'\n" % res
+    # Read BPD's MAC ID
+    obisCommand = OBIS_MAC
+    print "READING BPD MAC ID\n"
+    Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
+    obisInvokeID += 1
 
-# Test get latest el data:
-#res = Nm.nm_get_latest_el_data_response(sendMode, IPV6)
-#print "Latest EL EVENT  is: \n\%s\'\n" % res
+    # Get resonse:
+    res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
+    print "Response Data for BPD's MAC Address is: \n\%s\'\n" % res
+
+    # Test get latest el data:
+    #res = Nm.nm_get_latest_el_data_response(sendMode, IPV6)
+    #print "Latest EL EVENT  is: \n\%s\'\n" % res
+
 
 # Teardown
 # Pickle the seqNum for next startup
