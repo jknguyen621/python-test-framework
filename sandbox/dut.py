@@ -170,3 +170,12 @@ for rows in lines:
 
 for e in certs_array:
     print e
+
+########################################################################################################################
+
+if __name__ == "__main__":
+    print "Running nm.py module as script"
+    print "NIC info"
+    sendMode = '-d'
+
+    nm_get_image_str_version(sendMode, CPD_IPV6_AP)
