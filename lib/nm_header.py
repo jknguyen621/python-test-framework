@@ -22,11 +22,14 @@ elif platform == "linux2":                  #Raspberry Pi
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
-BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #BPD1 was CPD
-CPD_MAC_ID = '00:13:50:05:00:4f:89:17'                 #CPD
-BPD2_MAC_ID = '00:13:50:07:00:00:0c:7e'               #BPD2
+########################################################################################################################
 
-#CPD_IPV6_FSU = 'fe80::213:5005:0069:ce38'             #BPD1
+BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #BPD1 was CPD
+BPD1_BRICK_MAC_ID = '00:07:81:43:00:BC:61:4E'
+
+CPD_MAC_ID = '00:13:50:05:00:4f:89:17'                 #CPD
+BPD2_MAC_ID = '00:13:50:07:00:00:0c:7e'
+BPD2_BRICK_MAC_ID = '00:07:81:43:00:BC:61:4E'
 
 CPD_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD
 
@@ -35,8 +38,7 @@ CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD
 BPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5007:0000:0c7e'    #BPD2
 
 AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'      #Start_word = 0x6a5d'; net_id = 0xffff
-#CERTS_PATH = '~/Certs/'                                 #Expecting ~/Certs path at the home directory for user
-CERTS_PATH =  '~/PycharmProjects/python-test-framework/certs/'
+CERTS_PATH =  pwd+'/certs/'
 OP_CERT = '01_SWENG_20224_OPERATOR.x509'
 SUB_CA_ECBOCA_CERT = '02_SWENG_20224_ECBOCA_PRIV.x509'
 SUB_NM_CERT = '03_SWENG_20224_NM1245.x509'
@@ -69,6 +71,14 @@ DLCA_SERVER ="fde4:77d:7b24:e3cc:250:56ff:fe83:69c3"    # sjc-fwapps-01.eng.ssns
 #the below login credentials are for Jyothsna's local dlca server. you have to change it for parkcity. but password for root on parkcity:????
 DLCA_USERNAME="root"
 DLCA_PASSWORD="mypassword"
+
+
+#BPD Payload:
+PAYLOAD1 = '08d32b0fdb005b0000000100780001004be140003040010108010203040506070801084954554300000000010c07e20913ff0a323500000000000030400001020100010001000200ff01020002000100010001000200ff0102000200'
+
+PAYLOAD2 = '09d32b0fdb005b0000000100780001004be140003040010108010203040506070801084954554300000000010c07e20913ff0a323500000000000030400001020100010001000200ff01020002000100010001000200ff0102000200'
+
+########################################################################################################################
 
 #Trap setup:
 TRAP_SERVER_IPV6 = 'fd34:fe56:7891:7e23:4a8:7e53:a48e:e474'   #Local Macbook Ethernet

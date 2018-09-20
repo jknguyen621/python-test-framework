@@ -529,6 +529,22 @@ def nm_OBIS_read(sendMode, invokeID, obisCommand, IPV6=CPD_IPV6_AP):
     #return out
 
 
+#Define routine to send command to BPD via CPD:
+#net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -v lls_nodeq cmd 00:07:81:43:00:BC:61:4E
+def nm_send_CPD_cmd(sendMode, IPV6, bpdMac, payload):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t 20 -v lls_nodeq cmd " + bpdMac + " " + payload
+    out = processCmd(cmd)
+    print out
+
+#Routine to display response from BPD to CPD and encoded message sent.
+#net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -v lls_nodeq show all
+def nm_get_BPD_response(sendMode, IPV6, bpdMac):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t 20 -v lls_nodeq show all "
+    out = processCmd(cmd)
+    print out
+    return out
+
+
 ########################################################################################################################
 
 if __name__ == "__main__":

@@ -52,7 +52,7 @@ Nm.nm_get_version_str(sendMode, CPD_IPV6_AP)
 # Configure CPD to talk to BPD:
 Nm.nm_configure_cpd(sendMode, CPD_IPV6_AP)
 Nm.nm_configure_cpd(sendMode, BPD1_IPV6_AP)
-#Nm.nm_configure_cpd(sendMode, BPD2_IPV6_AP)
+Nm.nm_configure_cpd(sendMode, BPD2_IPV6_AP)
 
 # Get Random 5-digits Required ID to start communication
 reqId = Nm.random_with_N_digits(5)
@@ -86,13 +86,13 @@ print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_A
 Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
-#Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 
-BPD_ARRAY = [BPD1_IPV6_AP]
+BPD_ARRAY = [BPD1_IPV6_AP, BPD2_IPV6_AP]
 for bpd_ipv6 in BPD_ARRAY:
 
     # Establihsing ALS connection and sendig first command via secured ALS
@@ -172,3 +172,12 @@ for rows in lines:
 
 for e in certs_array:
     print e
+
+########################################################################################################################
+
+if __name__ == "__main__":
+    print "Running nm.py module as script"
+    print "NIC info"
+    sendMode = '-d'
+
+    nm_get_image_str_version(sendMode, CPD_IPV6_AP)

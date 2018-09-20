@@ -32,8 +32,6 @@ sendMode = '-d'
 timeOut = 60
 Nm.nm_discover_thy_neighbor(sendMode, CPD_MAC_ID, 30)
 
-# time.sleep(10)
-
 # Get Random 5-digits Required ID to start communication
 reqId = Nm.random_with_N_digits(5)
 blobFileIn = CERTS_PATH + BLOB_FILE
@@ -45,9 +43,20 @@ replyType2 = '03'  # HMAC, ShA256 for secured send comands
 # Configure CPD to talk to BPD:
 Nm.nm_configure_cpd(sendMode, IPV6)
 Nm.nm_configure_cpd(sendMode, BPD1_IPV6_AP)
-#Nm.nm_configure_cpd(sendMode, BPD2_IPV6_AP)
+Nm.nm_configure_cpd(sendMode, BPD2_IPV6_AP)
 
-IPV6_ARRAY = [CPD_IPV6_AP, BPD1_IPV6_AP]
+#Check Certs Ownership level of device:
+print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_AP
+Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+
+print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
+Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+
+print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
+Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+
+
+IPV6_ARRAY = [CPD_IPV6_AP, BPD1_IPV6_AP, BPD2_IPV6_AP]
 
 for ipv6 in IPV6_ARRAY:
 
@@ -63,8 +72,8 @@ for ipv6 in IPV6_ARRAY:
         seqNum, assocId, ss)
 
     # Get a list of Securit Association:
-    # sa_list = nm.nm_get_secure_association_list(sendMode, IPV6)
-    # print "ALS ccurent Security Asscocation list is: \'%s\'\n"  % (sa_list)
+    sa_list = Nm.nm_get_secure_association_list(sendMode, IPV6)
+    print "ALS ccurent Security Asscocation list is: \'%s\'\n"  % (sa_list)
 
 
     # Disable unsecured port for safety net during testing as a way to recover.
@@ -78,11 +87,6 @@ for ipv6 in IPV6_ARRAY:
     # Set Link Layer Idle Timeout to 1 day:
     noOfDay = 1
     Nm.nm_conf_set_link_layer_idle_limit(sendMode, noOfDay, ipv6)
-
-    #Set IPV6 = BPD under test:
-    #IPV6 = BPD2_IPV6_AP
-    #IPV6 = BPD2_IPV6_AP
-
 
     # Set App Layer idle timeout to 1 day:
     Nm.nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, ipv6)
@@ -100,17 +104,8 @@ for ipv6 in IPV6_ARRAY:
 #print "CERTs CACHE: \n" + certsCache
 
 
-#Check Certs Ownership level of device:
-print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_AP
-Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
-print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
-#Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
-
-print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
-Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
-
-
+#COSEM/OBIS commands testing to the BPDs
 obisInvokeID = 11111
 
 BPD_ARRAY = [BPD1_IPV6_AP]
@@ -159,6 +154,14 @@ for bpd_ipv6 in BPD_ARRAY:
     # Test get latest el data:
     #res = Nm.nm_get_latest_el_data_response(sendMode, IPV6)
     #print "Latest EL EVENT  is: \n\%s\'\n" % res
+
+
+    #Test MAC Layer Security
+    Nm.nm_send_CPD_cmd(sendMode, bpd_ipv6, BPD1_BRICK_MAC_ID, PAYLOAD1)
+
+    ret = Nm.nm_get_BPD_response(sendMode, bpd_ipv6, BPD1_BRICK_MAC_ID)
+
+    print "Encoded message sent from CPD to BPD and response from BPD are: \'%s\' \n"  % str(ret)
 
 
 # Teardown
