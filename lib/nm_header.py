@@ -36,7 +36,7 @@ BPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5007:0000:0c7e'    #BPD2
 
 AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'      #Start_word = 0x6a5d'; net_id = 0xffff
 #CERTS_PATH = '~/Certs/'                                 #Expecting ~/Certs path at the home directory for user
-CERTS_PATH =  '~/PycharmProjects/python-test-framework/certs/'
+CERTS_PATH =  pwd+'/certs/'
 OP_CERT = '01_SWENG_20224_OPERATOR.x509'
 SUB_CA_ECBOCA_CERT = '02_SWENG_20224_ECBOCA_PRIV.x509'
 SUB_NM_CERT = '03_SWENG_20224_NM1245.x509'
