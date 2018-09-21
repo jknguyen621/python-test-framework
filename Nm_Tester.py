@@ -91,12 +91,36 @@ for ipv6 in IPV6_ARRAY:
     # Set App Layer idle timeout to 1 day:
     Nm.nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, ipv6)
 
-    # show various types of certs:
-    birthCert = Nm.nm_show_cert(sendMode, ipv6, 2)  # Birth
-    print "BIRTH CERT: \n" + birthCert
+    if(0):
+        # show various types of certs:
+        birthCert = Nm.nm_show_cert(sendMode, ipv6, 2)  # Birth
+        print "BIRTH CERT: \n" + birthCert
 
-    mfgCert = Nm.nm_show_cert(sendMode, ipv6, 3)  # MFG
-    print "MFG CERT: \n" + mfgCert
+        mfgCert = Nm.nm_show_cert(sendMode, ipv6, 3)  # MFG
+        print "MFG CERT: \n" + mfgCert
+
+    # Test MAC Layer Security with hardcoded CCM secret Alpha2 Integreation
+    cmdString = ''
+    if ipv6 == BPD1_IPV6_AP:
+        #Nm.nm_send_CPD_cmd(sendMode, ipv6, BPD1_BRICK_MAC_ID, PAYLOAD1)
+        cmdString = "-v lls_nodeq cmd " + BPD1_BRICK_MAC_ID + " " + PAYLOAD1
+    elif ipv6 == BPD2_IPV6_AP:
+        #Nm.nm_send_CPD_cmd(sendMode, ipv6, BPD1_BRICK_MAC_ID, PAYLOAD2)
+        cmdString = "-v lls_nodeq cmd " + BPD2_BRICK_MAC_ID + " " + PAYLOAD2
+    else:
+        pass
+
+    #ret = Nm.nm_get_BPD_response(sendMode, ipv6, BPD1_BRICK_MAC_ID)
+    # Making a second secured command request via ALS
+    #cmdString = "-t 20 -v lls_nodeq cmd " + BPD1_BRICK_MAC_ID + " " + PAYLOAD1
+
+    if ipv6 != CPD_IPV6_AP:
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, ipv6, timeOut,
+                                                                replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+        seqNum, assocId, ss)
+
+
 
 
 #Disabling this for now, the return cache is huge, with all the certs text printed out.
@@ -108,61 +132,65 @@ for ipv6 in IPV6_ARRAY:
 #COSEM/OBIS commands testing to the BPDs
 obisInvokeID = 11111
 
-BPD_ARRAY = [BPD1_IPV6_AP]
+BPD_ARRAY = [BPD1_IPV6_AP, BPD2_IPV6_AP]
 
-for bpd_ipv6 in BPD_ARRAY:
-    # Read BPD's FW Version
-    obisCommand = OBIS_FW_VERSION
-    print "READING BPD FW VERSION\n"
-    Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
-    obisInvokeID += 1
+if(0):
+    for bpd_ipv6 in BPD_ARRAY:
+        # Read BPD's FW Version
+        obisCommand = OBIS_FW_VERSION
+        print "READING BPD FW VERSION\n"
+        Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
+        obisInvokeID += 1
 
-    # Get resonse:
-    res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
-    print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
+        # Get resonse:
+        res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
+        print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
 
-    # Read BPD's Unix Time
-    obisCommand = OBIS_UNIX_TIME
-    print "READING BPD TIME\n"
-    Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
-    obisInvokeID += 1
+        # Read BPD's Unix Time
+        obisCommand = OBIS_UNIX_TIME
+        print "READING BPD TIME\n"
+        Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
+        obisInvokeID += 1
 
-    # Get resonse:
-    res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
-    print "Response Data for BPD's Unix Time is: \n\%s\'\n" % res
+        # Get resonse:
+        res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
+        print "Response Data for BPD's Unix Time is: \n\%s\'\n" % res
 
-    # Read BPD's SN
-    obisCommand = OBIS_SN
-    print "READING BPD S/N\n"
-    Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
-    obisInvokeID += 1
+        # Read BPD's SN
+        obisCommand = OBIS_SN
+        print "READING BPD S/N\n"
+        Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
+        obisInvokeID += 1
 
-    # Get resonse:
-    res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
-    print "Response Data for BPD's SN is: \n\%s\'\n" % res
+        # Get resonse:
+        res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
+        print "Response Data for BPD's SN is: \n\%s\'\n" % res
 
-    # Read BPD's MAC ID
-    obisCommand = OBIS_MAC
-    print "READING BPD MAC ID\n"
-    Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
-    obisInvokeID += 1
+        # Read BPD's MAC ID
+        obisCommand = OBIS_MAC
+        print "READING BPD MAC ID\n"
+        Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd_ipv6)
+        obisInvokeID += 1
 
-    # Get resonse:
-    res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
-    print "Response Data for BPD's MAC Address is: \n\%s\'\n" % res
+        # Get resonse:
+        res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
+        print "Response Data for BPD's MAC Address is: \n\%s\'\n" % res
 
-    # Test get latest el data:
-    #res = Nm.nm_get_latest_el_data_response(sendMode, IPV6)
-    #print "Latest EL EVENT  is: \n\%s\'\n" % res
+        # Test get latest el data:
+        #res = Nm.nm_get_latest_el_data_response(sendMode, IPV6)
+        #print "Latest EL EVENT  is: \n\%s\'\n" % res
 
-
-    #Test MAC Layer Security
-    Nm.nm_send_CPD_cmd(sendMode, bpd_ipv6, BPD1_BRICK_MAC_ID, PAYLOAD1)
-
-    ret = Nm.nm_get_BPD_response(sendMode, bpd_ipv6, BPD1_BRICK_MAC_ID)
-
-    print "Encoded message sent from CPD to BPD and response from BPD are: \'%s\' \n"  % str(ret)
-
+    """
+        #Test MAC Layer Security
+        if bpd_ipv6 == BPD1_IPV6_AP:
+            Nm.nm_send_CPD_cmd(sendMode, bpd_ipv6, BPD1_BRICK_MAC_ID, PAYLOAD1)
+        else:
+            Nm.nm_send_CPD_cmd(sendMode, bpd_ipv6, BPD1_BRICK_MAC_ID, PAYLOAD2)
+    
+        ret = Nm.nm_get_BPD_response(sendMode, bpd_ipv6, BPD1_BRICK_MAC_ID)
+    
+        print "Encoded message sent from CPD to BPD and response from BPD are: \'%s\' \n"  % str(ret)
+    """
 
 # Teardown
 # Pickle the seqNum for next startup

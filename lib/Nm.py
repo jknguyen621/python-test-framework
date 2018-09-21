@@ -41,6 +41,19 @@ def processCmd(cmd, *argv):
     #print "command terminal output: \'%s\' \n" % str(out)
     return out
 
+#Command to restart the device(meter, AP, whatever with an IPV6)
+def nm_restart_now(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " restart now "
+    print ("Processing Command: \'%s\' \n" % cmd)
+    ret = processCmd(cmd)
+    print "Wait for the device to reboot, be back in 30 sec...\n"
+    time.sleep(30)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " image list"
+    print ("Processing Command: \'%s\' \n" % cmd)
+    ret = processCmd(cmd)
+    print ret
+
 ########################################################################################################################
 #Discovery and Nodeq checking related:
 ########################################################################################################################
@@ -112,10 +125,13 @@ def nm_configure_cpd(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s enable 1"   #When changing values, need to reboot.
     out = processCmd(cmd)
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs 1"   #Dont need on latest BPD's fw, but doesn't hurt
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs 1"    #0 - OTA; 1 - Serial for DBS
     out = processCmd(cmd)
 
-    print out
+    #"app_sysvar 1246:00:07:81:43"                   #BPD's 4 bytes prefix for usbserial mode.
+    #Really need a reboot here to make these values persist.
+    nm_restart_now(sendMode, IPV6)
+
 
 ########################################################################################################################
 #Certs related:
@@ -354,7 +370,7 @@ def nm_get_shared_secret_from_assoc_response(outputString):
     return out[10]
 
 #Routine for secured commands send via ALS:
-#Example: /home/pi/python-test-framework/net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -t 60 -a 03 -A 47989 -k \
+#Example: /home/pi/python-test-f ret = processCmd(cmd)ramework/net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -t 60 -a 03 -A 47989 -k \
 # ecdd06e7fc092a4ad054d569d35d25ed25ac51d422e8f074c1528f718ffa88e5 -c 1 image list
 #NOTE:  "-a Sign message with specified sig
     # 1st digit - sig type:
