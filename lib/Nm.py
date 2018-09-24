@@ -122,16 +122,31 @@ def nm_configure_cpd(sendMode, IPV6):
     conf i5s dbs	0	Connect to BPD NCL via debug serial instead of LLS MAC
     Note - compile option allows directing COSEM messages directly to debug serial for initial development.
     """
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf lls enable 1"  # Enable lls
+    out = processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf lls_bls interval " + str(CPD_2_BPD_POLLING_INTERVAL)   #Minimimum interval in seconds between BPD's response to request.
+    out = processCmd(cmd)
+
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s enable 1"   #When changing values, need to reboot.
     out = processCmd(cmd)
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs 1"    #0 - OTA; 1 - Serial for DBS
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs 0"    #0 - OTA; 1 - Serial for DBS
     out = processCmd(cmd)
 
-    #"app_sysvar 1246:00:07:81:43"                   #BPD's 4 bytes prefix for usbserial mode.
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  "app_sysvar 1246:0x00:0x07:0x81:0x43"                   #BPD's 4 bytes prefix for usbserial mode.
+    out = processCmd(cmd)
     #Really need a reboot here to make these values persist.
-    nm_restart_now(sendMode, IPV6)
+    #nm_restart_now(sendMode, IPV6)
 
+
+#Check LLS enabled:
+def nm_check_lls_enabled(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " lls_nodeq show all"
+    out = processCmd(cmd)
+    print out
+    return out
 
 ########################################################################################################################
 #Certs related:
@@ -539,7 +554,7 @@ def nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP):
 #Routine to send OBIS command to BPD via NIC using IPV6
 def nm_OBIS_read(sendMode, invokeID, obisCommand, IPV6=CPD_IPV6_AP):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " -t 20 cosem aa_sn --flags=128 xdlms --ia \
-    --cst=4954526300000002 --sst=0x4954554300000002 --time --inv=" + str(invokeID) + " get " + obisCommand
+    --cst=" + CST1 + " --sst=" + SST1 + " --time --inv=" + str(invokeID) + " get " + obisCommand
     out = processCmd(cmd)
     print out
     #return out

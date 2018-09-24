@@ -8,6 +8,7 @@ from lib.nm_header import *
 from lib.utilities import *
 import lib.Nm as Nm
 import os
+import time
 
 from random import randint
 global seqNum
@@ -42,21 +43,22 @@ replyType2 = '03'  # HMAC, ShA256 for secured send comands
 
 # Configure CPD to talk to BPD:
 Nm.nm_configure_cpd(sendMode, IPV6)
-Nm.nm_configure_cpd(sendMode, BPD1_IPV6_AP)
-Nm.nm_configure_cpd(sendMode, BPD2_IPV6_AP)
+#Nm.nm_configure_cpd(sendMode, BPD1_IPV6_AP)
+#Nm.nm_configure_cpd(sendMode, BPD2_IPV6_AP)
+#Nm.nm_restart_now(sendMode, IPV6)    #Dont want to restart now
 
 #Check Certs Ownership level of device:
-print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_AP
-Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+#print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_AP
+#Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
-print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
-Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+#print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
+#Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 
-IPV6_ARRAY = [CPD_IPV6_AP, BPD1_IPV6_AP, BPD2_IPV6_AP]
+IPV6_ARRAY = [CPD_IPV6_AP]
 
 for ipv6 in IPV6_ARRAY:
 
@@ -102,11 +104,11 @@ for ipv6 in IPV6_ARRAY:
     # Test MAC Layer Security with hardcoded CCM secret Alpha2 Integreation
     cmdString = ''
     if ipv6 == BPD1_IPV6_AP:
-        #Nm.nm_send_CPD_cmd(sendMode, ipv6, BPD1_BRICK_MAC_ID, PAYLOAD1)
-        cmdString = "-v lls_nodeq cmd " + BPD1_BRICK_MAC_ID + " " + PAYLOAD1
+        Nm.nm_send_CPD_cmd(sendMode, ipv6, BPD1_BRICK_MAC_ID, PAYLOAD1)
+        #cmdString = "-v lls_nodeq cmd " + BPD1_BRICK_MAC_ID + " " + PAYLOAD1
     elif ipv6 == BPD2_IPV6_AP:
-        #Nm.nm_send_CPD_cmd(sendMode, ipv6, BPD1_BRICK_MAC_ID, PAYLOAD2)
-        cmdString = "-v lls_nodeq cmd " + BPD2_BRICK_MAC_ID + " " + PAYLOAD2
+        Nm.nm_send_CPD_cmd(sendMode, ipv6, BPD1_BRICK_MAC_ID, PAYLOAD2)
+        #cmdString = "-v lls_nodeq cmd " + BPD2_BRICK_MAC_ID + " " + PAYLOAD2
     else:
         pass
 
@@ -114,11 +116,11 @@ for ipv6 in IPV6_ARRAY:
     # Making a second secured command request via ALS
     #cmdString = "-t 20 -v lls_nodeq cmd " + BPD1_BRICK_MAC_ID + " " + PAYLOAD1
 
-    if ipv6 != CPD_IPV6_AP:
-        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, ipv6, timeOut,
-                                                                replyType2)
-        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
-        seqNum, assocId, ss)
+    #if ipv6 != CPD_IPV6_AP:
+        #(seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, ipv6, timeOut,
+        #                                                        replyType2)
+        #print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+        #seqNum, assocId, ss)
 
 
 
@@ -132,9 +134,9 @@ for ipv6 in IPV6_ARRAY:
 #COSEM/OBIS commands testing to the BPDs
 obisInvokeID = 11111
 
-BPD_ARRAY = [BPD1_IPV6_AP, BPD2_IPV6_AP]
-
-if(0):
+#BPD_ARRAY = [BPD1_IPV6_AP, BPD2_IPV6_AP]
+BPD_ARRAY = [CPD_IPV6_AP]
+if(1):
     for bpd_ipv6 in BPD_ARRAY:
         # Read BPD's FW Version
         obisCommand = OBIS_FW_VERSION
@@ -146,6 +148,9 @@ if(0):
         res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
         print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
 
+        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..."  % (CPD_2_BPD_POLLING_INTERVAL)
+        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
         # Read BPD's Unix Time
         obisCommand = OBIS_UNIX_TIME
         print "READING BPD TIME\n"
@@ -156,6 +161,9 @@ if(0):
         res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
         print "Response Data for BPD's Unix Time is: \n\%s\'\n" % res
 
+        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
         # Read BPD's SN
         obisCommand = OBIS_SN
         print "READING BPD S/N\n"
@@ -165,6 +173,9 @@ if(0):
         # Get resonse:
         res = Nm.nm_get_latest_IMU_data_response(sendMode, bpd_ipv6)
         print "Response Data for BPD's SN is: \n\%s\'\n" % res
+
+        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
         # Read BPD's MAC ID
         obisCommand = OBIS_MAC
