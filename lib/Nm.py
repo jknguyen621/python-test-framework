@@ -135,11 +135,13 @@ def nm_configure_cpd(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs 0"    #0 - OTA; 1 - Serial for DBS
     out = processCmd(cmd)
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  "app_sysvar 1246:0x00:0x07:0x81:0x43"                   #BPD's 4 bytes prefix for usbserial mode.
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " app_sysvar 1246:0x00:0x07:0x81:0x43"                   #BPD's 4 bytes prefix for usbserial mode.
     out = processCmd(cmd)
     #Really need a reboot here to make these values persist.
     #nm_restart_now(sendMode, IPV6)
 
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [361,362]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
+    out = processCmd(cmd)
 
 #Check LLS enabled:
 def nm_check_lls_enabled(sendMode, IPV6):
@@ -148,7 +150,15 @@ def nm_check_lls_enabled(sendMode, IPV6):
     print out
     return out
 
-########################################################################################################################
+#Display nlog show dev:
+def nm_nlog_show_dev(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " nlog show dev"
+    out = processCmd(cmd)
+    print out
+    return out
+
+
+#########################################################################################################################
 #Certs related:
 ########################################################################################################################
 
@@ -552,9 +562,17 @@ def nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP):
 #OBIS Commands using COSEM from onboard NIC to BPD
 
 #Routine to send OBIS command to BPD via NIC using IPV6
-def nm_OBIS_read(sendMode, invokeID, obisCommand, IPV6=CPD_IPV6_AP):
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " -t 20 cosem aa_sn --flags=128 xdlms --ia \
-    --cst=" + CST1 + " --sst=" + SST1 + " --time --inv=" + str(invokeID) + " get " + obisCommand
+def nm_OBIS_read(sendMode, invokeID, obisCommand, bpd_id, IPV6=CPD_IPV6_AP):
+
+    cmd = ''
+    if (bpd_id == BPD1_BRICK_MAC_ID):
+        cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " -t 20 cosem aa_sn --flags=128 xdlms --ia \
+        --cst=" + CST1 + " --sst=" + SST1 + " --time --inv=" + str(invokeID) + " get " + obisCommand
+    elif (bpd_id == BPD2_BRICK_MAC_ID):
+        cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t 20 cosem aa_sn --flags=128 xdlms --ia \
+                --cst=" + CST2 + " --sst=" + SST2 + " --time --inv=" + str(invokeID) + " get " + obisCommand
+    else:
+        pass
     out = processCmd(cmd)
     print out
     #return out
@@ -569,7 +587,7 @@ def nm_send_CPD_cmd(sendMode, IPV6, bpdMac, payload):
 
 #Routine to display response from BPD to CPD and encoded message sent.
 #net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -v lls_nodeq show all
-def nm_get_BPD_response(sendMode, IPV6, bpdMac):
+def nm_show_BPD_LLS_Nodes(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t 20 -v lls_nodeq show all "
     out = processCmd(cmd)
     print out
