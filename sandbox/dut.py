@@ -9,6 +9,7 @@
 #To execute from project's root directory: python -m sandbox.dut.py    (Where package name is 'sandbox')
 from lib.nm_header import *
 import lib.Nm as Nm
+import time
 
 LOOP_MAX = 1
 
@@ -33,12 +34,14 @@ sendMode = '-d'     #via corp network & AP
 ########################################################################################################################
 
 #device discovery
-print "Neighbor Discovery...\n"
-Nm.nm_device_discovery('-i', CPD_MAC_ID)
+#print "Neighbor Discovery...\n"
+#Nm.nm_device_discovery('-i', CPD_MAC_ID)
 
 #Check nodeq 0
-print "Check Nodeq...\n"
-Nm.nm_nodeq_x('-i', '0')
+#print "Check Nodeq...\n"
+#Nm.nm_nodeq_x('-i', '0')
+
+#Removing discovery for now, based on lls_nodeq show all for BPD to show up on CPD.
 
 #check image list on device
 print "Get Image List...\n"
@@ -49,49 +52,48 @@ print "Get Version Str...\n"
 Nm.nm_get_version_str(sendMode, CPD_IPV6_AP)
 
 
-# Configure CPD to talk to BPD:
+# Configure CPD to be able to proxy for BPDS: :
 Nm.nm_configure_cpd(sendMode, CPD_IPV6_AP)
-Nm.nm_configure_cpd(sendMode, BPD1_IPV6_AP)
-Nm.nm_configure_cpd(sendMode, BPD2_IPV6_AP)
+
 
 # Get Random 5-digits Required ID to start communication
 reqId = Nm.random_with_N_digits(5)
 blobFileIn = CERTS_PATH + BLOB_FILE
 privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
-IPV6 = BPD1_IPV6_AP
+IPV6 = CPD_IPV6_AP
 timeOut = 30
 replyType = 5  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
 replyType2 = '03'  # HMAC, ShA256 for secured send comands
 
 #Upload ECBOCA cert test:
-ecboca_x509_path = CERTS_PATH + SUB_CA_ECBOCA_CERT
-print "Uploading ECBOCA cert...\n"
+#ecboca_x509_path = CERTS_PATH + SUB_CA_ECBOCA_CERT
+#print "Uploading ECBOCA cert...\n"
 #Nm.nm_upload_op_cert(sendMode, IPV6, ecboca_x509_path)
 
 #Upload NMenity cert test:
-dl_x509_path = CERTS_PATH + SUB_NM_CERT
-print "Uploading NMenity Cert...\n"
+#dl_x509_path = CERTS_PATH + SUB_NM_CERT
+#print "Uploading NMenity Cert...\n"
 #Nm.nm_upload_op_cert(sendMode, IPV6, dl_x509_path)
 
 #These next 2 are done as part of DL cert generation
 #Upload DLCA cert test:
-dl_x509_path = CERTS_PATH + SWENG_DLCA_2019
+#dl_x509_path = CERTS_PATH + SWENG_DLCA_2019
 #print "Uploading DLCA Cert...\n"
 #Nm.nm_upload_dl_cert(sendMode, IPV6, dl_x509_path)
 
 #Next would be to upload mintedDL cert....
 
 #Check Certs Ownership level of device:
-print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_AP
-Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+#print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_AP
+#Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
-print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
-Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+#print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
+#Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
 print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
 Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
-
+"""
 BPD_ARRAY = [BPD1_IPV6_AP, BPD2_IPV6_AP]
 for bpd_ipv6 in BPD_ARRAY:
 
@@ -112,7 +114,7 @@ for bpd_ipv6 in BPD_ARRAY:
 
     ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, bpd_ipv6)
 
-
+"""
 ########################################################################################################################
 """
 #Upload Operator cert test:
@@ -172,6 +174,51 @@ for rows in lines:
 
 for e in certs_array:
     print e
+
+
+#####################################################################################
+#Begin of BPD-CPD Security unit test DUT
+
+BPD_DUT = BPD1_BRICK_MAC_ID
+
+#*********************************************************************************************#
+#Test #1: Sending COSEM/OBIS formatted command to BPD to get version
+# Request BPD's FW Version
+obisInvokeID = 22222
+
+obisCommand = OBIS_FW_VERSION
+print "REQUEST BPD FW VERSION\n"
+Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, BPD_DUT, IPV6)
+obisInvokeID += 1
+
+print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
+# Get resonse:
+res = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
+print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
+
+print "Check 'nlog show dev' should see: \n"
+print "raw tx [78]: 09 d3 2b 0f db 00 4d 00 00 00 01 00 78 00 01 00 3d e1 40 00 56 ce 01 01 08 49 54 52 63 00 00 00 00 01 08 49 54 55 43 1b ad a5 51 01 0c 07 e2 09 1a ff 0b 14 0e 00 00 00 00 00 00 56 ce 00 01 01 01 00 01 00 01 00 02 00 ff 01 02 00 02 00"
+print "\n"
+print "raw rx [74]: 08 0f db 0f db 00 49 00 00 00 01 00 01 00 78 00 39 e2 00 00 56 ce 01 01 08 49 54 52 63 00 00 00 00 01 08 49 54 55 43 1b ad a5 51 01 0c 07 e1 05 01 01 01 0e 28 00 00 00 00 00 00 56 ce 00 01 01 01 00 01 00 09 04 4a 01 01 14"
+print "\n"
+
+#************************************************************************************************#
+#Test #2: Send raw payload to the BPD:
+print "Sending Test PAYLOAD1 to BPD...\n"
+Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD1)
+
+print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
+# Get resonse:
+res = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
+print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
+
+
+#*************************************************************#
+
 
 ########################################################################################################################
 

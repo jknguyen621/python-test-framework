@@ -135,12 +135,14 @@ def nm_configure_cpd(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs 0"    #0 - OTA; 1 - Serial for DBS
     out = processCmd(cmd)
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " app_sysvar 1246:0x00:0x07:0x81:0x43"                   #BPD's 4 bytes prefix for usbserial mode.
-    out = processCmd(cmd)
+    #No longer needed after BPD build 14.1.1.20
+    #cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " app_sysvar 1246:0x00:0x07:0x81:0x43"                   #BPD's 4 bytes prefix for usbserial mode.
+    #out = processCmd(cmd)
+
     #Really need a reboot here to make these values persist.
     #nm_restart_now(sendMode, IPV6)
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [361,362]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [126, 361,362]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
     out = processCmd(cmd)
 
 #Check LLS enabled:
@@ -578,7 +580,7 @@ def nm_OBIS_read(sendMode, invokeID, obisCommand, bpd_id, IPV6=CPD_IPV6_AP):
     #return out
 
 
-#Define routine to send command to BPD via CPD:
+#Define routine to send raw payload command to BPD via CPD:
 #net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -v lls_nodeq cmd 00:07:81:43:00:BC:61:4E
 def nm_send_CPD_cmd(sendMode, IPV6, bpdMac, payload):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t 20 -v lls_nodeq cmd " + bpdMac + " " + payload

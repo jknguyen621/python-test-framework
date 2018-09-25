@@ -157,56 +157,65 @@ BPD_ARRAY = [BPD1_BRICK_MAC_ID, BPD2_BRICK_MAC_ID]
 
 ipv6 = CPD_IPV6_AP
 
-
 for bpd in BPD_ARRAY:
-    # Read BPD's FW Version
+
+    #*************************************************************#
+    # Request BPD's FW Version
     obisCommand = OBIS_FW_VERSION
-    print "READING BPD FW VERSION\n"
+    print "REQUEST BPD FW VERSION\n"
     Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd, ipv6)
     obisInvokeID += 1
+
+    print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+    time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
     # Get resonse:
     res = Nm.nm_get_latest_IMU_data_response(sendMode, ipv6)
     print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
 
-    print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..."  % (CPD_2_BPD_POLLING_INTERVAL)
-    time.sleep(CPD_2_BPD_POLLING_INTERVAL)
-
-    # Read BPD's Unix Time
+    #*************************************************************#
+    # Request BPD's Unix Time
     obisCommand = OBIS_UNIX_TIME
-    print "READING BPD TIME\n"
+    print "REQUEST BPD TIME\n"
     Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd, ipv6)
     obisInvokeID += 1
+
+    print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+    time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
     # Get resonse:
     res = Nm.nm_get_latest_IMU_data_response(sendMode, ipv6)
     print "Response Data for BPD's Unix Time is: \n\%s\'\n" % res
 
-    print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
-    time.sleep(CPD_2_BPD_POLLING_INTERVAL)
-
-    # Read BPD's SN
+    #*************************************************************#
+    # Request BPD's SN
     obisCommand = OBIS_SN
-    print "READING BPD S/N\n"
+    print "REQUEST BPD S/N\n"
     Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd, ipv6)
     obisInvokeID += 1
+
+    print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+    time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
     # Get resonse:
     res = Nm.nm_get_latest_IMU_data_response(sendMode, ipv6)
     print "Response Data for BPD's SN is: \n\%s\'\n" % res
 
-    print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
-    time.sleep(CPD_2_BPD_POLLING_INTERVAL)
-
-    # Read BPD's MAC ID
+    #*************************************************************#
+    # Request BPD's MAC ID
     obisCommand = OBIS_MAC
-    print "READING BPD MAC ID\n"
+    print "REQUEST BPD MAC ID\n"
     Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, bpd, ipv6)
     obisInvokeID += 1
+
+    print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+    time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
     # Get resonse:
     res = Nm.nm_get_latest_IMU_data_response(sendMode, ipv6)
     print "Response Data for BPD's MAC Address is: \n\%s\'\n" % res
+
+    #*************************************************************#
 
     # Test get latest el data:
     #res = Nm.nm_get_latest_el_data_response(sendMode, IPV6)
