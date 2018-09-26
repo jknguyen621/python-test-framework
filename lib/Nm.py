@@ -586,6 +586,7 @@ def nm_send_CPD_cmd(sendMode, IPV6, bpdMac, payload):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t 20 -v lls_nodeq cmd " + bpdMac + " " + payload
     out = processCmd(cmd)
     print out
+    return out
 
 #Routine to display response from BPD to CPD and encoded message sent.
 #net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -v lls_nodeq show all
