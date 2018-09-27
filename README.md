@@ -13,7 +13,8 @@ Sandbox for Python framework for smart meter test automation
   python -m unittest tests.TestName (w/o the .py)
   
 4. To Run Suites under ./suites directory:
-  python -m unittest suites.SuiteName (w/o the .py)
+  python -m unittest suites.SuiteName (w/o the .py)  #This will run things twice.
+  Solution: python -m suites.Certs_Suite.py   (w/o the unittest and with the *.py)
   
 5. To Run trapTester.py:
   python -m miscellaneous.trapTester.py

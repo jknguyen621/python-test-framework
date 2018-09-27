@@ -28,9 +28,9 @@ CPD_MAC_ID = '00:13:50:05:00:4f:89:17'                 #CPD
 CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD
 CPD_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD
 
-CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
+CPD_2_BPD_POLLING_INTERVAL = 10                     #In Secs, 10 secs is too short.
 
-BPD_FW_VERSION = "74,1,1,22"
+BPD_FW_VERSION = "74,1,1,24"
 BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #BPD1 was CPD
 BPD1_BRICK_MAC_ID = '00:07:81:43:1B:AD:A5:51'
 SST1 = '495455431bada551'
