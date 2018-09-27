@@ -273,7 +273,7 @@ class Test_Dut(unittest.TestCase):
 ########################################################################################################################
 
 if __name__ == "__main__":
-    print "Running nm.py module as script"
+    print "Running Test_Dut.py module as script"
     print "NIC info"
     sendMode = '-d'
 

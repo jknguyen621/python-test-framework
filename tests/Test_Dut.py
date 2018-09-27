@@ -1,12 +1,12 @@
 #!/usr/bin/python
 
 #Author: Joseph Nguyen 8-20-2018
-#File: dut.py
+#File: Test_Dut.py
 #Base Python program to call and invoke net_mgr
 
 
 
-#To execute from project's root directory: python -m sandbox.dut.py    (Where package name is 'sandbox')
+#To execute from project's root directory: python -m sandbox.Test_Dut.py    (Where package name is 'sandbox')
 from lib.nm_header import *
 import lib.Nm as Nm
 import time
@@ -27,13 +27,16 @@ elif platform == "linux2":                  #Raspberry Pi
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
+sendMode = '-d'  # via corp network & AP
 
+IPV6 = CPD_IPV6_AP
+BPD_DUT = BPD1_BRICK_MAC_ID
 
-class TestDut(unittest.TestCase):
+class Test_Dut(unittest.TestCase):
 
 
     #sendMode = '-g -d'  #//via FSU
-    sendMode = '-d'     #via corp network & AP
+    #sendMode = '-d'     #via corp network & AP
 
     ########################################################################################################################
 
@@ -179,7 +182,7 @@ class TestDut(unittest.TestCase):
     for e in certs_array:
         print e
 
-    def dut(self):
+    def test_cosem_obis_get_fw_version(self):
         #####################################################################################
         #Begin of BPD-CPD Security unit test DUT
 
@@ -199,43 +202,52 @@ class TestDut(unittest.TestCase):
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
         # Get resonse:
-        res = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
-        print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
+        rc = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
+        print "Response Data for BPD's FW Version is: \n\%s\'\n" % rc
 
-        print "Check 'nlog show dev' should see: \n"
-        print "raw tx [78]: 09 d3 2b 0f db 00 4d 00 00 00 01 00 78 00 01 00 3d e1 40 00 56 ce 01 01 08 49 54 52 63 00 00 00 00 01 08 49 54 55 43 1b ad a5 51 01 0c 07 e2 09 1a ff 0b 14 0e 00 00 00 00 00 00 56 ce 00 01 01 01 00 01 00 01 00 02 00 ff 01 02 00 02 00"
-        print "\n"
-        print "raw rx [74]: 08 0f db 0f db 00 49 00 00 00 01 00 01 00 78 00 39 e2 00 00 56 ce 01 01 08 49 54 52 63 00 00 00 00 01 08 49 54 55 43 1b ad a5 51 01 0c 07 e1 05 01 01 01 0e 28 00 00 00 00 00 00 56 ce 00 01 01 01 00 01 00 09 04 4a 01 01 14"
-        print "\n"
+        #print "Check 'nlog show dev' should see: \n"
+        #print "raw tx [78]: 09 d3 2b 0f db 00 4d 00 00 00 01 00 78 00 01 00 3d e1 40 00 56 ce 01 01 08 49 54 52 63 00 00 00 00 01 08 49 54 55 43 1b ad a5 51 01 0c 07 e2 09 1a ff 0b 14 0e 00 00 00 00 00 00 56 ce 00 01 01 01 00 01 00 01 00 02 00 ff 01 02 00 02 00"
+        #print "\n"
+        #print "raw rx [74]: 08 0f db 0f db 00 49 00 00 00 01 00 01 00 78 00 39 e2 00 00 56 ce 01 01 08 49 54 52 63 00 00 00 00 01 08 49 54 55 43 1b ad a5 51 01 0c 07 e1 05 01 01 01 0e 28 00 00 00 00 00 00 56 ce 00 01 01 01 00 01 00 09 04 4a 01 01 14"
+        #print "\n"
+        self.assertTrue(BPD_FW_VERSION in rc, "Did not get FW Version as expected")
 
+
+
+    def test_send_raw_payload_to_BPD(self):
         #************************************************************************************************#
         #Test #2: Send raw payload to the BPD:
         print "Sending Test PAYLOAD1 to BPD...\n"
-        Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD1)
-
+        rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD1)
+        print "Response Data for BPD cmd Payload is: \n\%s\'\n" % rc
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+        self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
 
-
+    def test_send_various_size_payloads_to_BPD(self):
         #************************************************************************************************#
         #Test #3: Test with various length payload to BPD:
         #*************************************************************#
         print "Sending Test PAYLOAD_ZERO to BPD...\n"
-        Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_ZERO)
+        rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_ZERO)
+        print "Response Data for BPD cmd Payload of zero is: \n\%s\'\n" % rc
+        self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
 
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
         print "Sending Test PAYLOAD_1000 to BPD...\n"
-        Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1000)
+        rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1000)
+        self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
 
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
 
         print "Sending Test PAYLOAD_1001 to BPD...\n"
-        retCode = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1001)
-        self.assertTrue(self, "Erroneous request" in retCode, "Received Erroneous Request message as expected")
+        rc = retCode = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1001)
+        self.assertTrue('Erroneous request' in rc, "Did not get received 'Erroneous Request' message as expected")
+
 
         if(0):
             print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
@@ -243,31 +255,22 @@ class TestDut(unittest.TestCase):
 
 
             print "Sending Test PAYLOAD_MAX_VALID to BPD...\n"
-            Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_MAX_VALID)
+            rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_MAX_VALID)
+            self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
 
             print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
             time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
 
             print "Sending Test PAYLOAD_2048 to BPD...\n"
-            Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_2048)
+            rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_2048)
+            self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
 
-        #print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
-        #time.sleep(CPD_2_BPD_POLLING_INTERVAL)
-
-
-
-        # Get resonse:
-        #res = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
-        #print "Response Data for BPD's FW Version is: \n\%s\'\n" % res
 
 
 
 ########################################################################################################################
 
-if __name__ == "__main__":
-    print "Running nm.py module as script"
-    print "NIC info"
-    sendMode = '-d'
+#if __name__ == '__main__':
+#    unittest.main()
 
-    nm_get_image_str_version(sendMode, CPD_IPV6_AP)

@@ -24,12 +24,13 @@ class TestCertsValidationHandling(unittest.TestCase):
 
 
     #Setup required to run our testcase/suite.
+    """
     def setUp(self):
         #self.certsTest = Widget('The widget')
         sendMode = '-d'
 
         timeOut = 60
-        Nm.nm_discover_thy_neighbor(sendMode, CPD_MAC_ID, 30)
+        #Nm.nm_discover_thy_neighbor(sendMode, CPD_MAC_ID, 30)
 
         reqId = Nm.random_with_N_digits(5)
         blobFileIn = CERTS_PATH + BLOB_FILE
@@ -48,7 +49,7 @@ class TestCertsValidationHandling(unittest.TestCase):
                                                                privkeyFileIn=CERTS_PATH + PRIVKEY_FILE)
         self.assertTrue(self, (assocId !=0 or ss != ''), "Wrong response for ")
 
-
+    """
 
 
 
@@ -76,7 +77,7 @@ class TestCertsValidationHandling(unittest.TestCase):
 
 
     if __name__ == '__main__':            # unittest.main()
-       suite = unittest.TestLoader().loadTestsFromTestCase(TestCertsValidationHandling)
-       runner = unittest.TextTestRunner(verbosity=2)
-       runner.run(suite)
+       #suite = unittest.TestLoader().loadTestsFromTestCase(TestCertsValidationHandling)
+       #runner = unittest.TextTestRunner(verbosity=2)
+       #runner.run(suite)
 

@@ -22,3 +22,13 @@ Sandbox for Python framework for smart meter test automation
 6.  ./lib/500sanity.zip is to be unzipped onto a windows environment and run with COSEM DevBench.
 7.  ./arm_net_mgr are tools for Raspberry Pi OS.
  
+ 
+Fundamentally,  to start, you should create tests in the sandbox, lets call it Test_XYZ.py.
+Once you are satisfied with it, you can copy it to ./tests directory.
+Add the Test class in the Test Suite under ./suites directory and call the test by name such as:
+
+from tests.Test_Dut import *
+
+ 
+suite.addTest(Test_Dut('test_cosem_obis_get_fw_version')) 
+ 
