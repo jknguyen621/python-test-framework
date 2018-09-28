@@ -12,6 +12,8 @@
 from unittest import TestLoader, TextTestRunner, suite, defaultTestLoader
 from tests.Test_Dut import *                    #Import more tests.TestClasses here
 import ResultsHandling as rh
+from reporting.HTMLTestRunner import *
+from reporting.reporter import *
 
 ########################################################################################################################
 #Defining Suite of Suites of Testcases. This method to handle very large set of various
@@ -27,8 +29,10 @@ for testCase in testList:
 newSuite = unittest.TestSuite(TestList)
 result = unittest.TextTestRunner(verbosity=2).run(newSuite)
 
+run_and_generate_Test_Report(newSuite)
+
 #Output results statistics
-rh.ResultsHandling(result)
+#rh.ResultsHandling(result)
 
 
 ########################################################################################################################
