@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 #Author: Joseph Nguyen 8-20-2018
 #File: Test_Dut.py

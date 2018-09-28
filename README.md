@@ -32,4 +32,8 @@ from tests.Test_Dut import *
 
  
 suite.addTest(Test_Dut('test_cosem_obis_get_fw_version')) 
+
+External Dependencies:
+  
+ 
  
