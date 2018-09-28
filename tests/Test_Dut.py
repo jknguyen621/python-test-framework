@@ -31,21 +31,10 @@ sendMode = '-d'  # via corp network & AP
 
 IPV6 = CPD_IPV6_AP
 BPD_DUT = BPD1_BRICK_MAC_ID
-<<<<<<< HEAD
+
 count = 0
 class Test_Dut(unittest.TestCase):
     count = count +1
-    #def __init__(self):
-        #super(BaseTest, self).__init__(*args, **kwargs)
-        #pass
-=======
-
-class Test_Dut(unittest.TestCase):
-
->>>>>>> 661f5e3273775074c0dc8fe4f4a99d7c277af83e
-
-    #sendMode = '-g -d'  #//via FSU
-    #sendMode = '-d'     #via corp network & AP
 
     ########################################################################################################################
 
@@ -59,21 +48,8 @@ class Test_Dut(unittest.TestCase):
 
     #Removing discovery for now, based on lls_nodeq show all for BPD to show up on CPD.
 
-    #check image list on device
-<<<<<<< HEAD
-    #print "Get Image List...\n"
-    #Nm.nm_get_image_list(sendMode, CPD_IPV6_AP)
-
-    #get version str on device
-    #print "Get Version Str...\n"
-    #Nm.nm_get_version_str(sendMode, CPD_IPV6_AP)
-
-
-    # Configure CPD to be able to proxy for BPDS: :
-    #Nm.nm_configure_cpd(sendMode, CPD_IPV6_AP)
 
     '''
-=======
     print "Get Image List...\n"
     Nm.nm_get_image_list(sendMode, CPD_IPV6_AP)
 
@@ -86,7 +62,6 @@ class Test_Dut(unittest.TestCase):
     Nm.nm_configure_cpd(sendMode, CPD_IPV6_AP)
 
 
->>>>>>> 661f5e3273775074c0dc8fe4f4a99d7c277af83e
     # Get Random 5-digits Required ID to start communication
     reqId = Nm.random_with_N_digits(5)
     blobFileIn = CERTS_PATH + BLOB_FILE
@@ -123,11 +98,8 @@ class Test_Dut(unittest.TestCase):
 
     print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
     Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
-<<<<<<< HEAD
     '''
-=======
->>>>>>> 661f5e3273775074c0dc8fe4f4a99d7c277af83e
-
+    
     """
     BPD_ARRAY = [BPD1_IPV6_AP, BPD2_IPV6_AP]
     for bpd_ipv6 in BPD_ARRAY:
@@ -195,10 +167,8 @@ class Test_Dut(unittest.TestCase):
 
     ################################################################################
     #Dump Cert Cache and returning a cert cache text table as a list
-<<<<<<< HEAD
+
     """
-=======
->>>>>>> 661f5e3273775074c0dc8fe4f4a99d7c277af83e
     certs_list = Nm.nm_dump_cert_cache(sendMode, CPD_IPV6_AP)
     #print "certs output: ", certs_list
     #print '{:s}'.format(certs_list)
@@ -213,14 +183,10 @@ class Test_Dut(unittest.TestCase):
 
     for e in certs_array:
         print e
-<<<<<<< HEAD
+
     """
 
     def test01_cosem_obis_get_fw_version(self):
-=======
-
-    def test_cosem_obis_get_fw_version(self):
->>>>>>> 661f5e3273775074c0dc8fe4f4a99d7c277af83e
         #####################################################################################
         #Begin of BPD-CPD Security unit test DUT
 
@@ -250,13 +216,7 @@ class Test_Dut(unittest.TestCase):
         #print "\n"
         self.assertTrue(BPD_FW_VERSION in rc, "Did not get FW Version as expected")
 
-
-
-<<<<<<< HEAD
     def test02_send_raw_payload_to_BPD(self):
-=======
-    def test_send_raw_payload_to_BPD(self):
->>>>>>> 661f5e3273775074c0dc8fe4f4a99d7c277af83e
         #************************************************************************************************#
         #Test #2: Send raw payload to the BPD:
         print "Sending Test PAYLOAD1 to BPD...\n"
@@ -266,11 +226,7 @@ class Test_Dut(unittest.TestCase):
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
         self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
 
-<<<<<<< HEAD
     def test03_send_various_size_payloads_to_BPD(self):
-=======
-    def test_send_various_size_payloads_to_BPD(self):
->>>>>>> 661f5e3273775074c0dc8fe4f4a99d7c277af83e
         #************************************************************************************************#
         #Test #3: Test with various length payload to BPD:
         #*************************************************************#
@@ -294,11 +250,8 @@ class Test_Dut(unittest.TestCase):
         rc = retCode = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1001)
         self.assertTrue('Erroneous request' in rc, "Did not get received 'Erroneous Request' message as expected")
 
-<<<<<<< HEAD
-        """
-=======
 
->>>>>>> 661f5e3273775074c0dc8fe4f4a99d7c277af83e
+        """
         if(0):
             print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
             time.sleep(CPD_2_BPD_POLLING_INTERVAL)
@@ -315,22 +268,9 @@ class Test_Dut(unittest.TestCase):
             print "Sending Test PAYLOAD_2048 to BPD...\n"
             rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_2048)
             self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
-<<<<<<< HEAD
-            
         """
     print "Class Test_Dut being called \'%d\' time(s)...\n" % count
 
 ########################################################################################################################
 if __name__ == '__main__':
     unittest.main()
-=======
-
-
-
-
-########################################################################################################################
-
-#if __name__ == '__main__':
-#    unittest.main()
-
->>>>>>> 661f5e3273775074c0dc8fe4f4a99d7c277af83e
