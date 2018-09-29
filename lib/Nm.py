@@ -127,13 +127,35 @@ def nm_configure_cpd(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf lls enable 1"  # Enable lls
     out = processCmd(cmd)
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf lls_bls interval " + str(CPD_2_BPD_POLLING_INTERVAL)   #Minimimum interval in seconds between BPD's response to request.
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf lls enable"  # Check again on lls
     out = processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf imu_proxy imu_mm_enable 0"  # Disabling imu mm
+    out = processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf imu_proxy imu_mm_enable"  # Check again on disabling imu mm
+    out = processCmd(cmd)
+
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s enable 1"   #When changing values, need to reboot.
     out = processCmd(cmd)
 
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s enable"  # Check Value.
+    out = processCmd(cmd)
+
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs 0"    #0 - OTA; 1 - Serial for DBS
+    out = processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs"      #Check value 0 - OTA; 1 - Serial for DBS
+    out = processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 0"  # Set link security to normal
+    out = processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec"  # Check value of i5s linksec
+    out = processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf lls_bls interval " + str(CPD_2_BPD_POLLING_INTERVAL)  # Minimimum interval in seconds between BPD's response to request.
     out = processCmd(cmd)
 
     #No longer needed after BPD build 14.1.1.20
@@ -143,8 +165,14 @@ def nm_configure_cpd(sendMode, IPV6):
     #Really need a reboot here to make these values persist.
     #nm_restart_now(sendMode, IPV6)
 
+    #Inject default security key between CPD and BPD
+    nm_inject_security_key(sendMode, IPV6, DEFAULT_SECURITY_KEY, 1)
+
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [126, 361,362]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
     out = processCmd(cmd)
+
+    #Show Mac security key on CPD for BPD:
+    #nm_show_mac_sec_key(sendMode, IPV6, bpdMacId, 1)
 
 #Check LLS enabled:
 def nm_check_lls_enabled(sendMode, IPV6):
@@ -265,6 +293,25 @@ def nm_validate_certs_ownership(sendMode, IPV6, expectedCertsOwnershipLevel):
     else:
         print "FAILED: Certs Ownership level for device is not at proper level: \'%s\'\n" % ret
         return "FAILED"
+
+#######################################################################################################################
+#Insert security key between CPD & BPD
+#ie.: DEFAULT_SECURITY_KEY
+def nm_inject_security_key(sendMode, IPV6, bpdMacId, sec_key, index=1):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " mac_secmib add  " + str(bpdMacId) + " " + str(index) + " " + str(sec_key)
+    print cmd
+    ret = processCmd(cmd)
+    print "inject key rc =:\'%s\'\n" % (ret)
+    return ret
+
+
+#TO view secuirty key on the CPD for BPD
+def nm_show_mac_sec_key(sendMode, IPV6, bpdMacId, index=1):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " mac_secmib show  " + str(bpdMacId) + " " + str(index)
+    print cmd
+    ret = processCmd(cmd)
+    print "Security key on CPD for BPD at index \'%d\' is: \'%s\' \n"  % (index, str(ret))
+    print ret
 #######################################################################################################################
 #IMU or Master Meter Reading related, read imu Data and el events
 ########################################################################################################################

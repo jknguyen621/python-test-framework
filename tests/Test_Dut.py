@@ -293,7 +293,7 @@ class Test_Dut(unittest.TestCase):
         # Test #5: Test with 1001 bytes length payload to BPD:
         # *************************************************************#
         print "Sending Test PAYLOAD_1001 to BPD...\n"
-        rc = retCode = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1001)
+        rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1001)
         self.assertTrue('Erroneous request' in rc, "Did not get received 'Erroneous Request' message as expected")
 
 
@@ -315,8 +315,50 @@ class Test_Dut(unittest.TestCase):
             rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_2048)
             self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
         """
+
+    def test06_load_CPD_2_BPD_secure_key(self):
+        # ************************************************************************************************#
+        # Test #6: Test ability to load and set default security key on CPD for BPD
+        # *************************************************************#
+        print "Uploading default security key for BPD to CPD...\n"
+        #Inject default security key between CPD and BPD
+        rc = Nm.nm_inject_security_key(sendMode, IPV6, BPD_DUT, DEFAULT_SECURITY_KEY, 1)
+        self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
+
+    def test07_delete_CPD_2_BPD_secure_key(self):
+        # ************************************************************************************************#
+        # Test #7: Test ability to remove/ddete/ default security key on CPD for BPD
+        # *************************************************************#
+        print "Uploading default security key for BPD to CPD...\n"
+        print "Trying to establish ALS to delete old key"
+        # Establihsing ALS connection and sendig first command via secured ALS
+        reqId = Nm.random_with_N_digits(5)
+        blobFileIn = CERTS_PATH + BLOB_FILE
+        privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
+        #IPV6 = CPD_IPV6_AP
+        timeOut = 30
+        replyType2 = '03'  # HMAC, ShA256 for secured send comands
+
+        (seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, IPV6, timeOut=60, reqId=12345, \
+                                                               replyType=5, replyType2='03',
+                                                               blobFileIn=CERTS_PATH + BLOB_FILE,
+                                                               privkeyFileIn=CERTS_PATH + PRIVKEY_FILE)
+
+        # Making a second secured command request via ALS
+        cmdString = "  mac_secmib delete  " + str(BPD_DUT) + " 1"
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut, replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+            seqNum, assocId, ss)
+
+        #Bug: FIRMW-19441
+        rc = Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
+        self.assertFalse('Key' in rc, "Key should of been deleted as expected, but delete is failing")
+
+        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
     print "Class Test_Dut being called \'%d\' time(s)...\n" % count
 
 ########################################################################################################################
 if __name__ == '__main__':
     unittest.main()
+

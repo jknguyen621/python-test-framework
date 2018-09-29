@@ -76,6 +76,8 @@ OBIS_UNIX_TIME = "1:0.0.1.1.0.255:2"
 OBIS_SN = "1:0.0.96.1.1.255:2"
 OBIS_MAC = "1:128.1.1.1.1.10:2"
 
+DEFAULT_SECURITY_KEY = "0102030405060708090a0b0c0d0e0f10"
+
 #DLCA Server:
 DLCA_SERVER ="fde4:77d:7b24:e3cc:250:56ff:fe83:69c3"    # sjc-fwapps-01.eng.ssnsgs.net
 #the below login credentials are for Jyothsna's local dlca server. you have to change it for parkcity. but password for root on parkcity:????
