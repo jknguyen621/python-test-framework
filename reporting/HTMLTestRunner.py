@@ -133,9 +133,15 @@ stderr_redirector = OutputRedirector(sys.stderr)
 
 class Template_mixin(object):
     """
+<<<<<<< HEAD
     Define a HTML template for report customerization and generation.
 
     Overall structure of an HTML report
+=======
+    Define a HTML template for reporting customerization and generation.
+
+    Overall structure of an HTML reporting
+>>>>>>> 4ce201c0674b677a1677e99da2165732d75862de
 
     HTML
     +------------------------+

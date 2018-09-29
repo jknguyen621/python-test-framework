@@ -9,7 +9,7 @@
 
 import os
 import calendar;
-from HTMLTestRunner import *
+from reporting.HTMLTestRunner import *
 
 
 def run_and_generate_Test_Report(TestSuiteName):

@@ -227,9 +227,9 @@ class Test_Dut(unittest.TestCase):
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
         self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
 
-    def test03_send_various_size_payloads_to_BPD(self):
+    def test03_send_zero_bytes_payload_to_BPD(self):
         #************************************************************************************************#
-        #Test #3: Test with various length payload to BPD:
+        #Test #3: Test with zero byte length payload to BPD:
         #*************************************************************#
         print "Sending Test PAYLOAD_ZERO to BPD...\n"
         rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_ZERO)
@@ -239,6 +239,11 @@ class Test_Dut(unittest.TestCase):
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
+    def test04_send_1000_bytes_payload_to_BPD(self):
+
+        # ************************************************************************************************#
+        # Test #4: Test with 1000 bytes length payload to BPD:
+        # *************************************************************#
         print "Sending Test PAYLOAD_1000 to BPD...\n"
         rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1000)
         self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
@@ -246,7 +251,11 @@ class Test_Dut(unittest.TestCase):
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
+    def test05_send_1001_bytes_payload_to_BPD(self):
 
+        # ************************************************************************************************#
+        # Test #5: Test with 1001 bytes length payload to BPD:
+        # *************************************************************#
         print "Sending Test PAYLOAD_1001 to BPD...\n"
         rc = retCode = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1001)
         self.assertTrue('Erroneous request' in rc, "Did not get received 'Erroneous Request' message as expected")

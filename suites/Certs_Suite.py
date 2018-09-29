@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 
 #Author: Joseph K. Nguyen
 #Date: Sept 5th, 2018
@@ -10,17 +9,16 @@
 
 #To run this suite and prevent double invoking, from root directory type: "python -m suites.Certs_Suite.py"
 
-from unittest import TestLoader, TextTestRunner, suite, defaultTestLoader
-from tests.Test_Dut import *                    #Import more tests.TestClasses here
-import ResultsHandling as rh
-from reporting.HTMLTestRunner import *
+from unittest import TestLoader, TextTestRunner
+
+from tests.Test_Dut import *                    #<== Import more tests.TestClasses here
 from reporting.reporter import *
 
 ########################################################################################################################
 #Defining Suite of Suites of Testcases. This method to handle very large set of various
 # TestCases and grouping them into one major Suite.
 ########################################################################################################################
-testList = [Test_Dut]   #Add more TestClasses here to run collective testsuites
+testList = [Test_Dut]   #<== Add more TestClasses here to run collective testsuites
 
 TestList = []
 for testCase in testList:
@@ -30,11 +28,6 @@ for testCase in testList:
 newSuite = unittest.TestSuite(TestList)
 
 run_and_generate_Test_Report(newSuite)
-
-#Output results statistics
-#result = unittest.TextTestRunner(verbosity=2).run(newSuite)
-#rh.ResultsHandling(result)
-
 
 ########################################################################################################################
 #For smaller subset suite to test, one can use this 2nd way to declare and run suite:
