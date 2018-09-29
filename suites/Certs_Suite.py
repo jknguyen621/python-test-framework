@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 
 #Author: Joseph K. Nguyen
 #Date: Sept 5th, 2018
