@@ -22,5 +22,5 @@ def run_and_generate_Test_Report(TestSuiteName):
     REPORTING_PATH = pwd + '/Test_Reports/'
 
     outfile = open(REPORTING_PATH + "SmokeTestReport_" + str(ts) + "_.html", "wb")
-    runner = HTMLTestRunner(stream = outfile,verbosity=2,title = 'Security Test Report',description = 'Certs Sanity Tests')
+    runner = HTMLTestRunner(stream = outfile,verbosity=2,title = 'JKN: Security Testing Report',description = 'MAC Layer LLS  Tests')
     runner.run(TestSuiteName)

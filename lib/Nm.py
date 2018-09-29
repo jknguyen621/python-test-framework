@@ -261,9 +261,10 @@ def nm_validate_certs_ownership(sendMode, IPV6, expectedCertsOwnershipLevel):
     print ret
     if ret.rstrip() == expectedCertsOwnershipLevel:
         print "PASSED: Got expected Level of Certs Ownership for device: \'%s\' : \'%s\'\n" % (IPV6, ret)
+        return "PASSED"
     else:
         print "FAILED: Certs Ownership level for device is not at proper level: \'%s\'\n" % ret
-
+        return "FAILED"
 #######################################################################################################################
 #IMU or Master Meter Reading related, read imu Data and el events
 ########################################################################################################################
