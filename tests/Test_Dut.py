@@ -356,6 +356,29 @@ class Test_Dut(unittest.TestCase):
 
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
+    def test08_send_package_with_mac_security_enabled(self):
+         # ************************************************************************************************#
+         # Test #8: Test with Mac security enabled 1000 bytes length payload to BPD:
+         # *************************************************************#
+         print ("Re-infecting default secure key on CPD for BPD....\n")
+         Nm.nm_inject_security_key(sendMode, IPV6, DEFAULT_SECURITY_KEY, 1)
+
+         #Take a read of stats before send:
+         print "lls_nodeq data send statistic before send....\n"
+         Nm.nm_check_lls_enabled(sendMode, IPV6)
+
+         print "Sending Test PAYLOAD_1000 to BPD...\n"
+         rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1000)
+         self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
+
+         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
+         # Take a read of stats after send:
+         print "lls_nodeq data send statistic before send....\n"
+         Nm.nm_check_lls_enabled(sendMode, IPV6)
+
     print "Class Test_Dut being called \'%d\' time(s)...\n" % count
 
 ########################################################################################################################
