@@ -120,7 +120,7 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     #Next 2 commands to enable USB Serial debug for lack of LLS MAC
     """
     conf i5s enable	1	Initialize 500INS proxy application. //Requires a reboot
-    conf i5s dbs	0	Connect to BPD NCL via debug serial instead of LLS MAC
+    conf i5s dbs	0	Connect to BPD NCL via OTA
     Note - compile option allows directing COSEM messages directly to debug serial for initial development.
     """
 
@@ -149,7 +149,9 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs"      #Check value 0 - OTA; 1 - Serial for DBS
     out = processCmd(cmd)
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 0"  # Set link security to normal
+    #Note: For BPD's ecurity to be enabled, we need to set: conf i5s linksec 6 and in the setup_ins.cs script: /* Save To Flash */
+    #DBI("07 58 01");
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 6"  # Set link security to normal
     out = processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec"  # Check value of i5s linksec
@@ -191,7 +193,12 @@ def nm_nlog_show_dev(sendMode, IPV6):
     print out
     return out
 
-
+#Clear nlog:
+def nm_nlog_clear_dev(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " nlog clear dev"
+    out = processCmd(cmd)
+    print out
+    return out
 #########################################################################################################################
 #Certs related:
 ########################################################################################################################
@@ -341,6 +348,13 @@ def nm_imu_data_read_index(sendMode, IPV6, index):
     readData = processCmd(cmd)
     return readData
 
+#read imu data read_last
+def nm_imu_data_read_last(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " imu_data read_last " + index
+    print cmd
+    readData = []
+    readData = processCmd(cmd)
+    return readData
 
 #Get range of el data
 def nm_el_data_range(sendMode, IPV6):
@@ -619,18 +633,20 @@ def nm_conf_set_app_layer_idle_limit(sendMode, noOfDay, IPV6=CPD_IPV6_AP):
 def nm_OBIS_read(sendMode, invokeID, obisCommand, bpd_id, IPV6=CPD_IPV6_AP):
 
     cmd = ''
+
     if (bpd_id == BPD1_BRICK_MAC_ID):
-        cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " -t 20 cosem aa_sn --flags=128 xdlms --ia \
-        --cst=" + CST1 + " --sst=" + SST1 + " --time --inv=" + str(invokeID) + " get " + obisCommand
+        cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 +  " -t 20 cosem aa_sn --flags=128 xdlms --ia --cst=" + CST1 + " --sst=" + SST1 + " --time --inv=" + str(invokeID) + " get " + obisCommand
     elif (bpd_id == BPD2_BRICK_MAC_ID):
-        cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t 20 cosem aa_sn --flags=128 xdlms --ia \
-                --cst=" + CST2 + " --sst=" + SST2 + " --time --inv=" + str(invokeID) + " get " + obisCommand
+        cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t 20 cosem aa_sn --flags=128 xdlms --ia --cst=" + CST2 + " --sst=" + SST2 + " --time --inv=" + str(invokeID) + " get " + obisCommand
     else:
         pass
     out = processCmd(cmd)
     print out
     #return out
 
+
+########################################################################################################################
+#CPD to BPD commands:
 
 #Define routine to send raw payload command to BPD via CPD:
 #net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 -v lls_nodeq cmd 00:07:81:43:00:BC:61:4E

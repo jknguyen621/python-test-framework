@@ -31,7 +31,7 @@ print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH
 sendMode = '-d'  # via corp network & AP
 
 IPV6 = CPD_IPV6_AP
-BPD_DUT = BPD1_BRICK_MAC_ID
+BPD_DUT = BPD2_BRICK_MAC_ID   #BPD1_BRICK_MAC_ID
 
 count = 0
 class Test_Dut(unittest.TestCase):
@@ -115,7 +115,7 @@ class Test_Dut(unittest.TestCase):
 
         # Configure CPD to be able to proxy for BPDS: :
         print "Configuring CPD for proper Proxy Mode on behalf of BPD...\n"
-        Nm.nm_configure_cpd(sendMode, CPD_IPV6_AP)
+        Nm.nm_configure_cpd(sendMode, CPD_IPV6_AP, BPD_DUT)
 
         #Display lls_nodeq:
         print "Getting Link Layer Nodeq for the CPD and BPDs...\n"
@@ -227,8 +227,6 @@ class Test_Dut(unittest.TestCase):
         #####################################################################################
         #Begin of BPD-CPD Security unit test DUT
 
-        BPD_DUT = BPD1_BRICK_MAC_ID
-
         #*********************************************************************************************#
         #Test #1: Sending COSEM/OBIS formatted command to BPD to get version
         # Request BPD's FW Version
@@ -296,26 +294,6 @@ class Test_Dut(unittest.TestCase):
         rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1001)
         self.assertTrue('Erroneous request' in rc, "Did not get received 'Erroneous Request' message as expected")
 
-
-        """
-        if(0):
-            print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
-            time.sleep(CPD_2_BPD_POLLING_INTERVAL)
-
-
-            print "Sending Test PAYLOAD_MAX_VALID to BPD...\n"
-            rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_MAX_VALID)
-            self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
-
-            print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
-            time.sleep(CPD_2_BPD_POLLING_INTERVAL)
-
-
-            print "Sending Test PAYLOAD_2048 to BPD...\n"
-            rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_2048)
-            self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
-        """
-
     def test06_load_CPD_2_BPD_secure_key(self):
         # ************************************************************************************************#
         # Test #6: Test ability to load and set default security key on CPD for BPD
@@ -329,7 +307,11 @@ class Test_Dut(unittest.TestCase):
         # ************************************************************************************************#
         # Test #7: Test ability to remove/ddete/ default security key on CPD for BPD
         # *************************************************************#
-        print "Uploading default security key for BPD to CPD...\n"
+        print "Showing default security key for BPD to CPD...\n"
+
+        rc = Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
+        self.assertTrue('Key' in rc, "Secured Key for BPD should have been loaded...\n")
+
         print "Trying to establish ALS to delete old key"
         # Establihsing ALS connection and sendig first command via secured ALS
         reqId = Nm.random_with_N_digits(5)
@@ -390,7 +372,10 @@ class Test_Dut(unittest.TestCase):
         Sec_Mode = 6
         index = 1
 
-        print "Testing BPD secure key and Sec Mode set to 6 for the time being...\n"
+        print "Clear nlog dev first...\n"
+        Nm.nm_nlog_clear_dev(sendMode, IPV6)
+
+        print "Testing BPD secure send raw payload at LLS level, using key and Sec Mode set to 6 for the time being...\n"
         rc = Nm.nm_send_secured_CPD_cmd(sendMode, IPV6, BPD_DUT, SAFE_SECURED_PAYLOAD, Sec_Mode, index)
         #self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
         #NOTE: Expect to see on COSEM DevBench for BPD's log as:
@@ -399,6 +384,41 @@ class Test_Dut(unittest.TestCase):
         # Rx
         # Cmd: Len = 942, SecLvl = 6
         # 2018 / 10 / 01
+
+        print "Check nlog for proper SecLevel...\n"
+        rc = Nm.nm_nlog_show_dev(sendMode, IPV6)
+        self.assertTrue('sec:6' in rc, "Did not get proper security level 'sec:6' as expected")
+
+    def test10_test_send_secure_mode_cosem_obis_cmd(self):
+        # ************************************************************************************************#
+        # Test #10: Test with COSEM OBIS command via secured channel
+        # *************************************************************#
+
+        print "Clear nlog dev first...\n"
+        Nm.nm_nlog_clear_dev(sendMode, IPV6)
+
+        print "Testing BPD COSEM/OBIS command send with temp default secure key...\n"
+        obisInvokeID = 5555
+
+        obisCommand = OBIS_FW_VERSION  # Not secured? OBIS_MAC
+        print "OBIS REQUEST FOR BPD MAC ID\n"
+        Nm.nm_OBIS_read(sendMode, obisInvokeID, obisCommand, BPD_DUT, IPV6)
+        obisInvokeID += 1
+
+        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
+        # Get resonse:
+        rc = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
+        print "Response Data for BPD's FW Version is: \n\%s\'\n" % rc
+        # 16:38:59.112 = > Lls
+        # Rx
+        # Cmd: Len = 942, SecLvl = 6
+        # 2018 / 10 / 01
+
+        print "Check nlog for proper SecLevel...\n"
+        rc = Nm.nm_nlog_show_dev(sendMode, IPV6)
+        self.assertTrue('sec:6' in rc, "Did not get proper security level 'sec:6' as expected")
 
 
     print "Class Test_Dut being called \'%d\' time(s)...\n" % count

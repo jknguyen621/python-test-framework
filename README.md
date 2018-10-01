@@ -35,5 +35,11 @@ suite.addTest(Test_Dut('test_cosem_obis_get_fw_version'))
 
 External Dependencies:
   
+  
+  NOTE: 
+  COSEM/OBIS commands are issued at the Application level.
+  lls_nodeq cmd 00:07:81:43:1B:AD:A5:52 <PAYLOAD> [SecMode] [Index] is at the Link Layer level
+  
+  
  
  

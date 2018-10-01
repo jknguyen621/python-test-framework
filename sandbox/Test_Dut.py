@@ -243,22 +243,6 @@ class Test_Dut(unittest.TestCase):
         rc = retCode = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1001)
         self.assertTrue('Erroneous request' in rc, "Did not get received 'Erroneous Request' message as expected")
 
-        if (0):
-            print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (
-                CPD_2_BPD_POLLING_INTERVAL)
-            time.sleep(CPD_2_BPD_POLLING_INTERVAL)
-
-            print "Sending Test PAYLOAD_MAX_VALID to BPD...\n"
-            rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_MAX_VALID)
-            self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
-
-            print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (
-                CPD_2_BPD_POLLING_INTERVAL)
-            time.sleep(CPD_2_BPD_POLLING_INTERVAL)
-
-            print "Sending Test PAYLOAD_2048 to BPD...\n"
-            rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_2048)
-            self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
 
 
 ########################################################################################################################

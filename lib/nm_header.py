@@ -25,26 +25,26 @@ print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH
 
 ########################################################################################################################
 
-CPD_MAC_ID = '00:13:50:05:00:4f:89:17'                 #CPD
-CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD
-CPD_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD
+CPD_MAC_ID = '00:13:50:05:00:4f:89:17'                 #Main NIC as CPD
+CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD path via AP
+CPD_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD path via FSU
 
 CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
 
 BPD_FW_VERSION = "74,1,1,26"
-BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #BPD1 was CPD
+#BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #NIC for BPD1 as temporary.
 BPD1_BRICK_MAC_ID = '00:07:81:43:1B:AD:A5:51'
 SST1 = '495455431bada551'
 CST1 = '4954526300000000'
 
-BPD2_MAC_ID = '00:13:50:07:00:00:0c:7e'
-BPD2_BRICK_MAC_ID = '00:07:81:43:1B:AD:A5:52'
-SST2 = '495455431bada552'   #unveriifed
+#BPD2_MAC_ID = '00:13:50:07:00:00:0c:7e'           #NIC  for BPD2 as temporary
+BPD2_BRICK_MAC_ID = '00:07:81:43:1B:AD:A5:52'  #000781431bada552
+SST2 = '495455431bada552'
 CST2 = '4954526300000000'
 
 #NICs as temporary RF for BPD bricks
-BPD1_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:0069:ce38'    #BPD1 was CPD_IPV6_AP
-BPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5007:0000:0c7e'    #BPD2
+#BPD1_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:0069:ce38'    #BPD1 was CPD_IPV6_AP
+#BPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5007:0000:0c7e'    #BPD2
 
 AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'      #Start_word = 0x6a5d'; net_id = 0xffff
 
@@ -69,7 +69,7 @@ FULLY_DL_CHAINED_CERTS = 'Certificates owned: 0xff<BirthCertificate,verifiedBC,M
 DAILY_BUILD_4_6_x = "//it-nas-01/release/firmware/daily-builds/4.6.x/4.6.0/4.5.0-bld5a/rni_nic/"
 IMAGE ="slic_rni.nic.image.DEV.DEV_sig.04.05.995a.03"
 
-COSEM_OBIS_TEST_COMMAND = "net_mgr -d IPV6 -t 20 cosem aa_sn --flags=128 xdlms --ia --cst=" + CST1 + " --sst=" + SST1 + "  --time --inv=3001 get 1:0.1.0.2.0.255:2"
+#COSEM_OBIS_TEST_COMMAND = "net_mgr -d IPV6 -t 20 cosem aa_sn --flags=128 xdlms --ia --cst=" + CST1 + " --sst=" + SST1 + "  --time --inv=3001 get 1:0.1.0.2.0.255:2"
 
 OBIS_FW_VERSION = "1:0.1.0.2.0.255:2"
 OBIS_UNIX_TIME = "1:0.0.1.1.0.255:2"
