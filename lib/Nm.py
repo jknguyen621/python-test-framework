@@ -103,7 +103,7 @@ def nm_get_version_str(sendMode, IPV6):
 # conf meter_dt type 85
 # last_gasp ignore_pf_zx 3
 # Need to use 4.6 image and latest net_mgr
-def nm_configure_cpd(sendMode, IPV6):
+def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf meter_dt type 85"
     processCmd(cmd)
 
@@ -166,7 +166,8 @@ def nm_configure_cpd(sendMode, IPV6):
     #nm_restart_now(sendMode, IPV6)
 
     #Inject default security key between CPD and BPD
-    nm_inject_security_key(sendMode, IPV6, DEFAULT_SECURITY_KEY, 1)
+    nm_inject_security_key(sendMode, IPV6, BPD, DEFAULT_SECURITY_KEY, 1)
+    #NOTE: Will get Errorneous request error for now, since there is a bug in the deteltion of the key FIRMW-19441
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [126, 361,362]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
     out = processCmd(cmd)
