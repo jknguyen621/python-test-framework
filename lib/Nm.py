@@ -166,6 +166,7 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     #nm_restart_now(sendMode, IPV6)
 
     #Inject default security key between CPD and BPD
+    print "Loading default secured key for BPD on CPD...\n"
     nm_inject_security_key(sendMode, IPV6, BPD, DEFAULT_SECURITY_KEY, 1)
     #NOTE: Will get Errorneous request error for now, since there is a bug in the deteltion of the key FIRMW-19441
 
@@ -173,7 +174,8 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     out = processCmd(cmd)
 
     #Show Mac security key on CPD for BPD:
-    #nm_show_mac_sec_key(sendMode, IPV6, bpdMacId, 1)
+    print "Verifying that secured key was loaded successfully....\n"
+    nm_show_mac_sec_key(sendMode, IPV6, BPD, 1)
 
 #Check LLS enabled:
 def nm_check_lls_enabled(sendMode, IPV6):
@@ -646,7 +648,12 @@ def nm_show_BPD_LLS_Nodes(sendMode, IPV6):
     print out
     return out
 
-
+#Routine to send secured payload
+def nm_send_secured_CPD_cmd(sendMode, IPV6, bpdMac, payload, secMode, index=1):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " -t 20 -v lls_nodeq cmd " + bpdMac + " " + payload + " " + str(secMode) + " " +  str(index)
+    out = processCmd(cmd)
+    print out
+    return out
 ########################################################################################################################
 
 if __name__ == "__main__":

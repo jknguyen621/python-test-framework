@@ -379,6 +379,28 @@ class Test_Dut(unittest.TestCase):
          print "lls_nodeq data send statistic before send....\n"
          Nm.nm_check_lls_enabled(sendMode, IPV6)
 
+         # Show current Secure Key:
+         print "Display current loaded secured key for BPD on CPD\n"
+         Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
+
+    def test09_test_send_secure_mode_1K_payload(self):
+        # ************************************************************************************************#
+        # Test #9: Test with Mac security enabled and Sec Mode=6 SAFE_SECURED_PAYLOAD  length payload to BPD:
+        # *************************************************************#
+        Sec_Mode = 6
+        index = 1
+
+        print "Testing BPD secure key and Sec Mode set to 6 for the time being...\n"
+        rc = Nm.nm_send_secured_CPD_cmd(sendMode, IPV6, BPD_DUT, SAFE_SECURED_PAYLOAD, Sec_Mode, index)
+        #self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
+        #NOTE: Expect to see on COSEM DevBench for BPD's log as:
+
+        # 16:38:59.112 = > Lls
+        # Rx
+        # Cmd: Len = 942, SecLvl = 6
+        # 2018 / 10 / 01
+
+
     print "Class Test_Dut being called \'%d\' time(s)...\n" % count
 
 ########################################################################################################################
