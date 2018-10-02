@@ -387,7 +387,8 @@ class Test_Dut(unittest.TestCase):
 
         print "Check nlog for proper SecLevel...\n"
         rc = Nm.nm_nlog_show_dev(sendMode, IPV6)
-        self.assertTrue('sec:6' in rc, "Did not get proper security level 'sec:6' as expected")
+        #self.assertTrue('sec:6' in rc, "Did not get proper security level 'sec:6' as expected")
+        #NOTE: Can only be seen within COSEM DevBench log for now.
 
     def test10_test_send_secure_mode_cosem_obis_cmd(self):
         # ************************************************************************************************#
@@ -396,6 +397,11 @@ class Test_Dut(unittest.TestCase):
 
         print "Clear nlog dev first...\n"
         Nm.nm_nlog_clear_dev(sendMode, IPV6)
+
+        print "Clear the event log too...\n"
+        Nm.nm_event_clear(sendMode, IPV6)
+
+        time.sleep(1)
 
         print "Testing BPD COSEM/OBIS command send with temp default secure key...\n"
         obisInvokeID = 5555
@@ -408,6 +414,7 @@ class Test_Dut(unittest.TestCase):
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
+
         # Get resonse:
         rc = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
         print "Response Data for BPD's FW Version is: \n\%s\'\n" % rc
@@ -416,10 +423,17 @@ class Test_Dut(unittest.TestCase):
         # Cmd: Len = 942, SecLvl = 6
         # 2018 / 10 / 01
 
-        print "Check nlog for proper SecLevel...\n"
-        rc = Nm.nm_nlog_show_dev(sendMode, IPV6)
-        self.assertTrue('sec:6' in rc, "Did not get proper security level 'sec:6' as expected")
+        #print "Check nlog for proper SecLevel...\n"
+        #rc = Nm.nm_nlog_show_dev(sendMode, IPV6)
+        #self.assertTrue('sec:6' in rc, "Did not get proper security level 'sec:6' as expected")
 
+        #Sleep a little longer to ensure we get the expected event in the event log.
+        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
+        #Get event log for APP layer secure events:
+        rc = Nm.nm_event(sendMode, IPV6)
+        self.assertTrue('sec_level=6' in rc, "Did not get proper security level in the event log 'sec_level=6' as expected")
 
     print "Class Test_Dut being called \'%d\' time(s)...\n" % count
 

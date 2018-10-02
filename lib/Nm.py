@@ -149,9 +149,9 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs"      #Check value 0 - OTA; 1 - Serial for DBS
     out = processCmd(cmd)
 
-    #Note: For BPD's ecurity to be enabled, we need to set: conf i5s linksec 6 and in the setup_ins.cs script: /* Save To Flash */
+    #Note: For BPD's ecurity to be enabled, we need to set: conf i5s linksec 0 and in the setup_ins.cs script: /* Save To Flash */
     #DBI("07 58 01");
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 6"  # Set link security to normal
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 0"  # Set link security to normal
     out = processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec"  # Check value of i5s linksec
@@ -196,6 +196,20 @@ def nm_nlog_show_dev(sendMode, IPV6):
 #Clear nlog:
 def nm_nlog_clear_dev(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " nlog clear dev"
+    out = processCmd(cmd)
+    print out
+    return out
+
+#Display events:
+def nm_event(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " event"
+    out = processCmd(cmd)
+    print out
+    return out
+
+#Clear event log:
+def nm_event_clear(sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " event clear"
     out = processCmd(cmd)
     print out
     return out
