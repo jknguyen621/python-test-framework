@@ -213,6 +213,16 @@ def nm_event_clear(sendMode, IPV6):
     out = processCmd(cmd)
     print out
     return out
+
+#Clear all logs:
+def nm_clear_logs(sendMode, IPV6):
+    print "Clearing nlog dev...\n"
+    nm_nlog_clear_dev(sendMode, IPV6)
+
+    print "Clearing the event log...\n"
+    nm_event_clear(sendMode, IPV6)
+    time.sleep(1)
+
 #########################################################################################################################
 #Certs related:
 ########################################################################################################################
@@ -336,6 +346,19 @@ def nm_show_mac_sec_key(sendMode, IPV6, bpdMacId, index=1):
     ret = processCmd(cmd)
     print "Security key on CPD for BPD at index \'%d\' is: \'%s\' \n"  % (index, str(ret))
     print ret
+    return ret
+
+#Get Current transfer Frame Counter for the BPD Node
+def nm_get_TxFrameCounter(sendMode, IPV6, bpdMacId, index=1):
+    rc = nm_show_mac_sec_key(sendMode, IPV6, bpdMacId, index=1)
+    print rc
+    lines = rc.split('\n')
+    #for line in lines:
+        #print "line: %s \n" % (line)
+        #pass
+    TxFrameCount = lines[3].split(':')[-1]
+    return TxFrameCount.lstrip()
+
 #######################################################################################################################
 #IMU or Master Meter Reading related, read imu Data and el events
 ########################################################################################################################

@@ -298,6 +298,8 @@ class Test_Dut(unittest.TestCase):
         # ************************************************************************************************#
         # Test #6: Test ability to load and set default security key on CPD for BPD
         # *************************************************************#
+        Nm.nm_clear_logs(sendMode, IPV6)
+
         print "Uploading default security key for BPD to CPD...\n"
         #Inject default security key between CPD and BPD
         rc = Nm.nm_inject_security_key(sendMode, IPV6, BPD_DUT, DEFAULT_SECURITY_KEY, 1)
@@ -308,6 +310,8 @@ class Test_Dut(unittest.TestCase):
         # Test #7: Test ability to remove/ddete/ default security key on CPD for BPD
         # *************************************************************#
         print "Showing default security key for BPD to CPD...\n"
+
+        Nm.nm_clear_logs(sendMode, IPV6)
 
         rc = Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
         self.assertTrue('Key' in rc, "Secured Key for BPD should have been loaded...\n")
@@ -340,30 +344,39 @@ class Test_Dut(unittest.TestCase):
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
     def test08_send_package_with_mac_security_enabled(self):
-         # ************************************************************************************************#
-         # Test #8: Test with Mac security enabled 1000 bytes length payload to BPD:
-         # *************************************************************#
-         print ("Re-infecting default secure key on CPD for BPD....\n")
-         Nm.nm_inject_security_key(sendMode, IPV6, DEFAULT_SECURITY_KEY, 1)
+        # ************************************************************************************************#
+        # Test #8: Test with Mac security enabled 1000 bytes length payload to BPD:
+        # *************************************************************#
+        Nm.nm_clear_logs(sendMode, IPV6)
 
-         #Take a read of stats before send:
-         print "lls_nodeq data send statistic before send....\n"
-         Nm.nm_check_lls_enabled(sendMode, IPV6)
+        print ("Re-infecting default secure key on CPD for BPD....\n")
+        Nm.nm_inject_security_key(sendMode, IPV6, DEFAULT_SECURITY_KEY, 1)
 
-         print "Sending Test PAYLOAD_1000 to BPD...\n"
-         rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1000)
-         self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
+        #Take a read of stats before send:
+        print "lls_nodeq data send statistic before send....\n"
+        Nm.nm_check_lls_enabled(sendMode, IPV6)
 
-         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
-         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+        print "Sending Test PAYLOAD_1000 to BPD...\n"
+        rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_1000)
+        self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
 
-         # Take a read of stats after send:
-         print "lls_nodeq data send statistic before send....\n"
-         Nm.nm_check_lls_enabled(sendMode, IPV6)
+        #TODO: Once Security is fully implemented,
+        # Need to revisit this test and check and assert for SecLevel=6
+        # without requiring the [SecMode][Index] options.
 
-         # Show current Secure Key:
-         print "Display current loaded secured key for BPD on CPD\n"
-         Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
+        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
+        # Take a read of stats after send:
+        print "lls_nodeq data send statistic before send....\n"
+        rc = Nm.nm_check_lls_enabled(sendMode, IPV6)
+        self.assertTrue(BPD_DUT.lower() in rc, 'Did not get BPD under test Mac ID in lls_nodeq show all')
+
+        # Show current Secure Key:
+        print "Display current loaded secured key for BPD on CPD\n"
+        rc = Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
+        self.assertTrue(DEFAULT_SECURITY_KEY.lower() in rc, 'Did not get DEFAULT_SECURITY_KEY in  mac_secmib show BPD_DUT')
+
 
     def test09_test_send_secure_mode_1K_payload(self):
         # ************************************************************************************************#
@@ -372,39 +385,48 @@ class Test_Dut(unittest.TestCase):
         Sec_Mode = 6
         index = 1
 
-        print "Clear nlog dev first...\n"
-        Nm.nm_nlog_clear_dev(sendMode, IPV6)
+        Nm.nm_clear_logs(sendMode, IPV6)
 
         print "Testing BPD secure send raw payload at LLS level, using key and Sec Mode set to 6 for the time being...\n"
         rc = Nm.nm_send_secured_CPD_cmd(sendMode, IPV6, BPD_DUT, SAFE_SECURED_PAYLOAD, Sec_Mode, index)
-        #self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
+        #Lls Rx Cmd: Len = 942, SecLvl = 6
+
+
         #NOTE: Expect to see on COSEM DevBench for BPD's log as:
 
-        # 16:38:59.112 = > Lls
-        # Rx
-        # Cmd: Len = 942, SecLvl = 6
-        # 2018 / 10 / 01
+        # 2018/10/03 09:16:48.003 => Lls Rx BLS
+        # 2018/10/03 09:16:48.065 => Lls Lw Pending Cmd
+        # 2018/10/03 09:16:48.065 => MAC Rx Valid Frame Len: 966
+        # 2018/10/03 09:16:48.128 => MAC Rx Ack Sent
+        # 2018/10/03 09:16:48.190 => Lls Rx Cmd: Len = 934, SecLvl = 6
+        # 2018/10/03 09:17:17.911 => LLS Lw: chan=39, dur=6.8ms, freqVar=0.0ppm, freqErr=0.1ppm
+        # 2018/10/03 09:17:17.911 => MAC Rx Valid Frame Len: 18
 
-        print "Check nlog for proper SecLevel...\n"
-        rc = Nm.nm_nlog_show_dev(sendMode, IPV6)
-        #self.assertTrue('sec:6' in rc, "Did not get proper security level 'sec:6' as expected")
+
+
+        print "Please Manually Check COSEM DevBench for proper SecLevel...\n"
+        #TODO: Once Security is fully implemented and BPD's events are supported,
+        # need to detect, SecLevel=6 and check and assert accorindgly.
+
         #NOTE: Can only be seen within COSEM DevBench log for now.
 
     def test10_test_send_secure_mode_cosem_obis_cmd(self):
         # ************************************************************************************************#
         # Test #10: Test with COSEM OBIS command via secured channel
+        # NOTE: THis is an APP level security testing.
+        # Testing security enforcement down the stack.
         # *************************************************************#
 
-        print "Clear nlog dev first...\n"
-        Nm.nm_nlog_clear_dev(sendMode, IPV6)
+        Nm.nm_clear_logs(sendMode, IPV6)
 
-        print "Clear the event log too...\n"
-        Nm.nm_event_clear(sendMode, IPV6)
-
-        time.sleep(1)
+        print("Displaying the current BPD node security key...\n")
+        Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
 
         print "Testing BPD COSEM/OBIS command send with temp default secure key...\n"
         obisInvokeID = 5555
+
+        rc1 = Nm.nm_get_TxFrameCounter(sendMode, IPV6, BPD_DUT, 1)
+        print "Tx Frame Counter before command is: \'%s\' \n" % rc1
 
         obisCommand = OBIS_FW_VERSION  # Not secured? OBIS_MAC
         print "OBIS REQUEST FOR BPD MAC ID\n"
@@ -414,28 +436,31 @@ class Test_Dut(unittest.TestCase):
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
+        rc2 = Nm.nm_get_TxFrameCounter(sendMode, IPV6, BPD_DUT, 1)
+        print "Tx Frame Counter before command is: \'%s\' \n" % rc2
+        self.assertTrue(rc2 > rc1, "BPD's Tx Frame Counter didn't increment as expected")
+
+
+        #In COSEM DevBench, expecting to see this:
+        # Lls Rx Cmd: Len = 90, SecLvl = 6
 
         # Get resonse:
         rc = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
         print "Response Data for BPD's FW Version is: \n\%s\'\n" % rc
-        # 16:38:59.112 = > Lls
-        # Rx
-        # Cmd: Len = 942, SecLvl = 6
-        # 2018 / 10 / 01
-
-        #print "Check nlog for proper SecLevel...\n"
-        #rc = Nm.nm_nlog_show_dev(sendMode, IPV6)
-        #self.assertTrue('sec:6' in rc, "Did not get proper security level 'sec:6' as expected")
 
         #Sleep a little longer to ensure we get the expected event in the event log.
-        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
-        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+        print "Sleep a little longer to ensure robustness of respond messages..."
+        time.sleep(60)
 
         #Get event log for APP layer secure events:
         rc = Nm.nm_event(sendMode, IPV6)
+        print rc
         self.assertTrue('sec_level=6' in rc, "Did not get proper security level in the event log 'sec_level=6' as expected")
 
-    print "Class Test_Dut being called \'%d\' time(s)...\n" % count
+    if(0):
+        def test99_test_new_feature(self):
+            rc = Nm.nm_get_TxFrameCounter(sendMode, IPV6, BPD_DUT, 1)
+            print "Inside test99, TxFrameCounter is:  \'%s\' \n" % rc
 
 ########################################################################################################################
 if __name__ == '__main__':

@@ -16,12 +16,16 @@ Sandbox for Python framework for smart meter test automation
   python -m unittest suites.SuiteName (w/o the .py)  #This will run things twice.
   Solution: python -m suites.Certs_Suite.py   (w/o the unittest and with the *.py)
   
-5. To Run trapTester.py:
+5. To run individual test within a TestCase (helps in quickly developing tests):
+    #python -m unittest testMyCase.MyCase.testItIsHot
+    i.e.: I want to run only this test for debugging: test10_test_send_secure_mode_cosem_obis_cmd
+    python -m unittest tests.Test_Dut.Test_Dut.test10_test_send_secure_mode_cosem_obis_cmd
+    
+6. To Run trapTester.py:
   python -m miscellaneous.trapTester.py
   
-  
-6.  ./lib/500sanity.zip is to be unzipped onto a windows environment and run with COSEM DevBench.
-7.  ./arm_net_mgr are tools for Raspberry Pi OS.
+7.  ./lib/500sanity.zip is to be unzipped onto a windows environment and run with COSEM DevBench.
+8.  ./arm_net_mgr are tools for Raspberry Pi OS.
  
  
 Fundamentally,  to start, you should create tests in the sandbox, lets call it Test_XYZ.py.
@@ -39,6 +43,9 @@ External Dependencies:
   NOTE: 
   COSEM/OBIS commands are issued at the Application level.
   lls_nodeq cmd 00:07:81:43:1B:AD:A5:52 <PAYLOAD> [SecMode] [Index] is at the Link Layer level
+  
+  Use '#TODO' sparingly for identified temporary hacks or upcoming features that are not ready yet.
+  
   
   
  
