@@ -13,8 +13,10 @@ from utilities import *
 import subprocess
 import time
 import os
+import sys
 
 from random import randint
+from pygtail import Pygtail
 global seqNum
 
 
@@ -722,6 +724,84 @@ def nm_retries(sendMode, IPV6):
 
     self.assertTrue('sec_level=6' and 'LLS_RX_SDU' in rc,
                     "Did not get proper security level in the event log 'sec_level=6' as expected")
+########################################################################################################################
+#Trap Server I setup locally on mac:
+"""#Set Trap server address:
+    ./net_mgr -d fd04:7c3e:be2f:100f:213:5005:004f:8917 nm_trap host_set fd34:fe56:7891:7e23:4a8:7e53:a48e:e474
+    
+    #Set Trap listening port:
+    ./net_mgr -d fd04:7c3e:be2f:100f:213:5005:004f:8917 nm_trap port_set 647   #On Net Mgr on the NIC
+    
+    #Set delay for trap message sent:
+    ./net_mgr -d fd04:7c3e:be2f:100f:213:5005:004f:8917 nm_trap delay authority_key_missing 0    #On Net Mgr on the NIC
+    
+    #Service is started by: 
+    sudo ./net_trap -p 647  fd34:fe56:7891:7e23:4a8:7e53:a48e:e474  >> /tmp/trap_file.tx   #On local mac on 4.6 branch.
+    
+    #Force a trap event example:
+    ./net_mgr -d fd04:7c3e:be2f:100f:213:5005:004f:8917 nm_trap force authority_key_missing   #On Net Mgr on the NIC
+    
+    #Monitoring the event:
+    /tmp/tail -f trap_file.txt
+    
+    Received *test* trap id = 0x529, seq=15, bootcnt=85, confirm=yes at time Thu Sep  6 22:32:53 2018 UTC (rx time Thu Sep  6 22:33:02 2018 UTC)
+         -> reason="Authority Key Missing Test Trap" subj_key_id="da:39:a3:ee:5e:6b:4b:0d:32:55:bf:ef:95:60:18:90:af:d8:07:09" from 00:13:50:05:00:69:ce:38
+"""
+#en3: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+	# options=10b<RXCSUM,TXCSUM,VLAN_HWTAGGING,AV>
+	# ether a8:60:b6:2f:d8:6c
+	# inet6 fe80::1033:67b8:87c7:f57e%en3 prefixlen 64 secured scopeid 0xe
+	# inet6 fd34:fe56:7891:7e23:4a8:7e53:a48e:e474 prefixlen 64 autoconf secured  <= This one (SSNI wifi)
+
+def nm_config_trap_server(sendMode, IPV6, localServerIPV6):
+    #Set host name
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " nm_trap host_set " + localServerIPV6
+    out = processCmd(cmd)
+    print out
+
+    #Set host port
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " nm_trap port_set " + TRAP_PORT  #647
+    out = processCmd(cmd)
+    print out
+
+    # Set delay for authority_key_missing
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " nm_trap delay authority_key_missing 0"
+    out = processCmd(cmd)
+    print out
+
+    # start trap server
+    # sudo ./net_trap -p 647  fd34:fe56:7891:7e23:4a8:7e53:a48e:e474  >> /tmp/trap_file.tx   #On local mac on 4.6 branch.
+    cmd = "sudo " +NET_TRAP_PATH + " -p " + TRAP_PORT + " " + localServerIPV6 + " >> " + TRAP_LOG + " &"
+    out = processCmd(cmd)
+    print out
+
+    #print "Please excute this cmd in a new terminal:\n"
+    #print "sudo ./nt -p 40600 fd34:fe56:7891:7e23:4a8:7e53:a48e:e474 >> /tmp/trap_file.txt"
+    time.sleep(10)
+
+def nm_force_trap_event(trap, sendMode, IPV6):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "nm_trap force  " + str(trap)
+    ret = processCmd(cmd)
+    return ret
+
+def nm_tail_file(filePath, expectedValue=None):
+
+    expetedValue1 = "Received "
+
+    if expectedValue == None:
+        dummyRead = Pygtail(filePath, read_from_end=True)
+
+    for line in Pygtail(filePath,  read_from_end=True, paranoid=True):
+        sys.stdout.write(line)
+        if expetedValue1 in line:
+            myList = line.split('=')
+            print myList
+            myList2 = myList[1].split(',')
+            actualValue = myList2[0].lstrip()
+            print "Hex Value Received is: \'%s\' \n" % actualValue
+            return actualValue
+        else:
+            pass
 ########################################################################################################################
 
 if __name__ == "__main__":

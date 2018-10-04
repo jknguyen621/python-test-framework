@@ -18,10 +18,19 @@ NET_MGR_PATH = ''
 from sys import platform
 if platform == "darwin" or platform == "linux":
     NET_MGR_PATH = pwd + '/nm'                 #'/mac_tools/net_mgr'
+    NET_TRAP_PATH = pwd + '/nt'
 elif platform == "linux2":                  #Raspberry Pi
     NET_MGR_PATH = pwd + '/Nm'   #''/arm_tools/net_mgr'
+    NET_TRAP_PATH = pwd + '/Nt'
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
+########################################################################################################################
+#NET_TRAP:
+TRAP_SERVER_IPV6 = 'fd34:fe56:7891:7e23:4a8:7e53:a48e:e474'   #Local Macbook Ethernet
+TRAP_LOG = "/tmp/trap_file.txt"
+TRAP_PORT = "40600"
+CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'
+
 
 ########################################################################################################################
 
