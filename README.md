@@ -37,6 +37,17 @@ from tests.Test_Dut import *
  
 suite.addTest(Test_Dut('test_cosem_obis_get_fw_version')) 
 
+Suggestions:
+-----------
+1. To create a symbolic link on your environment like so:
+ln -s /Users/jnguyen/python-test-framework/mac_tools/net_mgr /Users/jnguyen/python-test-framework/nm
+ - then call your net_mgr like so: ./nm -d fd04:7c3e:be2f:100f:213:5005:004f:8917 image list
+
+2. Similarly, on Pi, it would be:
+ln -s /home/pi/python-test-framework/arm_tools/net_mgr /home/pi/python-test-framework/Nm
+- then call your net_mgr like so: ./Nm -d fd04:7c3e:be2f:100f:213:5005:004f:8917 image list
+
+=========================================================================================
 External Dependencies:
   
   

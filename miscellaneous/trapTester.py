@@ -29,9 +29,9 @@ print "Current Working Direcgtory %s\n" % (pwd)
 NET_MGR_PATH = ''
 from sys import platform
 if platform == "darwin" or platform == "linux":
-    NET_MGR_PATH = pwd + '/net_mgr'
+    NET_MGR_PATH = pwd + '/nm'                 #'/mac_tools/net_mgr'
 elif platform == "linux2":                  #Raspberry Pi
-    NET_MGR_PATH = pwd + '/arm_net_mgr/net_mgr'
+    NET_MGR_PATH = pwd + '/Nm'   #''/arm_tools/net_mgr'
 
 
 """ 
