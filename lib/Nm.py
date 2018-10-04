@@ -707,6 +707,21 @@ def nm_send_secured_CPD_cmd(sendMode, IPV6, bpdMac, payload, secMode, index=1):
     out = processCmd(cmd)
     print out
     return out
+
+
+
+#Routine to mimic 3 retries of reading after each BLS timeframe
+def nm_retries(sendMode, IPV6):
+    # Sleep a little longer to ensure we get the expected event in the event log.
+    print "Sleep a little longer to ensure robustness of respond messages..."
+    time.sleep(60)
+
+    # Get event log for APP layer secure events:
+    rc = Nm.nm_event(sendMode, IPV6)
+    print rc
+
+    self.assertTrue('sec_level=6' and 'LLS_RX_SDU' in rc,
+                    "Did not get proper security level in the event log 'sec_level=6' as expected")
 ########################################################################################################################
 
 if __name__ == "__main__":

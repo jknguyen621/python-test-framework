@@ -14,12 +14,12 @@ Sandbox for Python framework for smart meter test automation
   
 4. To Run Suites under ./suites directory:
   python -m unittest suites.SuiteName (w/o the .py)  #This will run things twice.
-  Solution: python -m suites.Certs_Suite.py   (w/o the unittest and with the *.py)
+  Solution: python -m suites.Security_Suite.py   (w/o the unittest and with the *.py)
   
 5. To run individual test within a TestCase (helps in quickly developing tests):
     #python -m unittest testMyCase.MyCase.testItIsHot
     i.e.: I want to run only this test for debugging: test10_test_send_secure_mode_cosem_obis_cmd
-    python -m unittest tests.Test_Dut.Test_Dut.test10_test_send_secure_mode_cosem_obis_cmd
+    python -m unittest tests.Test_Security_TestCases.Test_Security.test10_test_send_secure_mode_cosem_obis_cmd
     
 6. To Run trapTester.py:
   python -m miscellaneous.trapTester.py
