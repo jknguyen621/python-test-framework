@@ -769,11 +769,11 @@ def nm_config_trap_server(sendMode, IPV6, localServerIPV6):
     out = processCmd(cmd)
     print out
 
-    # start trap server
-    # sudo ./net_trap -p 647  fd34:fe56:7891:7e23:4a8:7e53:a48e:e474  >> /tmp/trap_file.tx   #On local mac on 4.6 branch.
-    cmd = "sudo " +NET_TRAP_PATH + " -p " + TRAP_PORT + " " + localServerIPV6 + " >> " + TRAP_LOG + " &"
-    out = processCmd(cmd)
-    print out
+    # start trap server  (NOTE: More reliable to start manually outside of the framework!!!)
+    #sudo ./net_trap -p 40600  fd34:fe56:7891:7e23:4a8:7e53:a48e:e474  >> /tmp/trap_file.tx   #On local mac on 4.6 branch.
+    #cmd = "sudo " +NET_TRAP_PATH + " -p " + TRAP_PORT + " " + localServerIPV6 + " >> " + TRAP_LOG + " &"
+    #out = processCmd(cmd)
+    #print out
 
     #print "Please excute this cmd in a new terminal:\n"
     #print "sudo ./nt -p 40600 fd34:fe56:7891:7e23:4a8:7e53:a48e:e474 >> /tmp/trap_file.txt"

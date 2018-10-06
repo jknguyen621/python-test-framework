@@ -117,7 +117,7 @@ Received *test* trap id = 0x529, seq=15, bootcnt=85, confirm=yes at time Thu Sep
 
 #retValue = nm_tail_file(TRAP_LOG)   #Flush initial value
 
-sendMode = " -d "
+sendMode = "-g -d "
 #Call to initialize the server
 Nm.nm_config_trap_server(sendMode, CPD_IPV6_AP, TRAP_SERVER_IPV6)
 

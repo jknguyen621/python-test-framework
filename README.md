@@ -1,4 +1,10 @@
 # python-test-framework
+
+#Author: Joseph K. Nguyen
+#Date: August 20th, 2018
+#File: README.md
+
+
 Sandbox for Python framework for smart meter test automation
 
 

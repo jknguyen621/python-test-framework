@@ -36,6 +36,7 @@ CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'
 
 CPD_MAC_ID = '00:13:50:05:00:4f:89:17'                 #Main NIC as CPD
 CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD path via AP
+#CPD_IPV6_AP = 'fe80::213:5001:0173:01c3'                   #Gen4 NIC + FSU
 CPD_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD path via FSU
 
 CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
@@ -123,6 +124,8 @@ SAFE_SECURED_PAYLOAD = 'd32b0fdb005b0000000100780001004be14000304001010801020304
 ########################################################################################################################
 #Trap setup:
 TRAP_SERVER_IPV6 = 'fd34:fe56:7891:7e23:4a8:7e53:a48e:e474'   #Local Macbook Ethernet
+
+
 '''
 #Set Trap server address:
 ./net_mgr -d fd04:7c3e:be2f:100f:213:5005:0069:ce38 nm_trap host_set fd34:fe56:7891:7e23:4a8:7e53:a48e:e474

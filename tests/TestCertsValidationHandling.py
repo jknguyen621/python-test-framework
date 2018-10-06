@@ -17,14 +17,9 @@ import unittest
 
 class TestCertsValidationHandling(unittest.TestCase):
 
-    #def __init__(self):
-    #    suite = unittest.TestLoader().loadTestsFromTestCase(TestCertsValidationHandling)
-    #    runner = unittest.TextTestRunner(verbosity=2)
-    #    runner.run(suite)
-
 
     #Setup required to run our testcase/suite.
-    """
+
     def setUp(self):
         #self.certsTest = Widget('The widget')
         sendMode = '-d'
@@ -49,25 +44,6 @@ class TestCertsValidationHandling(unittest.TestCase):
                                                                privkeyFileIn=CERTS_PATH + PRIVKEY_FILE)
         self.assertTrue(self, (assocId !=0 or ss != ''), "Wrong response for ")
 
-    """
-
-
-
-
-    #Dummy tests
-    def test_upper(self):
-        self.assertEqual('foo'.upper(), 'FOO')
-
-    def test_isupper(self):
-        self.assertTrue('FOO'.isupper())
-        self.assertFalse('Foo'.isupper())
-
-    def test_split(self):
-        s = 'hello world'
-        self.assertEqual(s.split(), ['hello', 'world'])
-        # check that s.split fails when the separator is not a string
-        with self.assertRaises(TypeError):
-            s.split(2)
 
 
     #Tear down setup ready for next test run.
@@ -77,7 +53,5 @@ class TestCertsValidationHandling(unittest.TestCase):
 
 
     if __name__ == '__main__':            # unittest.main()
-       #suite = unittest.TestLoader().loadTestsFromTestCase(TestCertsValidationHandling)
-       #runner = unittest.TextTestRunner(verbosity=2)
-       #runner.run(suite)
+
 
