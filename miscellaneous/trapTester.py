@@ -54,7 +54,7 @@ Call this program from project root directory: python -m miscellaneous.trapTeste
 #'battery_config_mismatched':'0x379',
 #}
 
-
+"""
 trapsToTest = {
 'power_loss':'0xcf',
 'power_restore':'0xd0',
@@ -76,6 +76,95 @@ trapsToTest = {
 'high_temp':'0x468',
 'authority_key_missing':'0x529',
 }
+"""
+trapsToTest = {
+'power_loss':'0xcf',
+'power_restore':'0xd0',
+'battery_off': '0x11f',
+'battery_on':'0x11e',
+'battery_config_mismatched':'0x379',
+'imu_alarm': '0x130',
+'lg_bundled_power_loss':'0x1ca',
+'private_key_failure':'0x1bc',
+'no_battery_rt':'0x1d8',
+'tamper_trap':'0x299',
+'pb_tamper_trap 0':'0x4c5',
+'pb_tamper_trap 1':'0x4c5',
+'changed_id':'0x2f5',
+'open_gates':'0x301',
+'lcs_event_status':'0x356',
+'no_location':'0x456',
+'location_update':'0x41b',
+'high_temp':'0x468',
+'authority_key_missing':'0x529',
+'sntp_poll_fail':'0x00',
+'i5s_reg':'0x00',
+'coap_sec':'0x00',
+'coap_sec_pub':'0x00',
+'trap_conf_reqd':'0x00',
+'bpd_nreg':'0x00',
+'dhcp_lease_alarm':'0x00',
+'ap_call_home_req':'0x00',
+'esp_trap':'0x00',
+'esp_unsolicited':'0x00',
+'lg_reg_fail':'0x00',
+'private_key_failure':'0x00',
+'no_battery_rt':'0x00',
+'tamper_trap':'0x00',
+'changed_id':'0x00',
+'open_gates':'0x00',
+'lcs_event_status':'0x00',
+'streetlight':'0x00',
+'temp_notify':'0x00',
+'stlt_blk_relay':'0x00',
+'stlt_open_circuit':'0x00',
+'stlt_lamp_fail':'0x00',
+'stlt_day_burner':'0x00',
+'stlt_cycling':'0x00',
+'stlt_comm_fail':'0x00',
+'stlt_lamp_pwr_too_high':'0x00',
+'stlt_lamp_pwr_too_low':'0x00',
+'esp_gen':'0x00',
+'security_threshold':'0x00',
+'lua_string':'0x00',
+'stlt_inv_calendar':'0x00',
+'stlt_inv_program':'0x00',
+'stlt_calendar_change':'0x00',
+'stlt_program_change':'0x00',
+'power_mon_stream':'0x00',
+'no_location':'0x00',
+'no_gps_time':'0x00',
+'location_update':'0x00',
+'stlt_low_mains_volt':'0x00',
+'stlt_high_mains_volt':'0x00',
+'stlt_low_pf':'0x00',
+'stlt_set_lamp':'0x00',
+'high_temp':'0x00',
+'esp_pub_cpp':'0x00',
+'stlt_low_curr':'0x00',
+'stlt_high_curr':'0x00',
+'lcs_alarm_log':'0x00',
+'meter_id':'0x00',
+'master_meter':'0x00',
+}
+
+	#ap_rf_conn_loss <band_id> (band ids are: 0-900 MHz FHSS)
+    #dhcp_highlow_alarm <type> (low to no_range: 1 to 4)
+	#battery_capacity <type> (Faulty[0x20], Battery level critical[0x04]/low[0x8])
+	#pb_tamper_trap <state> (0 = clear 1 = set)
+	#master_meter_reg <bpd_mac_addr> <operation>
+	#c1219_tbl_mon_v2 <status>:<time>:<tid>:<offset>:<length>
+	#imu_data <bpd-mac> <pdu-data>
+    #pri_event_trap <mask> (8 byte format 0x00:0x00...)
+	#ev_event <type> (plug in to override off: 1 to 7)
+	#lgyr_iec_event <event_data> (18 bytes 0x00:0x00...)
+	#rsm_change_trap <mask> (disconnected to armed: 1 to 3)
+	#route_conflict_trap <ip-prefix/len> <dst-mac> <nh-mac> [flags]
+	#voltage_monitor_trap <0|1> <deci-volts> (0: volt sag, 1: volt swell)
+    #power_mon_alarm <channel>:<set=1/clear=0>
+	#c1219_event <status>:<time>
+	#c1219_alarm <status>:<time>
+	#dlms_push_data <status>:<time>
 
 
 #Trap setup:
@@ -117,7 +206,7 @@ Received *test* trap id = 0x529, seq=15, bootcnt=85, confirm=yes at time Thu Sep
 
 #retValue = nm_tail_file(TRAP_LOG)   #Flush initial value
 
-sendMode = "-g -d "
+sendMode = "-d "
 #Call to initialize the server
 Nm.nm_config_trap_server(sendMode, CPD_IPV6_AP, TRAP_SERVER_IPV6)
 
@@ -131,7 +220,7 @@ for key, value in trapsToTest.iteritems():
     ret = Nm.nm_force_trap_event(key, sendMode, CPD_IPV6_AP)
     print "Returned value of nm_force_trap_event is: \'%s\' \n" % ret
 
-    time.sleep(1)
+    time.sleep(10)
     retValue = Nm.nm_tail_file(TRAP_LOG, trapsToTest[key])
 
     print "Ret Value of parsing is: \'%s\' \n" % retValue

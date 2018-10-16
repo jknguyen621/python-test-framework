@@ -71,6 +71,10 @@ class Test_Security(unittest.TestCase):
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
+        # Clear both the event and nlog for APP layer secure events:
+        rc = Nm.nm_clear_logs(sendMode, IPV6)
+        print rc
+
 
     def test01_cosem_obis_get_fw_version(self):
         #####################################################################################
@@ -100,6 +104,10 @@ class Test_Security(unittest.TestCase):
         # print "\n"
         self.assertTrue(BPD_FW_VERSION in rc, "Did not get FW Version as expected")
 
+        # Get event log for APP layer secure events:
+        rc = Nm.nm_event(sendMode, IPV6)
+        print rc
+
     def test02_send_raw_payload_to_BPD(self):
         # ************************************************************************************************#
         # Test #2: Send raw payload to the BPD:
@@ -109,6 +117,7 @@ class Test_Security(unittest.TestCase):
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
         self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
+
 
     def test03_send_zero_bytes_payload_to_BPD(self):
         # ************************************************************************************************#
@@ -225,6 +234,9 @@ class Test_Security(unittest.TestCase):
         rc = Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
         self.assertTrue(DEFAULT_SECURITY_KEY.lower() in rc,
                         'Did not get DEFAULT_SECURITY_KEY in  mac_secmib show BPD_DUT')
+
+        # Get event log for APP layer secure events:
+        rc = Nm.nm_event(sendMode, IPV6)     #Note: lls cmd is a link layer send, so wont see
 
     def test09_test_send_secure_mode_1K_payload(self):
         # ************************************************************************************************#

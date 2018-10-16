@@ -41,7 +41,7 @@ CPD_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD path via FSU
 
 CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
 
-BPD_FW_VERSION = "14,2,0,3"
+BPD_FW_VERSION = "14,2,0,11"
 #BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #NIC for BPD1 as temporary.
 BPD1_BRICK_MAC_ID = '00:07:81:43:1B:AD:A5:51'
 SST1 = '495455431bada551'

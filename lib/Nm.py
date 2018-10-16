@@ -580,6 +580,7 @@ def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=123
     cmdString = "image list"
 
     global seqNum
+    print "Current Global seqNum inside nm_establish_ALS is: \'%d\' \n" % (seqNum)
     seqNum = seqNum + 1
     (seqNUM,assocID, SS) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocID, sharedSECRET, IPV6, timeOut,replyType2)
     print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (seqNUM, assocID, SS)
