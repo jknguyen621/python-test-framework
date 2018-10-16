@@ -28,7 +28,8 @@ elif platform == "linux2":  # Raspberry Pi
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
-sendMode = '-d'  # via corp network & AP
+sendMode = '-g -d'  # via FSU, locally
+#sendMode = '-d'  # via corp network & AP
 
 IPV6 = CPD_IPV6_AP
 BPD_DUT = BPD2_BRICK_MAC_ID  # BPD1_BRICK_MAC_ID

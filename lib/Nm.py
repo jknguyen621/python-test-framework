@@ -105,6 +105,7 @@ def nm_get_version_str(sendMode, IPV6):
 # conf meter_dt type 85
 # last_gasp ignore_pf_zx 3
 # Need to use 4.6 image and latest net_mgr
+# Refer to this wiki: https://zoo.silverspringnet.com/pages/viewpage.action?spaceKey=FwEng&title=500INS+CPD+Configuration
 def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf meter_dt type 85"
     processCmd(cmd)
@@ -152,8 +153,9 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     out = processCmd(cmd)
 
     #Note: For BPD's ecurity to be enabled, we need to set: conf i5s linksec 0 and in the setup_ins.cs script: /* Save To Flash */
-    #DBI("07 58 01");
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 0"  # Set link security to normal
+    #DBI("07 58 01");  #00 - clear text, disable security.
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 3"  # Set link security to normal security 0,  3 for clear text
     out = processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec"  # Check value of i5s linksec
