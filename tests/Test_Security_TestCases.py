@@ -294,6 +294,7 @@ class Test_Security(unittest.TestCase):
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
+        #NOTE:TxFrameCounter will only be increasing for MAC and App layer requests.
         rc2 = Nm.nm_get_TxFrameCounter(sendMode, IPV6, BPD_DUT, 1)
         print "Tx Frame Counter before command is: \'%s\' \n" % rc2
         self.assertTrue(rc2 > rc1, "BPD's Tx Frame Counter didn't increment as expected")
@@ -314,6 +315,36 @@ class Test_Security(unittest.TestCase):
         print rc
         self.assertTrue('sec_level=6' in rc,
                         "Did not get proper security level in the event log 'sec_level=6' as expected")
+
+    def test11_send_lls_nodeq_cmd_with_payload_to_request_FW_Version(self):
+        # ************************************************************************************************#
+        # Test #11: Test using lls_nodeq cmd at the Link Layer with payload that requests FW version
+        # Verify imu_data last_read and fw version read back.
+        # *************************************************************#
+
+        Nm.nm_clear_logs(sendMode, IPV6)
+
+        print "Testing BPD send raw payload for FW Version at LLS level...\n"
+        rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, PAYLOAD_FW_VER)
+
+        print("Displaying the current BPD node security key...\n")
+        Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
+
+
+        # Take a read of stats after send:
+        print "lls_nodeq data send statistic before send....\n"
+        rc = Nm.nm_check_lls_enabled(sendMode, IPV6)
+        self.assertTrue(BPD_DUT.lower() in rc, 'Did not get BPD under test Mac ID in lls_nodeq show all')
+
+        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
+
+        # Get resonse:
+        rc = Nm.nm_get_latest_IMU_data_response(sendMode, IPV6)
+        print "Response Data for BPD's FW Version is: \n\%s\'\n" % rc
+
+        self.assertTrue(BPD_FW_VERSION in rc, "Did not get FW Version as expected")
 
     if (0):
         def test99_test_new_feature(self):
