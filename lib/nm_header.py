@@ -35,15 +35,18 @@ CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'
 ########################################################################################################################
 
 CPD_MAC_ID = '00:13:50:05:00:4f:89:17'                 #Main NIC as CPD
-#CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD path via AP
+#CPD_MAC_ID = '00:13:50:05:00:8f:de:b2'                 #Sniffer_500s station
+
+CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD path via AP
 #CPD_IPV6_AP = 'fe80::213:5001:0173:01c3'                   #Gen4 NIC + FSU
 CPD_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD path via FSU
+#CPD_IPV6_FSU = 'fe80::213:5005:008f:deb2'              #Sniffer_500s station
 
 CPD_IPV6_AP = CPD_IPV6_FSU
 
 CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
 
-BPD_FW_VERSION = "14,2,0,13"
+BPD_FW_VERSION = "14,2,0,20"
 #BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #NIC for BPD1 as temporary.
 BPD1_BRICK_MAC_ID = '00:07:81:43:00:e4:e2:4d'       #'00:07:81:43:1B:AD:A5:51'
 SST1 = '4954554300e4e24d'  #'495455431bada551'
@@ -51,8 +54,16 @@ CST1 = '4954526300000000'
 
 #BPD2_MAC_ID = '00:13:50:07:00:00:0c:7e'           #NIC  for BPD2 as temporary
 BPD2_BRICK_MAC_ID = '00:07:81:43:00:e4:e2:4e'                          #'00:07:81:43:1B:AD:A5:52'
-SST2 = '4954554300e4e24e'        #'495455431bada552'
+SST2 = '4954554300e4e24e'        #'495455431bada552'  #Server System Title/DeviceID
 CST2 = '4954526300000000'
+
+
+##########################################################
+#Registration Trap: nm_trap force i5s_reg 00:07:81:47:15:00:01:55 4954554315000155 04010a0c 101112131415161718192021222324
+#./nm -g -d fe80::213:5005:004f:8917 nm_trap force i5s_reg [mac and dev ID/FW vers/config hash parameters required!]
+REGISTRATION_TRAP = "nm_trap force i5s_reg " + BPD2_BRICK_MAC_ID + " " + SST2 + "0E020014 101112131415161718192021222324"
+
+
 
 #NICs as temporary RF for BPD bricks
 #BPD1_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:0069:ce38'    #BPD1 was CPD_IPV6_AP

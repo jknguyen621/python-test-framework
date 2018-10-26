@@ -230,11 +230,12 @@ class Test_Security(unittest.TestCase):
         rc = Nm.nm_check_lls_enabled(sendMode, IPV6)
         self.assertTrue(BPD_DUT.lower() in rc, 'Did not get BPD under test Mac ID in lls_nodeq show all')
 
+        #NOTE: Loac/inject security is no longer supported if Security is enable, since A3-Integration
         # Show current Secure Key:
-        print "Display current loaded secured key for BPD on CPD\n"
-        rc = Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
-        self.assertTrue(DEFAULT_SECURITY_KEY.lower() in rc,
-                        'Did not get DEFAULT_SECURITY_KEY in  mac_secmib show BPD_DUT')
+        #print "Display current loaded secured key for BPD on CPD\n"
+        #rc = Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
+        #self.assertTrue(DEFAULT_SECURITY_KEY.lower() in rc,
+                        #'Did not get DEFAULT_SECURITY_KEY in  mac_secmib show BPD_DUT')
 
         # Get event log for APP layer secure events:
         rc = Nm.nm_event(sendMode, IPV6)     #Note: lls cmd is a link layer send, so wont see
@@ -242,14 +243,24 @@ class Test_Security(unittest.TestCase):
     def test09_test_send_secure_mode_1K_payload(self):
         # ************************************************************************************************#
         # Test #9: Test with Mac security enabled and Sec Mode=6 SAFE_SECURED_PAYLOAD  length payload to BPD:
+        # This test will not work after A3-Integration, since no more manual key injection
         # *************************************************************#
         Sec_Mode = 6
         index = 1
 
         Nm.nm_clear_logs(sendMode, IPV6)
 
+        #rc1 = Nm.nm_get_TxFrameCounter(sendMode, IPV6, BPD_DUT, 1)
+        #print "Tx Frame Counter before command is: \'%s\' \n" % rc1
+
+        #TODO: Figure out how to do security Key after A3-Integration, for the time, will use unsercure send.
+        #print "Testing BPD secure send raw payload at LLS level, using key and Sec Mode set to 6 for the time being...\n"
+        #rc = Nm.nm_send_secured_CPD_cmd(sendMode, IPV6, BPD_DUT, SAFE_SECURED_PAYLOAD, Sec_Mode, index)
+
         print "Testing BPD secure send raw payload at LLS level, using key and Sec Mode set to 6 for the time being...\n"
-        rc = Nm.nm_send_secured_CPD_cmd(sendMode, IPV6, BPD_DUT, SAFE_SECURED_PAYLOAD, Sec_Mode, index)
+        rc = Nm.nm_send_CPD_cmd(sendMode, IPV6, BPD_DUT, SAFE_SECURED_PAYLOAD)
+        self.assertTrue('Ok' in rc, "Did not get 'OK' message as expected")
+
         # Lls Rx Cmd: Len = 942, SecLvl = 6
 
         # NOTE: Expect to see on COSEM DevBench for BPD's log as:
@@ -265,6 +276,13 @@ class Test_Security(unittest.TestCase):
         print "Please Manually Check COSEM DevBench for proper SecLevel...\n"
         # TODO: Once Security is fully implemented and BPD's events are supported,
         # need to detect, SecLevel=6 and check and assert accorindgly.
+        print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
+        time.sleep(CPD_2_BPD_POLLING_INTERVAL)
+
+        # NOTE:TxFrameCounter will only be increasing for MAC and App layer requests.
+        #rc2 = Nm.nm_get_TxFrameCounter(sendMode, IPV6, BPD_DUT, 1)
+        #print "Tx Frame Counter before command is: \'%s\' \n" % rc2
+        #self.assertTrue(rc2 > rc1, "BPD's Tx Frame Counter didn't increment as expected")
 
         # NOTE: Can only be seen within COSEM DevBench log for now.
 
@@ -277,8 +295,9 @@ class Test_Security(unittest.TestCase):
 
         Nm.nm_clear_logs(sendMode, IPV6)
 
-        print("Displaying the current BPD node security key...\n")
-        Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
+        # NOTE: Loac/inject security is no longer supported if Security is enable, since A3-Integration
+        #print("Displaying the current BPD node security key...\n")
+        #Nm.nm_show_mac_sec_key(sendMode, IPV6, BPD_DUT, 1)
 
         print "Testing BPD COSEM/OBIS command send with temp default secure key...\n"
         obisInvokeID = 5555

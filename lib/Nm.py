@@ -155,7 +155,7 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     #Note: For BPD's ecurity to be enabled, we need to set: conf i5s linksec 0 and in the setup_ins.cs script: /* Save To Flash */
     #DBI("07 58 01");  #00 - clear text, disable security.
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 3"  # Set link security to normal security 0,  3 for clear text
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 0"  # Set link security to normal security 0,  3 for clear text
     out = processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec"  # Check value of i5s linksec
