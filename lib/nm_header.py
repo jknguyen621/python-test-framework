@@ -20,8 +20,9 @@ if platform == "darwin" or platform == "linux":
     NET_MGR_PATH = pwd + '/nm'                 #'/mac_tools/net_mgr'
     NET_TRAP_PATH = pwd + '/nt'
 elif platform == "linux2":                  #Raspberry Pi
-    NET_MGR_PATH = pwd + '/Nm'   #''/arm_tools/net_mgr'
+    #NET_MGR_PATH = pwd + '/Nm'   #''/arm_tools/net_mgr'
     NET_TRAP_PATH = pwd + '/Nt'
+    NET_MGR_PATH = pwd + '/arm_tools/net_mgr'
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 ########################################################################################################################
