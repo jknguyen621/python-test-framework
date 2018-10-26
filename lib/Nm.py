@@ -118,7 +118,7 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf last_gasp ignore_pf_zx"
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     #Next 2 commands to enable USB Serial debug for lack of LLS MAC
     """
@@ -128,41 +128,41 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     """
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf lls enable 1"  # Enable lls
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf lls enable"  # Check again on lls
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf imu_proxy imu_mm_enable 0"  # Disabling imu mm
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf imu_proxy imu_mm_enable"  # Check again on disabling imu mm
-    out = processCmd(cmd)
+    processCmd(cmd)
 
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s enable 1"   #When changing values, need to reboot.
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s enable"  # Check Value.
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs 0"    #0 - OTA; 1 - Serial for DBS
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs"      #Check value 0 - OTA; 1 - Serial for DBS
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     #Note: For BPD's ecurity to be enabled, we need to set: conf i5s linksec 0 and in the setup_ins.cs script: /* Save To Flash */
     #DBI("07 58 01");  #00 - clear text, disable security.
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec 0"  # Set link security to normal security 0,  3 for clear text
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s linksec"  # Check value of i5s linksec
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf lls_bls interval " + str(CPD_2_BPD_POLLING_INTERVAL)  # Minimimum interval in seconds between BPD's response to request.
-    out = processCmd(cmd)
+    processCmd(cmd)
 
     #No longer needed after BPD build 14.1.1.20
     #cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " app_sysvar 1246:0x00:0x07:0x81:0x43"                   #BPD's 4 bytes prefix for usbserial mode.
@@ -177,7 +177,14 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
     #NOTE: Will get Errorneous request error for now, since there is a bug in the deteltion of the key FIRMW-19441
 
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [126, 361,362]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
-    out = processCmd(cmd)
+    processCmd(cmd)
+
+
+    #Temp Set Registration Trap:
+    #REGISTRATION_TRAP = "nm_trap force i5s_reg " + BPD2_BRICK_MAC_ID + " " + SST2 + "04010a0c 101112131415161718192021222324"
+    print "Setting temporary i5s_reg trap...\n"
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + REGISTRATION_TRAP
+    processCmd(cmd)
 
     #Show Mac security key on CPD for BPD:
     print "Verifying that secured key was loaded successfully....\n"

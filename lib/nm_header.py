@@ -46,7 +46,7 @@ CPD_IPV6_AP = CPD_IPV6_FSU
 
 CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
 
-BPD_FW_VERSION = "14,2,0,20"
+BPD_FW_VERSION = "14,2,0,21"
 #BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #NIC for BPD1 as temporary.
 BPD1_BRICK_MAC_ID = '00:07:81:43:00:e4:e2:4d'       #'00:07:81:43:1B:AD:A5:51'
 SST1 = '4954554300e4e24d'  #'495455431bada551'
@@ -61,7 +61,7 @@ CST2 = '4954526300000000'
 ##########################################################
 #Registration Trap: nm_trap force i5s_reg 00:07:81:47:15:00:01:55 4954554315000155 04010a0c 101112131415161718192021222324
 #./nm -g -d fe80::213:5005:004f:8917 nm_trap force i5s_reg [mac and dev ID/FW vers/config hash parameters required!]
-REGISTRATION_TRAP = "nm_trap force i5s_reg " + BPD2_BRICK_MAC_ID + " " + SST2 + "0E020014 101112131415161718192021222324"
+REGISTRATION_TRAP = "nm_trap force i5s_reg " + BPD2_BRICK_MAC_ID + " " + SST2 + " " + "04010a0c 101112131415161718192021222324"
 
 
 
