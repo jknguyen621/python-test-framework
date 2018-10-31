@@ -61,7 +61,7 @@ class Test_Dut(unittest.TestCase):
     Nm.nm_get_version_str(sendMode, IPV6)
 
     # Configure CPD to be able to proxy for BPDS: :
-    Nm.nm_configure_cpd(sendMode, IPV6)
+    Nm.nm_configure_cpd(sendMode, IPV6, BPD_DUT)
 
     # Get Random 5-digits Required ID to start communication
     reqId = Nm.random_with_N_digits(5)
@@ -95,9 +95,18 @@ class Test_Dut(unittest.TestCase):
     print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
             seqNum, assocId, ss)
 
+    CPD_CERTS_PATH = "/home/pi/python-test-framework/certs/CPD_Certs/"
+    CPD_OP_CERT = "01_CPD_OPERATOR.x509"
+    CPD_DLCA_CERT = "02_CPD_DLCA.x509"
+    CPD_DL_CERT = "03_CPD_DL.x509"
+    
     #Removing DL cert:#1281, #1282
-    print "Removing DL cert....\n"
-    Nm.nm_remove_cert(sendMode, IPV6, '1025')
+    print "Removing DL cert 1281....\n"
+    Nm.nm_remove_cert(sendMode, IPV6, '1281')
+    
+    print "Removing DL cert 1282....\n"
+    Nm.nm_remove_cert(sendMode, IPV6, '1282')
+    
     
     #Removing DLCA cert: #1283
     print "Removing DLCA cert....\n"
@@ -108,7 +117,7 @@ class Test_Dut(unittest.TestCase):
     print "Deleting Op cert and subordinates...\n"
     Nm.nm_certs_delete_op(sendMode, IPV6)
 
-    ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, bpd_ipv6)
+    ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
 
     
     ########################################################################################################################

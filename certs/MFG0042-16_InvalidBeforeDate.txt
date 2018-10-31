@@ -1,0 +1,47 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 20379 (0x4f9b)
+        Signature Algorithm: ecdsa-with-SHA256
+        Issuer: C=US, O=Silver Spring Networks, CN=SSN Root Certificate
+        Validity
+            Not Before: Feb  1 22:56:59 2020 GMT
+            Not After : Feb  1 22:56:59 2047 GMT
+        Subject: C=US, O=SSN, OU=MFG, CN=MFG0042
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+            EC Public Key:
+                pub: 
+                    04:c1:0a:b6:32:e1:c3:05:9b:dc:69:1b:7c:8b:b4:
+                    da:e7:55:21:54:8a:6d:7c:6b:53:1e:81:b3:09:cd:
+                    27:bd:dc:42:07:d4:a1:c7:91:2a:9e:3d:81:d5:47:
+                    70:a6:e5:af:eb:ae:51:ff:89:49:01:a9:24:96:15:
+                    d7:dc:2d:31:69
+                ASN1 OID: prime256v1
+        X509v3 extensions:
+            X509v3 Key Usage: 
+                Certificate Sign
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier: 
+                C8:43:A7:6B:DD:FB:8C:F3:D3:C1:B2:E9:18:68:A9:31:B1:8F:34:08
+            X509v3 Authority Key Identifier: 
+                keyid:0D:CC:85:6F:D9:20:38:30:11:60:AA:B3:89:8B:2F:2F:16:04:B6:A2
+
+    Signature Algorithm: ecdsa-with-SHA256
+        30:46:02:21:00:8a:2d:87:eb:6d:4f:4f:b9:31:d3:68:97:5e:
+        7d:5c:71:d4:7b:f8:08:2a:04:55:02:1a:1b:7b:72:9c:62:56:
+        39:02:21:00:91:19:e7:16:00:ee:f3:15:b4:ea:f5:3f:38:b1:
+        73:c8:b1:16:45:c1:40:4c:36:71:08:0f:8d:8c:16:a7:74:1c
+-----BEGIN CERTIFICATE-----
+MIIB3DCCAYGgAwIBAgICT5swCgYIKoZIzj0EAwIwTTELMAkGA1UEBhMCVVMxHzAd
+BgNVBAoMFlNpbHZlciBTcHJpbmcgTmV0d29ya3MxHTAbBgNVBAMMFFNTTiBSb290
+IENlcnRpZmljYXRlMB4XDTE3MDIwMTIyNTY1OVoXDTQ3MDIwMTIyNTY1OVowOzEL
+MAkGA1UEBhMCVVMxDDAKBgNVBAoMA1NTTjEMMAoGA1UECwwDTUZHMRAwDgYDVQQD
+DAdNRkcwMDQyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEwQq2MuHDBZvcaRt8
+i7Ta51UhVIptfGtTHoGzCc0nvdxCB9Shx5Eqnj2B1UdwpuWv665R/4lJAakklhXX
+3C0xaaNjMGEwCwYDVR0PBAQDAgIEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0O
+BBYEFMhDp2vd+4zz08Gy6RhoqTGxjzQIMB8GA1UdIwQYMBaAFA3MhW/ZIDgwEWCq
+s4mLLy8WBLaiMAoGCCqGSM49BAMCA0kAMEYCIQCKLYfrbU9PuTHTaJdefVxx1Hv4
+CCoEVQIaG3tynGJWOQIhAJEZ5xYA7vMVtOr1Pzixc8ixFkXBQEw2cQgPjYwWp3Qc
+-----END CERTIFICATE-----
