@@ -106,7 +106,7 @@ def nm_get_version_str(sendMode, IPV6):
 # last_gasp ignore_pf_zx 3
 # Need to use 4.6 image and latest net_mgr
 # Refer to this wiki: https://zoo.silverspringnet.com/pages/viewpage.action?spaceKey=FwEng&title=500INS+CPD+Configuration
-def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
+def nm_configure_cpd(sendMode, IPV6, BPD=BPD2_BRICK_MAC_ID):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf meter_dt type 85"
     processCmd(cmd)
 
