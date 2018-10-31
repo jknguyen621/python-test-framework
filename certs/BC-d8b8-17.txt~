@@ -1,0 +1,48 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 1683 (0x693)
+        Signature Algorithm: ecdsa-with-SHA256
+        Issuer: C=US, O=SSN, OU=MFG, CN=MFG0042
+        Validity
+            Not Before: Nov 20 22:15:34 2017 GMT
+            Not After : Nov 20 22:15:34 2045 GMT
+        Subject: 
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+            EC Public Key:
+                pub: 
+                    04:87:72:c9:cb:a3:e2:bf:10:8e:d0:8b:2a:79:64:
+                    0a:93:dc:8b:5a:0d:dc:96:79:03:b2:96:fd:8e:93:
+                    ba:80:9e:a5:d5:db:61:14:72:99:2f:e5:c0:70:fb:
+                    3e:50:be:fa:4d:cf:80:31:07:69:ec:50:d7:e3:2b:
+                    81:56:69:1f:93
+                ASN1 OID: prime256v1
+        X509v3 extensions:
+            X509v3 Subject Alternative Name: critical
+                othername:<unsupported>
+            1.3.6.1.4.1.22368.10.2: 
+                0.........+......`
+..
+            X509v3 Authority Key Identifier: 
+                keyid:C8:43:A7:6B:DD:FB:8C:F3:D3:C1:B2:E9:18:68:A9:31:B1:8F:34:08
+
+            1.3.6.1.4.1.22368.10.4.2: 
+                0..... .;fZ.....
+    Signature Algorithm: ecdsa-with-SHA256
+        30:44:02:20:36:26:1c:ec:33:c7:90:be:83:9d:f6:70:a6:0a:
+        14:13:f7:ca:49:ac:fd:20:10:61:80:7a:b1:77:99:8a:3c:b6:
+        02:20:5a:69:b3:a3:5a:a0:fe:1b:b7:72:24:6a:af:87:30:1b:
+        8e:dd:73:15:7c:53:ad:3a:92:12:b1:6e:d0:30:b4:42
+-----BEGIN CERTIFICATE-----
+MIIBvTCCAWSgAwIBAgICBpMwCgYIKoZIzj0EAwIwOzELMAkGA1UEBhMCVVMxDDAK
+BgNVBAoMA1NTTjEMMAoGA1UECwwDTUZHMRAwDgYDVQQDDAdNRkcwMDQyMB4XDTE3
+MTEyMDIyMTUzNFoXDTQ1MTEyMDIyMTUzNFowADBZMBMGByqGSM49AgEGCCqGSM49
+AwEHA0IABIdyycuj4r8QjtCLKnlkCpPci1oN3JZ5A7KW/Y6TuoCepdXbYRRymS/l
+wHD7PlC++k3PgDEHaexQ1+MrgVZpH5OjgZIwgY8wJgYDVR0RAQH/BBwwGqAYBgor
+BgEEAYGuYAoBoAoECAATUAUAT4kXMCMGCisGAQQBga5gCgIEFTATAgEBAwEABgsr
+BgEEAYGuYAoHATAfBgNVHSMEGDAWgBTIQ6dr3fuM89PBsukYaKkxsY80CDAfBgsr
+BgEEAYGuYAoEAgQQMA4ECKD7IKw7ZloQAgIGkzAKBggqhkjOPQQDAgNHADBEAiA2
+JhzsM8eQvoOd9nCmChQT98pJrP0gEGGAerF3mYo8tgIgWmmzo1qg/hu3ciRqr4cw
+G47dcxV8U606khKxbtAwtEI=
+-----END CERTIFICATE-----
