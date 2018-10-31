@@ -148,6 +148,30 @@ class Test_Dut(unittest.TestCase):
                                                                 replyType2)
     print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
             seqNum, assocId, ss)
+    """
+    seqNum = seqNum + 15
+    
+    print "Deleting NMENITY Cert...\n"
+    #Nm.nm_certs_delete_op(sendMode, IPV6)
+    seqNum = seqNum + 15
+    privateID = "0x200010"
+    cmdString = " certs erase " + str(privateID)
+    (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                replyType2)
+    print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+            seqNum, assocId, ss)
+    seqNum = seqNum + 15
+    
+    print "Deleting EBOCA CERT...\n"
+    #Nm.nm_certs_delete_op(sendMode, IPV6)
+    seqNum = seqNum + 15
+    privateID = "0x20000f"
+    cmdString = " certs erase " + str(privateID)
+    (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                replyType2)
+    print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+            seqNum, assocId, ss)
+    """
     seqNum = seqNum + 15
     ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
 
