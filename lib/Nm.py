@@ -178,7 +178,7 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD2_BRICK_MAC_ID):
     nm_inject_security_key(sendMode, IPV6, BPD, DEFAULT_SECURITY_KEY, 1)
     #NOTE: Will get Errorneous request error for now, since there is a bug in the deteltion of the key FIRMW-19441
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [126, 361,362]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [108, 109, 110, 111, 126, 361,362]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
     processCmd(cmd)
 
 
@@ -320,6 +320,12 @@ def nm_certs_delete_op(sendMode, IPV6):
     ret = processCmd(cmd)
     print ret
 
+def nm_delete_sysvar(sendMode, IPV6, ID): #360 for certs cache  app_sysvar delete:360
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " app_sysvar delete:" + ID
+    print cmd
+    ret = processCmd(cmd)
+    time.sleep(10)
+    print ret
 
 #Routine to sync cert, moving from P persistent to F flash memory:
 def nm_cert_sync(sendMode, IPV6):

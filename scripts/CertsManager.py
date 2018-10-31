@@ -158,6 +158,18 @@ class CertsManager(unittest.TestCase):
         print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
                 seqNum, assocId, ss)
         """
+
+        #NOTE: if all failed, try app_sysvar delete:360  (the certs cache)
+
+        Nm.nm_dump_cert_cache(sendMode, IPV6)
+
+
+        print "Deleting out app_sysvar:360 for certs cache...\n"
+        ID = 360
+        Nm.nm_delete_sysvar(sendMode, IPV6, ID)
+
+        Nm.nm_dump_cert_cache(sendMode, IPV6)
+
         seqNum = seqNum + 15
         ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
 
