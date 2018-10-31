@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-# Author: Joseph Nguyen 10-09-2018
-# File: CertsManager.py
-# Use to manage certs, remove, delete upload.
+# Author: Joseph Nguyen 8-20-2018
+# File: Certs_Manager.py
+# Base Python program to call and invoke net_mgr
 
 
 # To execute from project's root directory: python -m scripts.CertsManager.py    (Where package name is 'scripts')
@@ -10,8 +10,6 @@ from lib.nm_header import *
 import lib.Nm as Nm
 import time
 import unittest
-
-LOOP_MAX = 1
 
 import os
 
@@ -28,14 +26,16 @@ elif platform == "linux2":  # Raspberry Pi
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
-sendMode = '-d'  # via corp network & AP
+# sendMode = '-d'  # via corp network & AP
 
-IPV6 = CPD_IPV6_AP
-BPD_DUT = BPD1_BRICK_MAC_ID
+sendMode = '-g -d'  # via FSU
+
+IPV6 = CPD_IPV6_FSU  # CPD_IPV6_AP
+BPD_DUT = BPD2_BRICK_MAC_ID
 
 
 class CertsManager(unittest.TestCase):
-    # sendMode = '-g -d'  #//via FSU
+    sendMode = '-g -d'  # //via FSU
     # sendMode = '-d'     #via corp network & AP
 
     ########################################################################################################################
@@ -51,171 +51,195 @@ class CertsManager(unittest.TestCase):
     # Removing discovery for now, based on lls_nodeq show all for BPD to show up on CPD.
 
     # check image list on device
-    print "Get Image List...\n"
-    #Nm.nm_get_image_list(sendMode, CPD_IPV6_AP)
+    #print "Get Image List...\n"
+    # Nm.nm_get_image_list(sendMode, IPV6)
 
     # get version str on device
-    print "Get Version Str...\n"
-    #Nm.nm_get_version_str(sendMode, CPD_IPV6_AP)
+    #print "Get Version Str...\n"
+    # Nm.nm_get_version_str(sendMode, IPV6)
 
     # Configure CPD to be able to proxy for BPDS: :
-    #Nm.nm_configure_cpd(sendMode, CPD_IPV6_AP)
+    #Nm.nm_configure_cpd(sendMode, IPV6, BPD_DUT)
 
     # Get Random 5-digits Required ID to start communication
     reqId = Nm.random_with_N_digits(5)
-    blobFileIn = CERTS_PATH + BLOB_FILE
-    privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
-    IPV6 = CPD_IPV6_AP
     timeOut = 30
     replyType = 5  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
     replyType2 = '03'  # HMAC, ShA256 for secured send comands
 
-    # Upload ECBOCA cert test:
-    # ecboca_x509_path = CERTS_PATH + SUB_CA_ECBOCA_CERT
-    # print "Uploading ECBOCA cert...\n"
-    # Nm.nm_upload_op_cert(sendMode, IPV6, ecboca_x509_path)
-
-    # Upload NMenity cert test:
-    # dl_x509_path = CERTS_PATH + SUB_NM_CERT
-    # print "Uploading NMenity Cert...\n"
-    # Nm.nm_upload_op_cert(sendMode, IPV6, dl_x509_path)
-
-    # These next 2 are done as part of DL cert generation
-    # Upload DLCA cert test:
-    # dl_x509_path = CERTS_PATH + SWENG_DLCA_2019
-    # print "Uploading DLCA Cert...\n"
-    # Nm.nm_upload_dl_cert(sendMode, IPV6, dl_x509_path)
-
-    # Next would be to upload mintedDL cert....
-
-    # Check Certs Ownership level of device:
-    # print "Validating & Checking certs ownership on devices... \'%s\'" % BPD1_IPV6_AP
-    # Nm.nm_validate_certs_ownership(sendMode, BPD1_IPV6_AP, FULLY_DL_CHAINED_CERTS)
-
     # print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
     # Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
+    ####################################################################################################################
+    #REMOVING OLD OP's Path chained certs(DL, DLCA, and OP), optionally NMENITY and EBOCA too
+    ####################################################################################################################
+    def test_removing_OP_chained_path_certs(self):
+        # Establihsing ALS connection and sendig first command via secured ALS
+        (seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, IPV6, timeOut=60, reqId=12345, \
+                                                               replyType=5, replyType2='03',
+                                                               blobFileIn=CERTS_PATH + BLOB_FILE,
+                                                               privkeyFileIn=CERTS_PATH + PRIVKEY_FILE)
 
-    #To call this test directly:
-        #python -m unittest scripts.CertsManager.CertsManager.test_remove_certs
-    def test_remove_certs(self):
-        print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
-        Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+        # seqNum = seqNum + 15
+        # Making a second secured command request via ALS
+        cmdString = " certs esdump 4 "
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+            seqNum, assocId, ss)
 
-        timeOut = 30
-        replyType = 5  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
-        replyType2 = '03'  # HMAC, ShA256 for secured send comands
 
-        CPD_ARRAY = [CPD_IPV6_AP]
-        for dut_ipv6 in CPD_ARRAY:
 
-            # Establihsing ALS connection and sendig first command via secured ALS
-            (seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, dut_ipv6, timeOut=60, reqId=12345, \
-                                                                   replyType=5, replyType2='03', blobFileIn=CERTS_PATH + BLOB_FILE, privkeyFileIn=CERTS_PATH + PRIVKEY_FILE)
+        # Removing DL cert:#1281, #1282
+        print "Removing DL cert 1281....\n"
+        # Nm.nm_remove_cert(sendMode, IPV6, '1281')
+        seqNum = seqNum + 15
 
-            # Making a second secured command request via ALS
-            cmdString = " certs esdump 4 "
-            print "Current seqNum is: \'%d\' \n" % (seqNum)
-            seqNum = seqNum + 20
-            (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, dut_ipv6, timeOut,replyType2)
-            print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+        privateID = 1282
+        cmdString = " certs erase " + str(privateID)
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+            seqNum, assocId, ss)
+
+        print "Removing DL cert 1282....\n"
+        # Nm.nm_remove_cert(sendMode, IPV6, '1282')
+
+        seqNum = seqNum + 15
+        privateID = 1281
+        cmdString = " certs erase " + str(privateID)
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+            seqNum, assocId, ss)
+
+        # Removing DLCA cert: #1283
+        print "Removing DLCA cert....\n"
+        # Nm.nm_remove_cert(sendMode, IPV6, '1025')
+
+        seqNum = seqNum + 15
+        privateID = 1283
+        cmdString = " certs erase " + str(privateID)
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+            seqNum, assocId, ss)
+
+        # Removing OP cert:  #1027
+        print "Deleting Op cert and subordinates...\n"
+        # Nm.nm_certs_delete_op(sendMode, IPV6)
+        seqNum = seqNum + 15
+        cmdString = " certs delete_op"
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+            seqNum, assocId, ss)
+        """
+        seqNum = seqNum + 15
+    
+        print "Deleting NMENITY Cert...\n"
+        #Nm.nm_certs_delete_op(sendMode, IPV6)
+        seqNum = seqNum + 15
+        privateID = "0x200010"
+        cmdString = " certs erase " + str(privateID)
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                    replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
                 seqNum, assocId, ss)
-
-            #################################################################################
-            #seqNum = seqNum * 2
-            #Removing OP cert:
-            #print "Removing OP cert....\n"
-            #Nm.nm_certs_delete_op(sendMode, IPV6, '1025')
-
-            #################################################################################
-
-            seqNum = seqNum * 2
-            # Removing BC cert - type 17:
-            print "Removing BC cert....\n"
-            #rc = Nm.nm_remove_cert(sendMode, dut_ipv6, '17')
-            cmdString =" certs erase " + str(17)
-            rc = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, dut_ipv6,60, replyType2)
-            self.assertTrue("Ok" in rc, "BC Cert was not able to be removed!!!")
-
-            #seqNum = seqNum * 2
-            # Removing MFG cert - type 16:
-            #print "Removing MFG cert....\n"
-            #cmdString = " certs erase " + str(16)
-            #rc = Nm.nm_remove_cert(sendMode, dut_ipv6, '16')
-            #self.assertTrue("Ok" in rc, "MFG Cert was not able to be removed!!!")
-
-            #################################################################################
-            seqNum = seqNum * 2
-            ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, dut_ipv6)
-        print "Validating & Checking certs ownership on devices... \'%s\'" % CPD_IPV6_AP
-        rc = Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
-        self.assertTrue("FAILED" in rc, "One of the KEY certs was removed!!!")
+        seqNum = seqNum + 15
+    
+        print "Deleting EBOCA CERT...\n"
+        #Nm.nm_certs_delete_op(sendMode, IPV6)
+        seqNum = seqNum + 15
+        privateID = "0x20000f"
+        cmdString = " certs erase " + str(privateID)
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                    replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+                seqNum, assocId, ss)
+        """
+        seqNum = seqNum + 15
+        ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
 
     ########################################################################################################################
-    """
-    #Upload Operator cert test:
-    op_x509_path = CERTS_PATH + OP_CERT
-    print "Uploading OP Cert...\n"
-    Nm.nm_upload_op_cert(sendMode, CPD_IPV6_AP, op_x509_path)
 
-    #Upload ECBOCA cert test:
-    ecboca_x509_path = CERTS_PATH + SUB_CA_ECBOCA_CERT
-    print "Uploading ECBOCA cert...\n"
-    Nm.nm_upload_dl_cert(sendMode, CPD_IPV6_AP, ecboca_x509_path)
+    def test_inject_OP_chained_path_certs(self):
 
+        #Certs generated form i5sim V.
+        CPD_CERTS_PATH = pwd + "/certs/CPD_Certs/"
+        CPD_OP_CERT = "01_CPD_OPERATOR.x509"
+        CPD_DLCA_CERT = "02_CPD_DLCA.x509"
+        CPD_DL_CERT = "03_CPD_DL.x509"
 
-    #Upload NMenity cert test:
-    dl_x509_path = CERTS_PATH + SUB_NM_CERT
-    print "Uploading NMenity Cert...\n"
-    Nm.nm_upload_op_cert(sendMode, CPD_IPV6_AP, dl_x509_path)
+        blobFileIn = CERTS_PATH + BLOB_FILE
+        privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
 
-    #Upload DLCA cert test:
-    dl_x509_path = CERTS_PATH + SWENG_DLCA_2019
-    print "Uploading DLCA Cert...\n"
-    Nm.nm_upload_dl_cert(sendMode, CPD_IPV6_AP, dl_x509_path)
+        #Upload Operator cert test:
+        op_x509_path = CPD_CERTS_PATH + CPD_OP_CERT
+        print "Uploading OP Cert...\n"
+        Nm.nm_upload_op_cert(sendMode, IPV6, op_x509_path)
 
-    #Upload DL cert test:
-    dl_x509_path = CERTS_PATH + DL_CERT_CPD
-    print "Uploading DL Cert...\n"
-    Nm.nm_upload_dl_cert(sendMode, CPD_IPV6_AP, dl_x509_path)
+        #Upload ECBOCA cert test:
+        #ecboca_x509_path = CERTS_PATH + SUB_CA_ECBOCA_CERT
+        #print "Uploading ECBOCA cert...\n"
+        #Nm.nm_upload_dl_cert(sendMode, IPV6, ecboca_x509_path)
 
 
-    #Check cert chain node:
-    print "Check Certs chains...\n"
-    chain = Nm.nm_cert_own(sendMode, CPD_IPV6_AP)
+        #Upload NMenity cert test:
+        #dl_x509_path = CERTS_PATH + SUB_NM_CERT
+        #print "Uploading NMenity Cert...\n"
+        #Nm.nm_upload_op_cert(sendMode, IPV6, dl_x509_path)
 
-    #Check valid certs chain ownership:
-    chain.rstrip('\r\n')
-    ret = Nm.nm_check_valid_chain(chain)
-    print ("Output of valid cert check = %r \n" % ret)
+        #Upload DLCA cert test:
+        dl_x509_path = CPD_CERTS_PATH + CPD_DLCA_CERT
+        print "Uploading DLCA Cert...\n"
+        Nm.nm_upload_dl_cert(sendMode, IPV6, dl_x509_path)
 
-    #Delete Operator cert and all subordinate certs:
-    print "Deleting Op cert and subordinates...\n"
-    Nm.nm_certs_delete_op(sendMode, CPD_IPV6_AP)
-    """
+        #Upload DL cert test:
+        dl_x509_path = CPD_CERTS_PATH + CPD_DL_CERT
+        print "Uploading DL Cert...\n"
+        Nm.nm_upload_dl_cert(sendMode, IPV6, dl_x509_path)
+
+        #Sync certs write from temp to flash
+
+        print "Sync Certs chains...\n"
+        ret = Nm.nm_cert_sync(sendMode, IPV6)
+        print ("Output of Sync Certs....= %r \n" % ret)
+
+        #Check cert chain node:
+        print "Check Certs chains...\n"
+        chain = Nm.nm_cert_own(sendMode, IPV6)
+
+        #Check valid certs chain ownership:
+        chain.rstrip('\r\n')
+        ret = Nm.nm_check_valid_chain(chain)
+        print ("Output of valid cert check = %r \n" % ret)
+
+
 
     ################################################################################
-    # Dump Cert Cache and returning a cert cache text table as a list
-    certs_list = Nm.nm_dump_cert_cache(sendMode, CPD_IPV6_AP)
-    # print "certs output: ", certs_list
-    # print '{:s}'.format(certs_list)
+    def test_dump_certs(self):
+        # Dump Cert Cache and returning a cert cache text table as a list
+        certs_list = Nm.nm_dump_cert_cache(sendMode, CPD_IPV6_AP)
+        # print "certs output: ", certs_list
+        # print '{:s}'.format(certs_list)
 
-    # Load output Cert Cache table into a list
-    certs_array = []
-    lines = certs_list.split('\n')  # split by rows
-    for rows in lines:
-        elements = rows.split('\t')
-        print elements
-        certs_array.append(elements)
+        # Load output Cert Cache table into a list
+        certs_array = []
+        lines = certs_list.split('\n')  # split by rows
+        for rows in lines:
+            elements = rows.split('\t')
+            print elements
+            certs_array.append(elements)
 
-    for e in certs_array:
-        print e
+        for e in certs_array:
+            print e
 
     def test_cosem_obis_get_fw_version(self):
         #####################################################################################
         # Begin of BPD-CPD Security unit test DUT
 
-        BPD_DUT = BPD1_BRICK_MAC_ID
+        BPD_DUT = BPD2_BRICK_MAC_ID
 
         # *********************************************************************************************#
         # Test #1: Sending COSEM/OBIS formatted command to BPD to get version
@@ -275,12 +299,13 @@ class CertsManager(unittest.TestCase):
         self.assertTrue('Erroneous request' in rc, "Did not get received 'Erroneous Request' message as expected")
 
 
-
 ########################################################################################################################
 
 if __name__ == '__main__':
-    # ut = unittest.main()
-    # ut = Test_Dut()
-    Test_Dut.test_cosem_obis_get_fw_version()
-    Test_Dut.test_send_raw_payload_to_BPD()
-    Test_Dut.test_send_various_size_payloads_to_BPD()
+    ut = unittest.main()
+    ut = CertsManager()
+    # CertsManagert.test_cosem_obis_get_fw_version()
+    # CertsManager.test_send_raw_payload_to_BPD()
+    # CertsManager.test_send_various_size_payloads_to_BPD()
+    # CertsManager.test_removing_OP_chained_path_certs()
+    # CertsManager.test_inject_OP_chained_path_certs()

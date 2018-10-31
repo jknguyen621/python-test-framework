@@ -32,6 +32,12 @@ Sandbox for Python framework for smart meter test automation
   
 7.  ./lib/500sanity.zip is to be unzipped onto a windows environment and run with COSEM DevBench.
 8.  ./arm_net_mgr are tools for Raspberry Pi OS.
+
+9.  To remove OP cert chain, use Dev private build, run this script:
+    python -m unittest scripts.CertsManager.CertsManager.test_removing_OP_chained_path_certs
+    
+10. To Inject OP cert chain, use Dev Private build, run this script:
+    python -m unittest scripts.CertsManager.CertsManager.test_inject_OP_chained_path_certs    
  
  
 Fundamentally,  to start, you should create tests in the sandbox, lets call it Test_XYZ.py.
