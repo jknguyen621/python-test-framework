@@ -27,7 +27,9 @@ if os.path.isfile(filePath):
 else:
     seqNum = 0
 
+print "INITIAL SEQNUM IS: \'%d\'\n"  % (seqNum)
 seqNum = int(seqNum)
+SEQ_NUM = seqNum
 
 #'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
 ########################################################################################################################
@@ -106,7 +108,7 @@ def nm_get_version_str(sendMode, IPV6):
 # last_gasp ignore_pf_zx 3
 # Need to use 4.6 image and latest net_mgr
 # Refer to this wiki: https://zoo.silverspringnet.com/pages/viewpage.action?spaceKey=FwEng&title=500INS+CPD+Configuration
-def nm_configure_cpd(sendMode, IPV6, BPD=BPD1_BRICK_MAC_ID):
+def nm_configure_cpd(sendMode, IPV6, BPD=BPD2_BRICK_MAC_ID):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf meter_dt type 85"
     processCmd(cmd)
 
@@ -588,7 +590,8 @@ def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=123
     #3):  Send net_mgr commands string via secured ALS tunnel.
     cmdString = "image list"
 
-    global seqNum
+    global SEQ_NUM
+    seqNum = SEQ_NUM
     print "Current Global seqNum inside nm_establish_ALS is: \'%d\' \n" % (seqNum)
     seqNum = seqNum + 1
     (seqNUM,assocID, SS) = nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocID, sharedSECRET, IPV6, timeOut,replyType2)
@@ -597,6 +600,7 @@ def nm_establish_ALS_connection(sendMode, IPV6=CPD_IPV6_AP, timeOut=60,reqId=123
     #Pickle the seqNum for next startup
     filePath = "/tmp/picklefile.myData"
     write_data_to_file(filePath, seqNUM)
+    SEQ_NUM = seqNum
     return (seqNUM, assocID, SS)
 
 #Routine to return a list of current security associated ALS connections:

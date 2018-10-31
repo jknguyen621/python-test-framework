@@ -20,8 +20,9 @@ if platform == "darwin" or platform == "linux":
     NET_MGR_PATH = pwd + '/nm'                 #'/mac_tools/net_mgr'
     NET_TRAP_PATH = pwd + '/nt'
 elif platform == "linux2":                  #Raspberry Pi
-    NET_MGR_PATH = pwd + '/Nm'   #''/arm_tools/net_mgr'
+    #NET_MGR_PATH = pwd + '/Nm'   #''/arm_tools/net_mgr'
     NET_TRAP_PATH = pwd + '/Nt'
+    NET_MGR_PATH = pwd + '/arm_tools/net_mgr'
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 ########################################################################################################################
@@ -46,7 +47,7 @@ CPD_IPV6_AP = CPD_IPV6_FSU
 
 CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
 
-BPD_FW_VERSION = "14,2,1,1"
+BPD_FW_VERSION = "14,2,0,21"
 #BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #NIC for BPD1 as temporary.
 BPD1_BRICK_MAC_ID = '00:07:81:43:00:e4:e2:4d'       #'00:07:81:43:1B:AD:A5:51'
 SST1 = '4954554300e4e24d'  #'495455431bada551'
@@ -56,6 +57,8 @@ CST1 = '4954526300000000'
 BPD2_BRICK_MAC_ID = '00:07:81:43:00:e4:e2:4e'                          #'00:07:81:43:1B:AD:A5:52'
 SST2 = '4954554300e4e24e'        #'495455431bada552'  #Server System Title/DeviceID
 CST2 = '4954526300000000'
+
+SEQ_NUM = 0
 
 
 ##########################################################
