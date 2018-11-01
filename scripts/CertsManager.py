@@ -31,7 +31,7 @@ print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH
 sendMode = '-g -d'  # via FSU
 
 IPV6 = CPD_IPV6_FSU  # CPD_IPV6_AP
-BPD_DUT = BPD2_BRICK_MAC_ID
+BPD_DUT = BPD1_BRICK_MAC_ID #BPD2_BRICK_MAC_ID
 
 
 class CertsManager(unittest.TestCase):
@@ -63,6 +63,8 @@ class CertsManager(unittest.TestCase):
 
     # Get Random 5-digits Required ID to start communication
     reqId = Nm.random_with_N_digits(5)
+    blobFileIn = CERTS_PATH + BLOB_FILE
+    privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
     timeOut = 30
     replyType = 5  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
     replyType2 = '03'  # HMAC, ShA256 for secured send comands

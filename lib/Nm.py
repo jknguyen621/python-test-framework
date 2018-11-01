@@ -192,6 +192,16 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD2_BRICK_MAC_ID):
     print "Verifying that secured key was loaded successfully....\n"
     nm_show_mac_sec_key(sendMode, IPV6, BPD, 1)
 
+def test_create_or_register_40_Devices(self):
+    #"nm_trap force i5s_reg " + BPD2_BRICK_MAC_ID + " " + SST2 + " " + "04010a0c 101112131415161718192021222324"
+    TEST_SST = "4954554300e4e2"
+    TEST_BPD ="00:07:81:43:00:e4:e2:"
+    for i in range(1, 41):
+        cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "nm_trap force i5s_reg " + TEST_BPD+str(i) + " " + TEST_SST+str(i) + " " + "04010a0c 101112131415161718192021222324"
+        processCmd(cmd)
+        time.sleep(3)
+
+
 #Check LLS enabled:
 def nm_check_lls_enabled(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " lls_nodeq show all"
@@ -822,6 +832,22 @@ def nm_tail_file(filePath, expectedValue=None):
             return actualValue
         else:
             pass
+
+
+
+def nm_config_ndxp_dlca_server(sendMode, IPV6, ndxp_server):
+    #net_mgr -g -d fe80::213:5005:008f:deb2 conf nm_sec ndxp_server fde4:77d:7b24:e3cc:250:56ff:fe83:46ec
+    #SWENG_QA_NDXP = 'fde4:77d:7b24:e3cc:250:56ff:fe83:46ec'
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "conf nm_sec ndxp_server  " + ndxp_server
+    ret = processCmd(cmd)
+    return ret
+
+def nm_get_app_nodeq(sendMode, IPV6):
+    # ./nm -g -d fe80::213:5005:004f:8917 i5s_app_nodeq show
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "i5s_app_nodeq show"
+    ret = processCmd(cmd)
+    return ret
+
 ########################################################################################################################
 
 if __name__ == "__main__":
