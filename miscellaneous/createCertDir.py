@@ -11,7 +11,9 @@ parser.add_argument("-u", "--usage", dest='usage', action='store_true', help="py
 parser.add_argument("-V", "--version", dest='version', action='store_true', help="Display current version of this script")
 args = parser.parse_args()
 
-VERSION_STRING = "V1.00 11/7/2018"
+VERSION_STRING = "V1.01 11/8/2018"
+
+#History 1.01; Fixed output path file name fir Neter Security\P12*.p12pwd.txt
 
 if args.version :
 	print "Version: %s\n" % VERSION_STRING
@@ -48,6 +50,6 @@ shutil.copy("02_"+args.mac+".pkcs8", args.certs_dir+'/Meter Security/CER/'+"02_"
 shutil.copy("02_"+args.mac+"_BC.x509", args.certs_dir+'/Meter Security/CER/'+"02_"+args.mac+"_BC.x509")
 shutil.copy("03_"+args.mac+"_DL.x509", args.certs_dir+'/DL/'+"03_"+args.mac+"_DL.x509")
 shutil.copy(args.mac+".p12", args.certs_dir+'/Meter Security/P12/'+args.mac+".p12")
-shutil.copy(args.mac+"-p12pwd.txt", args.certs_dir+'/Meter Security/P12/'+"00_"+args.mac+"-p12pwd.txt")
+shutil.copy(args.mac+"-p12pwd.txt", args.certs_dir+'/Meter Security/P12/'+args.mac+"-p12pwd.txt")
 shutil.copy("Ipv6labAAA.cer", args.certs_dir+'/AAA/'+"Ipv6labAAA.cer")
 shutil.copy("FNDCertificate.pem", args.certs_dir+'/NMS/'+"FNDCertificate.pem")
