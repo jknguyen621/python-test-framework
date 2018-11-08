@@ -178,15 +178,19 @@ class Test_Dut(unittest.TestCase):
 
     
 
-################################################################################   
+################################################################################
+    #To run from cmd line: python -m unittest sandbox.Test_Dut.Test_Dut.test_register_40_Devices
     def test_register_40_Devices(self):
         #"nm_trap force i5s_reg " + BPD2_BRICK_MAC_ID + " " + SST2 + " " + "04010a0c 101112131415161718192021222324"
         TEST_SST = "4954554300e4e2"
         TEST_BPD ="00:07:81:43:00:e4:e2:"
-        for i in range(1, 41):
+        for i in range(01, 42):  #42 for negative test case, #Will go to 41, expect OK, but node 41 will not be registered, not even Node #40, since its my real BPD itself.
+            i = '{num:02d}'.format(num=i)
+            print "Registering CPD device #:%s\n" % str(i)
             cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "nm_trap force i5s_reg " + TEST_BPD+str(i) + " " + TEST_SST+str(i) + " " + "04010a0c 101112131415161718192021222324"
-            Nm.processCmd(cmd)
-            time.sleep(3)
+            ret = Nm.processCmd(cmd)
+            print ret
+            time.sleep(5)
 
 ########################################################################################################################
 

@@ -196,10 +196,13 @@ def test_create_or_register_40_Devices(self):
     #"nm_trap force i5s_reg " + BPD2_BRICK_MAC_ID + " " + SST2 + " " + "04010a0c 101112131415161718192021222324"
     TEST_SST = "4954554300e4e2"
     TEST_BPD ="00:07:81:43:00:e4:e2:"
-    for i in range(1, 41):
+    for i in range(1, 42):  #Will go to 41, expect OK, but node 41 will not be registered, not even Node #40, since its my real BPD itself.
+        i = '{num:02d}'.format(num=i)
+        print "Registering CPD device #:%s\n" % str(i)
         cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "nm_trap force i5s_reg " + TEST_BPD+str(i) + " " + TEST_SST+str(i) + " " + "04010a0c 101112131415161718192021222324"
-        processCmd(cmd)
-        time.sleep(3)
+        ret = processCmd(cmd)
+        print ret
+        time.sleep(5)
 
 
 #Check LLS enabled:
@@ -844,7 +847,7 @@ def nm_config_ndxp_dlca_server(sendMode, IPV6, ndxp_server):
 
 def nm_get_app_nodeq(sendMode, IPV6):
     # ./nm -g -d fe80::213:5005:004f:8917 i5s_app_nodeq show
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "i5s_app_nodeq show"
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "-v i5s_app_nodeq show"
     ret = processCmd(cmd)
     return ret
 
