@@ -28,11 +28,11 @@ elif platform == "linux2":  # Raspberry Pi
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
-sendMode = '-g -d'  # via FSU, locally
-#sendMode = '-d'  # via corp network & AP
+#sendMode = '-g -d'  # via FSU, locally
+sendMode = '-d'  # via corp network & AP
 
 IPV6 = CPD_IPV6_AP
-BPD_DUT = BPD2_BRICK_MAC_ID  # BPD1_BRICK_MAC_ID
+BPD_DUT = BPD1_BRICK_MAC_ID  # BPD1_BRICK_MAC_ID
 
 
 class Test_Security(unittest.TestCase):
@@ -60,20 +60,20 @@ class Test_Security(unittest.TestCase):
         reqId = Nm.random_with_N_digits(5)
         blobFileIn = CERTS_PATH + BLOB_FILE
         privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
-        IPV6 = CPD_IPV6_AP
+        IPV6 = IPV6
         timeOut = 30
         replyType = 5  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
         replyType2 = '03'  # HMAC, ShA256 for secured send comands
 
         print "Validating & Checking certs ownership on devices... \'%s\'\n" % CPD_IPV6_AP
-        rc = Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+        rc = Nm.nm_validate_certs_ownership(sendMode, IPV6, FULLY_DL_CHAINED_CERTS)
         self.assertTrue('PASSED' in rc, "FAILED Certs Chain Verification")
 
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
         time.sleep(CPD_2_BPD_POLLING_INTERVAL)
 
         # Clear both the event and nlog for APP layer secure events:
-        rc = Nm.nm_clear_logs(sendMode, IPV6)
+        rc = Nm.nm_clear_logs(sendMode, CPD_IPV6_AP)
         print rc
 
 

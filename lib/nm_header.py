@@ -36,15 +36,15 @@ CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'
 
 ########################################################################################################################
 
-CPD_MAC_ID = '00:13:50:05:00:4f:89:17'                 #Main NIC as CPD
-CPD2_MAC_ID = '00:13:50:05:00:8f:de:b2'                 #Sniffer_500s station
+CPD2_MAC_ID = '00:13:50:05:00:4f:89:17'                 #Main NIC as CPD
+CPD1_MAC_ID = '00:13:50:05:00:8f:de:b2'                 #Sniffer_500s station
 
-#CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD path via AP
-#CPD_IPV6_AP = 'fe80::213:5001:0173:01c3'                   #Gen4 NIC + FSU
+CPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD path via AP
+CPD1_IPV6_AP = 'fd59:4c3e:5440:1:213:5005:008f:deb2'                   #Joevani's AP, CPD2
 CPD_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD path via FSU
 CPD2_IPV6_FSU = 'fe80::213:5005:008f:deb2'              #Sniffer_500s station
 
-CPD_IPV6_AP = CPD_IPV6_FSU
+CPD_IPV6_AP =  CPD1_IPV6_AP #CPD_IPV6_FSU
 
 CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
 
