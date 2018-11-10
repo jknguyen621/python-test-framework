@@ -25,8 +25,6 @@ elif platform == "linux2":                  #Raspberry Pi
     NET_MGR_PATH = pwd + '/arm_tools/net_mgr'
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
-
-
 ########################################################################################################################
 #NET_TRAP:
 TRAP_SERVER_IPV6 = 'fd34:fe56:7891:7e23:4a8:7e53:a48e:e474'   #Local Macbook Ethernet

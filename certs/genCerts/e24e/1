@@ -1,0 +1,59 @@
+import argparse
+import os
+import shutil
+
+#if not os.path.exists('/tmp/newdir'):
+#    os.makedirs('/tmp/newdir')
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-c", "--certs", dest='certs_dir', help="Input the Top Level Dir Name to store the certs")
+parser.add_argument("-m", "--mac", dest='mac', help="MAC Address ie: 0007814300e43e99")
+args = parser.parse_args()
+if args == '':
+	print "Usage: python createCertDir.py --certs  Certs_e4e24e --mac 0007814300e4e24e"
+print(args.certs_dir)
+
+cwd = os.getcwd()
+if not os.path.exists(args.certs_dir):
+	os.makedirs(args.certs_dir)
+	os.makedirs(args.certs_dir+'/AAA')
+        os.makedirs(args.certs_dir+'/CA Certs')
+	os.makedirs(args.certs_dir+'/DL')
+	os.makedirs(args.certs_dir+'/DLCA')
+	os.makedirs(args.certs_dir+'/Meter Security')
+	os.makedirs(args.certs_dir+'/NMS')
+	os.makedirs(args.certs_dir+'/Operator')
+	os.makedirs(args.certs_dir+'/Xroot')
+	os.makedirs(args.certs_dir+'/Meter Security/CER')
+	os.makedirs(args.certs_dir+'/Meter Security/P12')
+
+
+"""
+rw-r--r--   1 jnguyen  4843    17 Nov  5 10:21 0007814300e4e24e-p12pwd.txt
+-rw-r--r--   1 jnguyen  4843   855 Nov  5 10:21 0007814300e4e24e.mycert
+-rw-r--r--   1 jnguyen  4843   958 Nov  5 10:21 0007814300e4e24e.p12
+-rw-r--r--   1 jnguyen  4843   447 Nov  5 10:21 00_0007814300e4e24e_ROOT.x509
+-rw-r--r--   1 jnguyen  4843   483 Nov  5 10:21 01_0007814300e4e24e_MFG.x509
+import argparse
+-rw-r--r--   1 jnguyen  4843   505 Nov  5 10:21 01_0007814300e4e24e_OPERATOR.x509
+-rw-r--r--   1 jnguyen  4843    67 Nov  5 10:21 02_0007814300e4e24e.pkcs8
+-rw-r--r--   1 jnguyen  4843   660 Nov  5 10:21 02_0007814300e4e24e_BC.pem
+print(args.certs_dir)
+-rw-r--r--   1 jnguyen  4843   445 Nov  5 10:21 02_0007814300e4e24e_BC.x509
+-rw-r--r--   1 jnguyen  4843   496 Nov  5 10:21 02_0007814300e4e24e_DLCA.x509
+-rw-r--r--   1 jnguyen  4843   227 Nov  5 10:21 02_0007814300e4e24e_pk.pem
+-rw-r--r--   1 jnguyen  4843    67 Nov  5 10:21 03_0007814300e4e24e_DLCA.pkcs8
+"""
+
+shutil.copy("00_"+args.mac+"_ROOT.x509", args.certs_dir+'/CA Certs/'+"00_rootCA.ins.x509")
+shutil.copy("00_"+args.mac+"_ROOT.x509", args.certs_dir+'/Xroot/'+"00_"+args.mac+"_ROOT.x509")
+shutil.copy("01_"+args.mac+"_MFG.x509", args.certs_dir+'/CA Certs/'+"01_"+args.mac+"_MFG.ins.x509")
+shutil.copy("01_"+args.mac+"_DL.x509", args.certs_dir+'/DL/'+"01_"+args.mac+"_DL.x509")
+shutil.copy("02_"+args.mac+"_DLCA.x509", args.certs_dir+'/DLCA/'+"02_"+args.mac+"_DLCA.x509")
+shutil.copy("02_"+args.mac+".pkcs8", args.certs_dir+'/Meter Security/CER'+"02_"+args.mac+".pkcs8")
+shutil.copy("02_"+args.mac+"_BC.x509", args.certs_dir+'/Meter Security/CER/'+"02_"+args.mac+"_BC.x509")
+shutil.copy(args.mac+".p12", args.certs_dir+'/Meter Security/P12/'+args.mac+".p12")
+shutil.copy(args.mac+"-p12pwd.txt", args.certs_dir+'/Meter Security/P12/'+"00_"+args.mac+"-p12pwd.txt")
+shutil.copy("01_"+args.mac+"_OPERATOR.x509", args.certs_dir+'/Operator/'+"01_"+args.mac+"_OPERATOR.x509")
+shutil.copy("Ipv6labAAA.cer", args.certs_dir+'/AAA/'+"Ipv6labAAA.cer")
+shutil.copy("FNDCertificate.pem", args.certs_dir+'/NMS/'+"FNDCertificate.pem")
