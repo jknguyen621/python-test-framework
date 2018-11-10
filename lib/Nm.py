@@ -192,6 +192,11 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD2_BRICK_MAC_ID):
     print "Verifying that secured key was loaded successfully....\n"
     nm_show_mac_sec_key(sendMode, IPV6, BPD, 1)
 
+    #Set Max retry for DLCA Tx retries:
+    retryNum = 1
+    print "Setting CPD's max retry for DLCA Tx: \'%d\' \n" % (retryNum)
+    nm_conf_dlca_max_tx_retries(sendMode, IPV6, retryNum)
+
 def test_create_or_register_40_Devices(self):
     #"nm_trap force i5s_reg " + BPD2_BRICK_MAC_ID + " " + SST2 + " " + "04010a0c 101112131415161718192021222324"
     TEST_SST = "4954554300e4e2"
@@ -850,6 +855,13 @@ def nm_get_app_nodeq(sendMode, IPV6):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "-v i5s_app_nodeq show"
     ret = processCmd(cmd)
     return ret
+
+#Configuring retry looking or DLCA: conf i5s_llsec dlca_max_tx_retries
+def nm_conf_dlca_max_tx_retries(sendMode, IPV6, retryNum=1):
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "-conf i5s_llsec dlca_max_tx_retries" + str(retryNum)
+    ret = processCmd(cmd)
+    return ret
+
 
 ########################################################################################################################
 
