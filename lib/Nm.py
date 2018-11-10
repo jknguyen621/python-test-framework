@@ -16,7 +16,7 @@ import os
 import sys
 
 from random import randint
-from pygtail import Pygtail
+#from pygtail import Pygtail
 global seqNum
 
 
@@ -30,6 +30,26 @@ else:
 print "INITIAL SEQNUM IS: \'%d\'\n"  % (seqNum)
 seqNum = int(seqNum)
 SEQ_NUM = seqNum
+
+
+IPV6 = ""
+sendMode = ""
+#NOTE: Set which BPD_DUT is running on this particular test bed.
+BPD_DUT = BPD1_BRICK_MAC_ID
+#BPD_DUT = BPD2_BRICK_MAC_ID
+
+
+#Selecting CPD with BPD based on testing
+if BPD_DUT == BPD1_BRICK_MAC_ID:   #Xroot Certd CPD&BPD combo with access to BOS.
+    CPD_DUT = CPD1_IPV6_AP         #BPD1 will be using AP, with DLCA, and X/Rooot
+    IPV6 = CPD_DUT
+    sendMode = "-d "
+else:
+    CPD_DUT = CPD2_IPV6_FSU        #Local, using FSU
+    IPV6 =  CPD_DUT
+    sendMode = "-g -d "
+
+
 
 #'Certificates owned: 0x7f<BirthCertificate,verifiedBC,ManufacturingCertificate,DriversLicense,verifiedDL,fullDLchain,OperatorCertificate>'
 ########################################################################################################################
@@ -817,10 +837,11 @@ def nm_force_trap_event(trap, sendMode, IPV6):
     ret = processCmd(cmd)
     return ret
 
+
 def nm_tail_file(filePath, expectedValue=None):
 
     expetedValue1 = "Received "
-
+    """
     if expectedValue == None:
         dummyRead = Pygtail(filePath, read_from_end=True)
 
@@ -835,7 +856,8 @@ def nm_tail_file(filePath, expectedValue=None):
             return actualValue
         else:
             pass
-
+    """
+    pass
 
 
 def nm_config_ndxp_dlca_server(sendMode, IPV6, ndxp_server):

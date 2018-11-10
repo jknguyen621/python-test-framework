@@ -28,11 +28,11 @@ elif platform == "linux2":  # Raspberry Pi
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
-sendMode = '-g -d'  # via FSU, locally
-#sendMode = '-d'  # via corp network & AP
+#sendMode = '-g -d'  # via FSU, locally
+sendMode = '-d'  # via corp network & AP
 
-IPV6 = CPD_IPV6_AP
-BPD_DUT = BPD2_BRICK_MAC_ID  # BPD1_BRICK_MAC_ID
+#IPV6 = CPD1_IPV6_AP
+#BPD_DUT = BPD1_BRICK_MAC_ID  # BPD1_BRICK_MAC_ID
 
 
 class Test_Security(unittest.TestCase):
@@ -41,32 +41,35 @@ class Test_Security(unittest.TestCase):
         pass
 
     def test00_Preliminary_Requesites_Check(self):
+        IPV6 = CPD1_IPV6_AP
+        BPD_DUT = BPD1_BRICK_MAC_ID  # BPD1_BRICK_MAC_ID
+
         print "Get Image List...\n"
-        Nm.nm_get_image_list(sendMode, CPD_IPV6_AP)
+        Nm.nm_get_image_list(sendMode, IPV6)
 
         # get version str on device
         print "Get Version Str...\n"
-        Nm.nm_get_version_str(sendMode, CPD_IPV6_AP)
+        Nm.nm_get_version_str(sendMode, IPV6)
 
         # Configure CPD to be able to proxy for BPDS: :
         print "Configuring CPD for proper Proxy Mode on behalf of BPD...\n"
-        Nm.nm_configure_cpd(sendMode, CPD_IPV6_AP, BPD_DUT)
+        Nm.nm_configure_cpd(sendMode, IPV6, BPD_DUT)
 
         # Display lls_nodeq:
         print "Getting Link Layer Nodeq for the CPD and BPDs...\n"
-        rc = Nm.nm_show_BPD_LLS_Nodes(sendMode, CPD_IPV6_AP)
+        rc = Nm.nm_show_BPD_LLS_Nodes(sendMode, IPV6)
 
         # Get Random 5-digits Required ID to start communication
         reqId = Nm.random_with_N_digits(5)
         blobFileIn = CERTS_PATH + BLOB_FILE
         privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
-        IPV6 = CPD_IPV6_AP
+        #IPV6 = CPD_IPV6_AP
         timeOut = 30
         replyType = 5  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
         replyType2 = '03'  # HMAC, ShA256 for secured send comands
 
-        print "Validating & Checking certs ownership on devices... \'%s\'\n" % CPD_IPV6_AP
-        rc = Nm.nm_validate_certs_ownership(sendMode, CPD_IPV6_AP, FULLY_DL_CHAINED_CERTS)
+        print "Validating & Checking certs ownership on devices... \'%s\'\n" % IPV6
+        rc = Nm.nm_validate_certs_ownership(sendMode, IPV6, FULLY_DL_CHAINED_CERTS)
         self.assertTrue('PASSED' in rc, "FAILED Certs Chain Verification")
 
         print "Sleep for set CPD-2-BPD POLLING INTERVAL SETTING OF: \'%s\' seconds ..." % (CPD_2_BPD_POLLING_INTERVAL)
