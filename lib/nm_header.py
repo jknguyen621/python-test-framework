@@ -36,25 +36,27 @@ CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'
 
 ########################################################################################################################
 
+CPD1_MAC_ID = '00:13:50:05:00:8f:de:b2'                 #Use with AP, DLCA and BOS
 CPD2_MAC_ID = '00:13:50:05:00:4f:89:17'                 #Main NIC as CPD
-CPD1_MAC_ID = '00:13:50:05:00:8f:de:b2'                 #Sniffer_500s station
 
-CPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD path via AP
-CPD1_IPV6_AP = 'fd59:4c3e:5440:1:213:5005:008f:deb2'                   #Joevani's AP, CPD2
-CPD_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD path via FSU
-CPD2_IPV6_FSU = 'fe80::213:5005:008f:deb2'              #Sniffer_500s station
+CPD1_IPV6_AP = 'fd59:4c3e:5440:1:213:5005:008f:deb2'      #CPD1 path via AP -Joevani's AP
+#CPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD2 path via AP - QA's 500s-ins AP
 
-CPD_IPV6_AP =  CPD1_IPV6_AP #CPD_IPV6_FSU
+#CPD1_IPV6_FSU = 'fe80::213:5005:008f:deb2'              #Use with AP, DLCA, and BOS
+CPD2_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD path via FSU
+
+
+#CPD_IPV6_AP = CPD2_IPV6_FSU
 
 CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
 
-BPD_FW_VERSION = "14,2,4,0"
-#BPD1_MAC_ID = '00:13:50:05:00:69:ce:38'               #NIC for BPD1 as temporary.
+BPD_FW_VERSION = "14,2,3,17"
+
 BPD1_BRICK_MAC_ID = '00:07:81:43:00:e4:e2:4d'       #'00:07:81:43:1B:AD:A5:51'
 SST1 = '4954554300e4e24d'  #'495455431bada551'
 CST1 = '4954526300000000'
 
-#BPD2_MAC_ID = '00:13:50:07:00:00:0c:7e'           #NIC  for BPD2 as temporary
+
 BPD2_BRICK_MAC_ID = '00:07:81:43:00:e4:e2:4e'                          #'00:07:81:43:1B:AD:A5:52'
 SST2 = '4954554300e4e24e'        #'495455431bada552'  #Server System Title/DeviceID
 CST2 = '4954526300000000'
@@ -172,3 +174,6 @@ Received *test* trap id = 0x529, seq=15, bootcnt=85, confirm=yes at time Thu Sep
      -> reason="Authority Key Missing Test Trap" subj_key_id="da:39:a3:ee:5e:6b:4b:0d:32:55:bf:ef:95:60:18:90:af:d8:07:09" from 00:13:50:05:00:69:ce:38
 
 '''
+
+########################################################################################################################
+

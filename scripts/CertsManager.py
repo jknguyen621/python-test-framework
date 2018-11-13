@@ -26,17 +26,18 @@ elif platform == "linux2":  # Raspberry Pi
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
-# sendMode = '-d'  # via corp network & AP
+sendMode = '-d'  # via corp network & AP
 
-sendMode = '-g -d'  # via FSU
+#sendMode = '-g -d'  # via FSU
 
-IPV6 = CPD_IPV6_FSU  # CPD_IPV6_AP
+#IPV6 = CPD_IPV6_FSU  # CPD_IPV6_AP
+IPV6 = CPD1_IPV6_AP
 BPD_DUT = BPD1_BRICK_MAC_ID #BPD2_BRICK_MAC_ID
 
 
 class CertsManager(unittest.TestCase):
-    sendMode = '-g -d'  # //via FSU
-    # sendMode = '-d'     #via corp network & AP
+    #sendMode = '-g -d'  # //via FSU
+    sendMode = '-d'     #via corp network & AP
 
     ########################################################################################################################
 
@@ -62,22 +63,30 @@ class CertsManager(unittest.TestCase):
     #Nm.nm_configure_cpd(sendMode, IPV6, BPD_DUT)
 
     # Get Random 5-digits Required ID to start communication
-    reqId = Nm.random_with_N_digits(5)
-    blobFileIn = CERTS_PATH + BLOB_FILE
-    privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
-    timeOut = 30
-    replyType = 5  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
-    replyType2 = '03'  # HMAC, ShA256 for secured send comands
+    # reqId = Nm.random_with_N_digits(5)
+    # blobFileIn = CERTS_PATH + BLOB_FILE
+    # privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
+    # timeOut = 30
+    # replyType = 5  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
+    # replyType2 = '03'  # HMAC, ShA256 for secured send comands
 
     # print "Validating & Checking certs ownership on devices... \'%s\'" % BPD2_IPV6_AP
     # Nm.nm_validate_certs_ownership(sendMode, BPD2_IPV6_AP, FULLY_DL_CHAINED_CERTS)
 
     ####################################################################################################################
     #REMOVING OLD OP's Path chained certs(DL, DLCA, and OP), optionally NMENITY and EBOCA too
+    #To Run: python -m unittest scripts.CertsManager.CertsManager.test_removing_OP_chained_path_certs
     ####################################################################################################################
     def test_removing_OP_chained_path_certs(self):
         # Establihsing ALS connection and sendig first command via secured ALS
-        (seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, IPV6, timeOut=60, reqId=12345, \
+        reqId = Nm.random_with_N_digits(5)
+        blobFileIn = CERTS_PATH + BLOB_FILE
+        privkeyFileIn = CERTS_PATH + PRIVKEY_FILE
+        timeOut = 30
+        replyType = 7  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
+        replyType2 = '03'  # HMAC, ShA256 for secured send comands
+        print "Trying to establish ALS Connection...\n"
+        (seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, IPV6, timeOut=60, reqId=12345,
                                                                replyType=5, replyType2='03',
                                                                blobFileIn=CERTS_PATH + BLOB_FILE,
                                                                privkeyFileIn=CERTS_PATH + PRIVKEY_FILE)
@@ -85,6 +94,7 @@ class CertsManager(unittest.TestCase):
         # seqNum = seqNum + 15
         # Making a second secured command request via ALS
         cmdString = " certs esdump 4 "
+        print "Trying to send command via secured ALSConnection...\n"
         (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
                                                                 replyType2)
         print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
@@ -93,19 +103,19 @@ class CertsManager(unittest.TestCase):
 
 
         # Removing DL cert:#1281, #1282
-        print "Removing DL cert 1281....\n"
-        # Nm.nm_remove_cert(sendMode, IPV6, '1281')
+        print "Removing DL cert 1280....\n"
+        #Nm.nm_remove_cert(sendMode, IPV6, '1280')
         seqNum = seqNum + 15
 
-        privateID = 1282
+        privateID = 1283
         cmdString = " certs erase " + str(privateID)
         (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
                                                                 replyType2)
         print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
             seqNum, assocId, ss)
 
-        print "Removing DL cert 1282....\n"
-        # Nm.nm_remove_cert(sendMode, IPV6, '1282')
+        print "Removing DL cert 1283....\n"
+        #Nm.nm_remove_cert(sendMode, IPV6, '1283')
 
         seqNum = seqNum + 15
         privateID = 1281
@@ -163,12 +173,19 @@ class CertsManager(unittest.TestCase):
 
         #NOTE: if all failed, try app_sysvar delete:360  (the certs cache)
 
-        Nm.nm_dump_cert_cache(sendMode, IPV6)
 
+        # Removing APP_SYSVAR 360 cert:
+        print "Deleting app_sysvar:360...\n"
+        seqNum = seqNum + 15
+        cmdString = " app_sysvar delete:360"
+        (seqNum, assocId, ss) = Nm.nm_als_secured_commands_send(sendMode, cmdString, seqNum, assocId, ss, IPV6, timeOut,
+                                                                replyType2)
+        print "Return for next command request for: seqNum;\'%d\', assocId:\'%s\', and sharedsecret:\'%s\' \n" % (
+            seqNum, assocId, ss)
 
-        print "Deleting out app_sysvar:360 for certs cache...\n"
-        ID = 360
-        Nm.nm_delete_sysvar(sendMode, IPV6, ID)
+        #print "Deleting out app_sysvar:360 for certs cache...\n"
+        #ID = 360
+        #Nm.nm_delete_sysvar(sendMode, IPV6, ID)
 
         Nm.nm_dump_cert_cache(sendMode, IPV6)
 
@@ -178,6 +195,9 @@ class CertsManager(unittest.TestCase):
     ########################################################################################################################
 
     def test_inject_OP_chained_path_certs(self):
+        #NOTE:
+        # NEED TO INJECT OP, ECBOCA, then NMENITY for ALS
+        # NEED TO INJECT OP, DLCA, and DL for LLS
 
         #Certs generated form i5sim V.
         CPD_CERTS_PATH = pwd + "/certs/CPD_Certs/"
@@ -194,15 +214,15 @@ class CertsManager(unittest.TestCase):
         Nm.nm_upload_op_cert(sendMode, IPV6, op_x509_path)
 
         #Upload ECBOCA cert test:
-        #ecboca_x509_path = CERTS_PATH + SUB_CA_ECBOCA_CERT
-        #print "Uploading ECBOCA cert...\n"
-        #Nm.nm_upload_dl_cert(sendMode, IPV6, ecboca_x509_path)
+        ecboca_x509_path = CERTS_PATH + SUB_CA_ECBOCA_CERT
+        print "Uploading ECBOCA cert...\n"
+        Nm.nm_upload_dl_cert(sendMode, IPV6, ecboca_x509_path)
 
 
         #Upload NMenity cert test:
-        #dl_x509_path = CERTS_PATH + SUB_NM_CERT
-        #print "Uploading NMenity Cert...\n"
-        #Nm.nm_upload_op_cert(sendMode, IPV6, dl_x509_path)
+        dl_x509_path = CERTS_PATH + SUB_NM_CERT
+        print "Uploading NMenity Cert...\n"
+        Nm.nm_upload_op_cert(sendMode, IPV6, dl_x509_path)
 
         #Upload DLCA cert test:
         dl_x509_path = CPD_CERTS_PATH + CPD_DLCA_CERT
