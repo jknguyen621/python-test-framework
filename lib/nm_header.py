@@ -39,7 +39,7 @@ CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'
 CPD1_MAC_ID = '00:13:50:05:00:8f:de:b2'                 #Use with AP, DLCA and BOS
 CPD2_MAC_ID = '00:13:50:05:00:4f:89:17'                 #Main NIC as CPD
 
-CPD1_IPV6_AP = 'fd59:4c3e:5440:1:213:5005:008f:deb2'      #CPD1 path via AP -Joevani's AP
+#CPD1_IPV6_AP = 'fd59:4c3e:5440:1:213:5005:008f:deb2'      #CPD1 path via AP -Joevani's AP
 #CPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD2 path via AP - QA's 500s-ins AP
 
 #CPD1_IPV6_FSU = 'fe80::213:5005:008f:deb2'              #Use with AP, DLCA, and BOS
@@ -81,6 +81,8 @@ SWENG_QA_NDXP = 'fde4:77d:7b24:e3cc:250:56ff:fe83:46ec'  #On 2nd CPD NiC: 0013:5
 AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'      #QA's AP for 500s-ins: Start_word = 0x6a5d'; net_id = 0xffff
 DEV_AP_IPV6 = 'fd59:4c3e:5440:1:213:50ff:fe12:437a'     #Joevani's AP use for DLCA & BOS access with Xrootm Start_word = 0xa122'; net_id = 0xffff
 
+eBridge_AP_IPV6 = "fd04:7c3e:be2f:86:213:50ff:fe30:5b5e"
+
 CERTS_PATH =  pwd+'/certs/'
 OP_CERT = '01_SWENG_20224_OPERATOR.x509'
 SUB_CA_ECBOCA_CERT = '02_SWENG_20224_ECBOCA_PRIV.x509'
@@ -116,6 +118,8 @@ DLCA_SERVER ="fde4:77d:7b24:e3cc:250:56ff:fe83:69c3"    # sjc-fwapps-01.eng.ssns
 #the below login credentials are for Jyothsna's local dlca server. you have to change it for parkcity. but password for root on parkcity:????
 DLCA_USERNAME="root"
 DLCA_PASSWORD="mypassword"
+
+DLCA_XROOT ="fdc2:c2cd:d343:39c8:250:56ff:feab:b3bd"
 
 ########################################################################################################################
 
