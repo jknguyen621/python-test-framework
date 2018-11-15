@@ -35,8 +35,8 @@ SEQ_NUM = seqNum
 IPV6 = ""
 sendMode = ""
 #NOTE: Set which BPD_DUT is running on this particular test bed.
-BPD_DUT = BPD1_BRICK_MAC_ID
-#BPD_DUT = BPD2_BRICK_MAC_ID
+#BPD_DUT = BPD1_BRICK_MAC_ID
+BPD_DUT = BPD2_BRICK_MAC_ID
 
 
 #Selecting CPD with BPD based on testing
@@ -880,7 +880,7 @@ def nm_get_app_nodeq(sendMode, IPV6):
 
 #Configuring retry looking or DLCA: conf i5s_llsec dlca_max_tx_retries
 def nm_conf_dlca_max_tx_retries(sendMode, IPV6, retryNum=1):
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + "-conf i5s_llsec dlca_max_tx_retries" + str(retryNum)
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " " + " conf i5s_llsec dlca_max_tx_retries" + str(retryNum)
     ret = processCmd(cmd)
     return ret
 

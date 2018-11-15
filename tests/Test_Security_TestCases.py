@@ -28,8 +28,8 @@ elif platform == "linux2":  # Raspberry Pi
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
-#sendMode = '-g -d'  # via FSU, locally
-sendMode = '-d'  # via corp network & AP
+sendMode = '-g -d'  # via FSU, locally
+#sendMode = '-d'  # via corp network & AP
 
 #IPV6 = CPD1_IPV6_AP
 #BPD_DUT = BPD1_BRICK_MAC_ID  # BPD1_BRICK_MAC_ID
@@ -41,8 +41,8 @@ class Test_Security(unittest.TestCase):
         pass
 
     def test00_Preliminary_Requesites_Check(self):
-        IPV6 = CPD1_IPV6_AP
-        BPD_DUT = BPD1_BRICK_MAC_ID  # BPD1_BRICK_MAC_ID
+        IPV6 = CPD2_IPV6_FSU #CPD1_IPV6_AP
+        BPD_DUT = BPD2_BRICK_MAC_ID  # BPD1_BRICK_MAC_ID
 
         print "Get Image List...\n"
         Nm.nm_get_image_list(sendMode, IPV6)

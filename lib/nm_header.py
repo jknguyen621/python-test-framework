@@ -39,7 +39,7 @@ CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'
 CPD1_MAC_ID = '00:13:50:05:00:8f:de:b2'                 #Use with AP, DLCA and BOS
 CPD2_MAC_ID = '00:13:50:05:00:4f:89:17'                 #Main NIC as CPD
 
-CPD1_IPV6_AP = 'fd59:4c3e:5440:1:213:5005:008f:deb2'      #CPD1 path via AP -Joevani's AP
+#CPD1_IPV6_AP = 'fd59:4c3e:5440:1:213:5005:008f:deb2'      #CPD1 path via AP -Joevani's AP
 #CPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD2 path via AP - QA's 500s-ins AP
 
 #CPD1_IPV6_FSU = 'fe80::213:5005:008f:deb2'              #Use with AP, DLCA, and BOS
