@@ -26,9 +26,9 @@ elif platform == "linux2":  # Raspberry Pi
 
 print "Operation System and Net_Mgr Path are: %s:%s\n" % (platform, NET_MGR_PATH)
 
-sendMode = '-d'  # via corp network & AP
+#sendMode = '-d'  # via corp network & AP
 
-#sendMode = '-g -d'  # via FSU
+sendMode = '-g -d'  # via FSU
 
 #IPV6 = CPD_IPV6_FSU  # CPD_IPV6_AP
 IPV6 = CPD1_IPV6_AP
@@ -37,7 +37,7 @@ BPD_DUT = BPD1_BRICK_MAC_ID #BPD2_BRICK_MAC_ID
 
 class CertsManager(unittest.TestCase):
     #sendMode = '-g -d'  # //via FSU
-    sendMode = '-d'     #via corp network & AP
+    sendMode = '-g -d'     #via corp network & AP
 
     ########################################################################################################################
 
@@ -85,6 +85,8 @@ class CertsManager(unittest.TestCase):
         timeOut = 30
         replyType = 7  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
         replyType2 = '03'  # HMAC, ShA256 for secured send comands
+        IPV6 = 'fe80::213:50ff:fe30:5b5e'
+
         print "Trying to establish ALS Connection...\n"
         (seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, IPV6, timeOut=60, reqId=12345,
                                                                replyType=5, replyType2='03',
@@ -191,6 +193,8 @@ class CertsManager(unittest.TestCase):
 
         seqNum = seqNum + 15
         ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
+
+        print "Please restart your NIC before checking" certs esdump 4 again!\n"
 
     ########################################################################################################################
 
