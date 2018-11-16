@@ -39,7 +39,8 @@ CPD_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'
 CPD1_MAC_ID = '00:13:50:05:00:8f:de:b2'                 #Use with AP, DLCA and BOS
 CPD2_MAC_ID = '00:13:50:05:00:4f:89:17'                 #Main NIC as CPD
 
-#CPD1_IPV6_AP = 'fd59:4c3e:5440:1:213:5005:008f:deb2'      #CPD1 path via AP -Joevani's AP
+CPD1_IPV6_AP = 'fd04:7c3e:be2f:86:213:5005:008f:deb2'    #New eBridge-AP 5b5e to CPD1 using XROOT, 0xFB01, 0xFAC#
+#CPD1_IPV6_AP = 'fd59:4c3e:5440:1:213:5005:008f:deb2'      #CPD1 path via AP -Joevani's AP, 0xa122, 0xffff
 #CPD2_IPV6_AP = 'fd04:7c3e:be2f:100f:213:5005:004f:8917'      #CPD2 path via AP - QA's 500s-ins AP
 
 #CPD1_IPV6_FSU = 'fe80::213:5005:008f:deb2'              #Use with AP, DLCA, and BOS
@@ -50,7 +51,7 @@ CPD2_IPV6_FSU = 'fe80::213:5005:004f:8917'               #CPD path via FSU
 
 CPD_2_BPD_POLLING_INTERVAL = 30                     #In Secs, 10 secs is too short.
 
-BPD_FW_VERSION = "14,2,3,17"
+BPD_FW_VERSION = "14,2,4,13"
 
 BPD1_BRICK_MAC_ID = '00:07:81:43:00:e4:e2:4d'       #'00:07:81:43:1B:AD:A5:51'
 SST1 = '4954554300e4e24d'  #'495455431bada551'
@@ -82,6 +83,7 @@ AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'      #QA's AP for 500s-ins: S
 DEV_AP_IPV6 = 'fd59:4c3e:5440:1:213:50ff:fe12:437a'     #Joevani's AP use for DLCA & BOS access with Xrootm Start_word = 0xa122'; net_id = 0xffff
 
 eBridge_AP_IPV6 = "fd04:7c3e:be2f:86:213:50ff:fe30:5b5e"
+
 
 CERTS_PATH =  pwd+'/certs/'
 OP_CERT = '01_SWENG_20224_OPERATOR.x509'
@@ -119,7 +121,7 @@ DLCA_SERVER ="fde4:77d:7b24:e3cc:250:56ff:fe83:69c3"    # sjc-fwapps-01.eng.ssns
 DLCA_USERNAME="root"
 DLCA_PASSWORD="mypassword"
 
-DLCA_XROOT ="fdc2:c2cd:d343:39c8:250:56ff:feab:b3bd"
+DLCA_XROOT ="fdc2:c2cd:d343:39c8:250:56ff:feab:b3bd"  #XROOT DLCA VM server that Lisa T. helped setup 11/15/2018
 
 ########################################################################################################################
 
