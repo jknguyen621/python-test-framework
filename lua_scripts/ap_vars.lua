@@ -27,7 +27,7 @@ IPSEC_IKE_DHGROUP=2
 ROUTING=1
 RIP_V6_ON=0
 LINK_LAYER_SECURITY="off"
-
+NDXP_SERVER_ADDR="fdc2:c2cd:d343:39c8:250:56ff:feab:b3bd"
 srt.mimic_ap = 1
 srt.accept_routes = 0
 srt.hiprio = 1
