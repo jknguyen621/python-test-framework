@@ -75,6 +75,9 @@ class CertsManager(unittest.TestCase):
 
     ####################################################################################################################
     #REMOVING OLD OP's Path chained certs(DL, DLCA, and OP), optionally NMENITY and EBOCA too
+    #If missing signer cert, do this: /nmgr -d IPV6 certs upload ./certs/02_SWENG_20224_ECBOCA_PRIV.x509
+    # cert sync
+    # and /nmgr -d IPV6 certs upload ./certs/03_SWENG_20224_NM1245.x509
     #To Run: python -m unittest scripts.CertsManager.CertsManager.test_removing_OP_chained_path_certs
     ####################################################################################################################
     def test_removing_OP_chained_path_certs(self):
@@ -85,7 +88,7 @@ class CertsManager(unittest.TestCase):
         timeOut = 30
         replyType = 7  # BC=0x1 + Blob=0x4 for nm.nm_sec_assoc assoc
         replyType2 = '03'  # HMAC, ShA256 for secured send comands
-        IPV6 = 'fe80::213:50ff:fe30:5b5e'
+        IPV6 = 'fe80::213:50ff:fe30:5b5e' #'fe80::213:5005:008f:deb2'  #'fe80::213:50ff:fe30:5b5e'
 
         print "Trying to establish ALS Connection...\n"
         (seqNum, assocId, ss) = Nm.nm_establish_ALS_connection(sendMode, IPV6, timeOut=60, reqId=12345,
@@ -194,7 +197,7 @@ class CertsManager(unittest.TestCase):
         seqNum = seqNum + 15
         ret = Nm.nm_teardown_ALS_connection(sendMode, seqNum, assocId, ss, IPV6)
 
-        print "Please restart your NIC before checking" certs esdump 4 again!\n"
+        print "Please restart your NIC before checking: certs esdump 4 again!\n"
 
     ########################################################################################################################
 

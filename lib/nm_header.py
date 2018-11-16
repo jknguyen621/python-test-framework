@@ -83,6 +83,7 @@ AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'      #QA's AP for 500s-ins: S
 DEV_AP_IPV6 = 'fd59:4c3e:5440:1:213:50ff:fe12:437a'     #Joevani's AP use for DLCA & BOS access with Xrootm Start_word = 0xa122'; net_id = 0xffff
 
 eBridge_AP_IPV6 = "fd04:7c3e:be2f:86:213:50ff:fe30:5b5e"
+DNS_SERVER = "fde4:77d:7b24:e3cc:250:56ff:fe83:69c3"    #For XROOT AP & DLCA
 
 
 CERTS_PATH =  pwd+'/certs/'

@@ -358,6 +358,7 @@ def nm_certs_delete_op(sendMode, IPV6):
     ret = processCmd(cmd)
     print ret
 
+#Delete app_sysvar delete:360 to delete out entire Op chained, may use net_mgrS first
 def nm_delete_sysvar(sendMode, IPV6, ID): #360 for certs cache  app_sysvar delete:360
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " app_sysvar delete:" + ID
     print cmd
