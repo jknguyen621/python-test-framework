@@ -174,6 +174,12 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD2_BRICK_MAC_ID):
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s dbs"      #Check value 0 - OTA; 1 - Serial for DBS
     processCmd(cmd)
 
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf i5s tsync_itvl 28800"  # Set time sync interval
+    processCmd(cmd)
+
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " conf nm_sec ndxp_server " + DLCA_XROOT # point to DLCA server
+    processCmd(cmd)
+
     #Note: For BPD's ecurity to be enabled, we need to set: conf i5s linksec 0 and in the setup_ins.cs script: /* Save To Flash */
     #DBI("07 58 01");  #00 - clear text, disable security.
 
@@ -198,7 +204,7 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD2_BRICK_MAC_ID):
     nm_inject_security_key(sendMode, IPV6, BPD, DEFAULT_SECURITY_KEY, 1)
     #NOTE: Will get Errorneous request error for now, since there is a bug in the deteltion of the key FIRMW-19441
 
-    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [108, 109, 110, 111, 126, 361,362]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
+    cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + " evstatus [102, 108, 109, 110, 111, 126, 361, 362, 510]:on" #Turn on events:  KIO_PKT_SEND (361), KIO_PKT_RECV (362)
     processCmd(cmd)
 
 
@@ -216,6 +222,9 @@ def nm_configure_cpd(sendMode, IPV6, BPD=BPD2_BRICK_MAC_ID):
     retryNum = 1
     print "Setting CPD's max retry for DLCA Tx: \'%d\' \n" % (retryNum)
     nm_conf_dlca_max_tx_retries(sendMode, IPV6, retryNum)
+
+    level ='0x7'
+    nm_conf_mlme_sec_level(sendMode, IPV6, level)     #Set default mlme sec_level to 0x7
 
 def test_create_or_register_40_Devices(self):
     #"nm_trap force i5s_reg " + BPD2_BRICK_MAC_ID + " " + SST2 + " " + "04010a0c 101112131415161718192021222324"
@@ -672,7 +681,7 @@ def nm_teardown_ALS_connection(sendMode, seqNum, assocId, sharedSecret, IPV6=CPD
 #0x0 - None
 #0x7 -  Compatibility Mode
 #0xF - Strict
-def nm_conf_mlme_sec_level():
+def nm_conf_mlme_sec_level(sendMode, IPV6, level):
     cmdString = "conf mlme sec_level " + str(level)
     cmd = NET_MGR_PATH + " " + sendMode + " " + IPV6 + cmdString
     # print cmd

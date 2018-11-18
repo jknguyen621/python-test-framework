@@ -82,8 +82,14 @@ SWENG_QA_NDXP = 'fde4:77d:7b24:e3cc:250:56ff:fe83:46ec'  #On 2nd CPD NiC: 0013:5
 AP_IPV6 = 'fd04:7c3e:be2f:100f:213:50ff:fe60:35b9'      #QA's AP for 500s-ins: Start_word = 0x6a5d'; net_id = 0xffff
 DEV_AP_IPV6 = 'fd59:4c3e:5440:1:213:50ff:fe12:437a'     #Joevani's AP use for DLCA & BOS access with Xrootm Start_word = 0xa122'; net_id = 0xffff
 
+#Config for ap_vars.lua
 eBridge_AP_IPV6 = "fd04:7c3e:be2f:86:213:50ff:fe30:5b5e"
 DNS_SERVER = "fde4:77d:7b24:e3cc:250:56ff:fe83:69c3"    #For XROOT AP & DLCA
+NDXP_SERVER_ADDR="fdc2:c2cd:d343:39c8:250:56ff:feab:b3bd"
+DNS_ZONE = "test.silverspringnet.com"
+DNS_SERVER = "fde4:77d:7b24:e3cc:250:56ff:fe83:69c3"
+TRAP_HOST = "fdc2:c2cd:d343:39c8:250:56ff:feac:7500"
+
 
 
 CERTS_PATH =  pwd+'/certs/'
